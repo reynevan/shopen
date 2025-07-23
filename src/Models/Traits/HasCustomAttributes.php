@@ -139,7 +139,7 @@ trait HasCustomAttributes
             'entity_id' => $this->id,
             'attribute_id' => $attribute->id,
         ];
-        if (!$valueModel) {
+        if (!$value) {
             $valueModel::query()
                 ->where($parameters)
                 ->delete();
