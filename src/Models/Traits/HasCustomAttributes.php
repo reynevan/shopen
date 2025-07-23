@@ -125,9 +125,6 @@ trait HasCustomAttributes
                     $this->saveAttributeValue($attribute, $v, true);
                 }
             } else {
-                if (is_array($value)) {
-                    dd($value);
-                }
                 $this->saveAttributeValue($attribute, $value);
             }
         }
@@ -142,6 +139,12 @@ trait HasCustomAttributes
             'entity_id' => $this->id,
             'attribute_id' => $attribute->id,
         ];
+        if (!$valueModel) {
+            $valueModel::query()
+                ->where($parameters)
+                ->delete();
+            return;
+        }
         if ($isMultiValue) {
             $attributeValue = new $valueModel($parameters);
         } else {
