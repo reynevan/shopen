@@ -1,0 +1,1 @@
+<init-shipping :methods="{{ json_encode($block->getShippingMethods()) }}"></init-shipping>

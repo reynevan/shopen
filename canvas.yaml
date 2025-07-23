@@ -1,0 +1,15 @@
+
+preset: laravel
+
+namespace: Shopen
+
+model:
+  namespace: Shopen/App/Models
+
+paths:
+  src: src
+  resource: resources
+
+migration:
+  path: src/database/migrations
+  prefix: ''

@@ -1,0 +1,1 @@
+<input type="number" name="{{ $attribute->code }}" value="{{ $value }}">

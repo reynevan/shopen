@@ -1,0 +1,1 @@
+<input type="checkbox" @if($value) checked="checked" @endif name="{{ $attribute->code }}">

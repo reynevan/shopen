@@ -1,0 +1,19 @@
+<script setup>
+import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
+import BannerForm from "../../../components/admin/banner/BannerForm.vue";
+
+defineOptions({layout: AdminLayout})
+
+defineProps({
+    placementTypes: Object,
+    placements: Object,
+    categories: Array,
+});
+</script>
+<template>
+    <BannerForm
+        :placement-types="placementTypes"
+        :placements="placements"
+        :categories="categories"
+    />
+</template>

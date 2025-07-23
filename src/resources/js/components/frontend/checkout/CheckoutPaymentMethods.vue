@@ -1,0 +1,41 @@
+<script setup>
+
+import {defineAsyncComponent} from "vue";
+import DefaultPaymentMethod from "@shopen/components/frontend/payment/methods/DefaultPaymentMethod.vue";
+
+const props = defineProps(['methods'])
+
+const projectComponents = import.meta.glob('/resources/js/components/frontend/payment/methods/**/*.vue')
+const coreComponents = import.meta.glob('/vendor/shopen/core/src/resources/js/components/frontend/payment/methods/**/*.vue')
+
+function resolveComponent(path) {
+    const projectPath = `/resources/js/components/frontend/payment/methods/${path}.vue`
+    const corePath = `/vendor/shopen/core/src/resources/js/components/frontend/payment/methods/${path}.vue`
+
+    if (projectComponents[projectPath]) {
+        return defineAsyncComponent(projectComponents[projectPath])
+    }
+
+    if (coreComponents[corePath]) {
+        return defineAsyncComponent(coreComponents[corePath])
+    }
+
+    console.warn(`Component '${path}' not found. Falling back to Default.`)
+
+    return defineAsyncComponent(() =>
+        import('/vendor/shopen/core/src/resources/js/components/frontend/payment/methods/DefaultPaymentMethod.vue')
+    )
+}
+
+</script>
+
+<template>
+    <template v-for="method in methods">
+        <component v-if="method.component" :is="resolveComponent(method.component)" :method="method"/>
+        <DefaultPaymentMethod v-else :method="method"/>
+    </template>
+</template>
+
+<style scoped>
+
+</style>

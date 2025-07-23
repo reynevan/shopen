@@ -1,0 +1,1 @@
+<product-price :price="{{ json_encode($block->getPrice()) }}" :configurable="{{ $product->isConfigurable() ? 'true' : 'false' }}"></product-price>

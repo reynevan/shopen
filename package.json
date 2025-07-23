@@ -1,0 +1,28 @@
+{
+  "name": "@shopen/core-ui",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@egjs/vue3-flicking": "^4.14.0",
+    "@tinymce/tinymce-vue": "^6.2.0",
+    "@vueform/slider": "^2.1.10",
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "axios": "^1.10.0",
+    "vue-debounce": "^5.0.1",
+    "vuedraggable": "^4.1.0"
+  },
+  "peerDependencies": {
+    "@egjs/vue3-flicking": "^4.14.0",
+    "@inertiajs/vue3": "^2.0.14",
+    "@tinymce/tinymce-vue": "^6.2.0",
+    "@vueform/slider": "^2.1.10",
+    "@vuepic/vue-datepicker": "^11.0.2",
+    "pinia": "^2.0.0",
+    "vue": "^3.2.0",
+    "vue-debounce": "^5.0.1",
+    "vuedraggable": "^4.1.0"
+  },
+  "devDependencies": {
+    "vite": "^7.0.3"
+  }
+}

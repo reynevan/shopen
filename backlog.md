@@ -1,0 +1,1 @@
+url generating - tak zeby byl adres z bazy - to samo dla obrazków

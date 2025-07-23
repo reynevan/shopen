@@ -1,0 +1,30 @@
+<?php
+
+namespace Shopen\Core\Payment\Methods;
+
+use Shopen\Models\Order\Order;
+use Shopen\Models\Order\Payment;
+
+interface PaymentMethodInterface
+{
+
+    public function initializePayment(Order $order, array $data = []): Payment;
+
+    public function requiresRedirect(): bool;
+
+    public function getPaymentUrl(Payment $payment): ?string;
+
+    public function handleWebhook(array $webhookData): ?Payment;
+
+    public function checkPaymentStatus(Payment $payment): string;
+
+    public function getName(): string;
+
+    public function getKey(): string;
+
+    public function isAvailable(): bool;
+
+    public function getPrice(): float;
+
+    public function jsonSerialize(): array;
+}

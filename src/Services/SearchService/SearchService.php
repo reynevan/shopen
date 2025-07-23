@@ -1,0 +1,236 @@
+<?php
+
+namespace Shopen\Services\SearchService;
+
+use App\Support\ProductSorting\ProductSortRegistry;
+use Elastic\Elasticsearch\Client;
+use Illuminate\Support\Arr;
+use Elastic\Elasticsearch\ClientBuilder;
+use Shopen\Repositories\Product\ProductAttributeRepository;
+use stdClass;
+
+class SearchService
+{
+    protected Client $client;
+    protected ?int $categoryId = null;
+    protected array $filters = [];
+    protected ?string $sort = null;
+    protected ?int $page = null;
+    protected ?int $perPage = null;
+    protected ?int $limit = null;
+
+    public function __construct(
+        protected ProductSortRegistry  $productSortRegistry,
+        protected ProductAttributeRepository $productAttributeRepository,
+    )
+    {
+        $this->client = ClientBuilder::create()
+            ->setHosts(['localhost:9200'])
+            ->build();
+    }
+
+
+    public function setCategoryId($categoryId): static
+    {
+        $this->categoryId = $categoryId;
+        return $this;
+    }
+
+    public function setFilters(array $filters): static
+    {
+        $this->filters = $filters;
+        return $this;
+    }
+
+    public function setSort(?string $sort): static
+    {
+        $this->sort = $sort;
+        return $this;
+    }
+
+    public function setPage(?int $page): static
+    {
+        $this->page = $page;
+        return $this;
+    }
+
+    public function setPerPage(?int $perPage): static
+    {
+        $this->perPage = $perPage;
+        return $this;
+    }
+
+    public function setLimit(?int $limit): static
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    public function getProducts()
+    {
+        $params = [
+            'index' => 'shopen_products',
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'filter' => ['term' => ['category_id' => $this->categoryId]],
+                    ]
+                ]
+            ],
+        ];
+        if ($this->limit) {
+            $params['body']['size'] = $this->limit;
+        }
+
+        $result = $this->client->search($params)->asArray();
+
+        return new SearchServiceResult($result);
+    }
+
+
+    public function searchProducts(): SearchServiceResult
+    {
+        $params = [
+            'index' => 'shopen_products',
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'filter' => $this->buildFiltersArray($this->filters),
+                    ],
+                ],
+                'aggs' => $this->buildAggregationsArray(),
+            ],
+        ];
+        if ($this->page) {
+            $perPage = $this->perPage ?? config('shopen.product.per_page');
+            $from = ( max(intval($this->page), 1) - 1) * $perPage;
+            $params['body']['from'] = $from;
+            $params['body']['size'] = $perPage;
+        } elseif ($this->limit) {
+            $params['body']['size'] = $this->limit;
+        }
+
+        if (config('shopen.product.show_out_of_stock')) {
+            $params['body']['sort'][] = ['in_stock' => 'desc'];
+        }
+        $sorter = $this->productSortRegistry->findByKey($this->sort);
+        if ($sorter) {
+            $params['body']['sort'][] = $sorter->build();
+        }
+
+        $result = $this->client->search($params)->asArray();
+
+        return new SearchServiceResult($result);
+    }
+
+    protected function buildFiltersArray(array $filters, ?string $exclude = null): array
+    {
+        $queryFilters = [];
+
+        $this->addCategoryFilter($queryFilters);
+        $this->addAttributeFilters($queryFilters, $filters, $exclude);
+        $this->addPriceRangeFilter($queryFilters, $filters);
+
+        return $queryFilters;
+    }
+
+
+    private function addCategoryFilter(array &$queryFilters): void
+    {
+        if ($this->categoryId) {
+            $queryFilters[] = ['term' => ['category_id' => $this->categoryId]];
+        }
+    }
+
+
+    private function addAttributeFilters(array &$queryFilters, array $allFilters, ?string $excludeAttribute): void
+    {
+        $attributeFilters = Arr::except($allFilters, ['price_min', 'price_max']);
+
+        foreach ($attributeFilters as $attribute => $values) {
+            if ($attribute === $excludeAttribute) {
+                continue;
+            }
+            $queryFilters[] = ['terms' => [$attribute => $values]];
+        }
+    }
+
+
+    private function addPriceRangeFilter(array &$queryFilters, array $allFilters): void
+    {
+        $range = [];
+
+        if (isset($allFilters['price_min'])) {
+            $range['gte'] = $allFilters['price_min'];
+        }
+
+        if (isset($allFilters['price_max'])) {
+            $range['lte'] = $allFilters['price_max'];
+        }
+
+        if (!empty($range)) {
+            $queryFilters[] = ['range' => ['price' => $range]];
+        }
+    }
+
+    protected function buildAggregationsArray(): array
+    {
+        $aggregations = [];
+        foreach ($this->productAttributeRepository->getFilterable() as $attribute) {
+            $aggregation = [];
+            if (in_array($attribute->code, array_keys($this->filters))) {
+                $aggregation['global'] = new stdClass();
+                $aggregation['aggs'] = [
+                    'filters' => [
+                        'filter' => [
+                            'bool' => [
+                                'filter' => $this->buildFiltersArray($this->filters, $attribute->code),
+                            ]
+                        ],
+                        'aggs' => [
+                            'count' => [
+                                'terms' => ['field' => $attribute->code],
+                            ]
+                        ]
+                    ],
+                ];
+            } else {
+                $aggregation = [
+                    'filter' => [
+                        'bool' => [
+                            'filter' => [],
+                        ],
+                    ],
+                    'aggs' => [
+                        'count' => [
+                            'terms' => [
+                                'field' => $attribute->code
+                            ],
+                        ],
+                    ],
+                ];
+            }
+            $aggregations[$attribute->code] = $aggregation;
+        }
+
+        $aggregations['price_stats'] =  [
+            'global' => new stdClass(),
+            'aggs' => [
+                'filters' => [
+                    'filter' => [
+                        'bool' => [
+                            'filter' => $this->buildFiltersArray(Arr::except($this->filters, ['price_min', 'price_max', 'sort']))
+                        ]
+                    ],
+                    'aggs' => [
+                        'min_price' => ['min' => ['field' => 'price']],
+                        'max_price' => ['max' => ['field' => 'price']],
+                    ]
+                ]
+            ]
+        ];
+
+        return $aggregations;
+    }
+
+}
