@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreign('attribute_id')->references('id')->on('attributes')->onDelete('cascade');
             $table->foreignId('store_id');
             $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
-            $table->longText('value')->default(false);
+            $table->longText('value');
             $table->timestamps();
         });
     }
