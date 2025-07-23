@@ -2,15 +2,12 @@
 
 namespace Shopen\Console\Commands;
 
-require_once __DIR__ . '/../../../vendor/openpayu/openpayu/lib/openpayu.php';
 
 use Elastic\Adapter\Indices\Index;
 use Elastic\Adapter\Indices\IndexManager;
 use Elastic\Adapter\Indices\Mapping;
 use Elastic\ScoutDriverPlus\Support\Query;
 use Illuminate\Console\Command;
-use OpenPayU_Configuration;
-use OpenPayU_Order;
 use Shopen\Models\Product\Product;
 
 class Test extends Command
