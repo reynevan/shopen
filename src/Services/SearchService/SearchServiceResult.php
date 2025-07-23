@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Shopen\Http\Resources\Attribute\FilterResource;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
@@ -17,6 +18,7 @@ class SearchServiceResult
 
     protected function parseProducts(): Collection
     {
+        $time = microtime(true);
         $ids = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $sortIds = implode(',', $ids);
@@ -42,6 +44,7 @@ class SearchServiceResult
             $product->setCustomAttribute('images', $images);
         }
 
+        config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
         return $products;
     }
 
@@ -75,6 +78,7 @@ class SearchServiceResult
 
     public function getAttributesFilters(): AnonymousResourceCollection
     {
+        $time = microtime(true);
        $attributeOptionsCount = [];
         foreach ($this->searchResult['aggregations'] as $aggregation) {
             foreach ($aggregation['count']['buckets'] ?? $aggregation['filters']['count']['buckets'] ?? [] as $bucket) {
@@ -93,6 +97,8 @@ class SearchServiceResult
                 ->sortBy('value')
                 ->filter(fn($option) => $option->count > 0);
         }
-        return FilterResource::collection($attributes);
+        $attributes = FilterResource::collection($attributes);
+        config('app.debug') && Log::debug('[TIME] getAttributesFilters: ' . (microtime(true) - $time));
+        return $attributes;
     }
 }

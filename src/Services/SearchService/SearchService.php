@@ -6,6 +6,7 @@ use App\Support\ProductSorting\ProductSortRegistry;
 use Elastic\Elasticsearch\Client;
 use Illuminate\Support\Arr;
 use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Support\Facades\Log;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use stdClass;
 
@@ -90,6 +91,7 @@ class SearchService
 
     public function searchProducts(): SearchServiceResult
     {
+        $time = microtime(true);
         $params = [
             'index' => 'shopen_products',
             'body' => [
@@ -119,7 +121,7 @@ class SearchService
         }
 
         $result = $this->client->search($params)->asArray();
-
+        config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
         return new SearchServiceResult($result);
     }
 

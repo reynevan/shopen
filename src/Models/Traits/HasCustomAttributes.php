@@ -4,6 +4,7 @@ namespace Shopen\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Log;
 use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Attribute\AttributeOption;
 use Shopen\Models\Category\Category;
@@ -204,9 +205,12 @@ trait HasCustomAttributes
 
     public function loadAttributes($attributes): static
     {
+        $time = microtime(true);
         foreach ($attributes as $attribute) {
             $this->loadAttribute($attribute);
         }
+
+        config('app.debug') && Log::debug('[TIME] loadAttributes: ' . (microtime(true) - $time));
         return $this;
     }
 

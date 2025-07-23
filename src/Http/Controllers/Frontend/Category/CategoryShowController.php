@@ -64,6 +64,7 @@ readonly class CategoryShowController
 
     protected function getActiveFilters($attributesKey = 'code', $optionKey = 'id'): array
     {
+        $time = microtime(true);
         $attributes = $this->productAttributeRepository->getFilterable();
         $activeFilters = [];
         $params = [];
@@ -101,6 +102,8 @@ readonly class CategoryShowController
         if (request()->query('cena_do')) {
             $activeFilters['price_max'] = request()->query('cena_do');
         }
+
+        config('app.debug') && Log::debug('[TIME] getActiveFilters: ' . (microtime(true) - $time));
         return $activeFilters;
     }
 

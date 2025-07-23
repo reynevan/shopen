@@ -148,6 +148,10 @@ const totalActiveFiltersCount = computed(() => {
     <Head>
         <meta name="title" :content="category.seo.seo_title">
         <meta name="description" :content="category.seo.seo_description">
+        <meta property="og:title" :content="category.seo.seo_title">
+        <meta property="og:description" :content="category.seo.seo_description">
+        <meta property="og:image" :content="category.image_url_desktop" v-if="category.image_url_desktop">
+        <meta property="og:type" content="product.group">
     </Head>
     <div class="container mx-auto px-4">
         <BannersContainer :banners="banners.category_page_top"/>
