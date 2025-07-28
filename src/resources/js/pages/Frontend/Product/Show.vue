@@ -16,6 +16,7 @@ const props = defineProps({
     product: {type: Object, required: true},
     recentlyViewedProducts: {type: Object},
     reviews: {type: Object},
+    reviewsEnabled: {type: Boolean},
     sort: {type: String},
     reviewSubmitted: {type: Boolean},
     attributes: {type: Object},
@@ -52,7 +53,7 @@ const props = defineProps({
             </section>
         </div>
 
-        <section>
+        <section v-if="reviewsEnabled">
             <h2 class="section-title">
                 Opinie
             </h2>

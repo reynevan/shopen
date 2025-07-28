@@ -101,6 +101,14 @@ readonly class CheckoutUpdateController
 
         }
         $this->cartService->setShippingMethod($shippingMethod->getKey(), $deliveryPoint);
+
+        $paymentMethodCode = $this->cartService->getCart()->payment_method;
+        if ($paymentMethodCode) {
+            $paymentMethod = $this->paymentMethodManager->get($paymentMethodCode);
+            if (!$paymentMethod->isAvailable()) {
+                $this->cartService->setPaymentMethod(null);
+            }
+        }
         return back();
     }
 

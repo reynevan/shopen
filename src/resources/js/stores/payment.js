@@ -15,7 +15,7 @@ export const usePaymentStore = defineStore('payment', () => {
             }, {
                 preserveState: true,
                 preserveScroll: true,
-                only: ['selectedPaymentMethod']
+                only: ['selectedPaymentMethod', 'selectedShippingMethod', 'shippingMethods', 'summary']
             })
     }
 

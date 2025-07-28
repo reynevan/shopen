@@ -11,8 +11,6 @@ class ShippingMethodManager
 
     protected function registerShippingMethodsFromNamespace($path, $namespace): void
     {
-        $activeMethods = config('shipping.active');
-
         if (!file_exists($path)) {
             return;
         }
@@ -30,7 +28,7 @@ class ShippingMethodManager
             }
             $instance = app($class);
 
-            if ($instance instanceof ShippingMethodInterface && in_array($instance->getKey(), $activeMethods)) {
+            if ($instance instanceof ShippingMethodInterface && config("shipping.{$instance->getKey()}.active")) {
                 $this->register($instance);
             }
         }

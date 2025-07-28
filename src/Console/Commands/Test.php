@@ -8,6 +8,7 @@ use Elastic\Adapter\Indices\IndexManager;
 use Elastic\Adapter\Indices\Mapping;
 use Elastic\ScoutDriverPlus\Support\Query;
 use Illuminate\Console\Command;
+use Shopen\Models\Attribute\AttributeOption;
 use Shopen\Models\Product\Product;
 
 class Test extends Command
@@ -31,7 +32,6 @@ class Test extends Command
      */
     public function handle()
     {
-
         $query = Query::match()->field('name')->query('buty');
         dd(Product::searchQuery($query)->execute()->models());
         $indexManager = app(IndexManager::class);

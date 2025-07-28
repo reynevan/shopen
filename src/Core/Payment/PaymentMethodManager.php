@@ -29,7 +29,7 @@ class PaymentMethodManager
             }
             $instance = app($class);
 
-            if ($instance instanceof PaymentMethodInterface && $instance->isAvailable()) {
+            if ($instance instanceof PaymentMethodInterface) {
                 $this->register($instance);
             }
         }
@@ -46,13 +46,16 @@ class PaymentMethodManager
 
     public function register(PaymentMethodInterface $method): void
     {
+        if (isset($this->methods[$method->getKey()])) {
+            return;
+        }
         $this->methods[$method->getKey()] = $method;
     }
 
     public function getPaymentMethods(): array
     {
         $this->registerMethods();
-        return array_values($this->methods);
+        return array_filter(array_values($this->methods), fn ($method) => $method->isAvailable());
     }
 
     public function get(string $key): ?PaymentMethodInterface

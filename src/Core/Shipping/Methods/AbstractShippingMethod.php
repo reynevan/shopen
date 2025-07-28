@@ -4,20 +4,27 @@ namespace Shopen\Core\Shipping\Methods;
 
 use Illuminate\Support\Number;
 use JsonSerializable;
+use Shopen\Services\CartService;
 
 abstract class AbstractShippingMethod implements JsonSerializable, ShippingMethodInterface
 {
+    public function __construct(
+        protected CartService $cartService,
+    )
+    {}
+
     protected ?string $view = null;
 
     abstract public function getKey(): string;
 
-    abstract public function getName(): string;
-
-    abstract public function getPrice(): float;
+    public function getName(): string
+    {
+        return config("shipping.{$this->getKey()}.name");
+    }
 
     public function getDescription(): ?string
     {
-        return null;
+        return config("shipping.{$this->getKey()}.description");
     }
 
     public function getComponent(): ?string
@@ -34,5 +41,25 @@ abstract class AbstractShippingMethod implements JsonSerializable, ShippingMetho
             'price' => Number::currency($this->getPrice()),
             'component' => $this->getComponent(),
         ];
+    }
+
+    public function isFreeShippingAvailable(): bool
+    {
+        return (bool)config("shipping.{$this->getKey()}.free_shipping_available");
+    }
+
+    public function freeShippingThreshold(): int
+    {
+        return config("shipping.{$this->getKey()}.free_shipping_threshold") ?? 0;
+    }
+
+    public function getPrice(): float
+    {
+        if ($this->isFreeShippingAvailable() &&
+            $this->cartService->getCart()->totalPrice() >= $this->freeShippingThreshold()
+        ) {
+            return 0;
+        }
+        return (float)config("shipping.{$this->getKey()}.price");
     }
 }

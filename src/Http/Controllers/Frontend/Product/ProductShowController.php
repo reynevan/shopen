@@ -39,12 +39,13 @@ readonly class ProductShowController
         $product->load(['price']);
         $product->image = $product->getThumbnailUrl();
 
-        $reviews = $this->productReviewRepository->getForProduct($product, request('opinie'));
+        $reviews = config('shopen.product.reviews.enabled') ? $this->productReviewRepository->getForProduct($product, request('opinie')) : [];
 
         return Inertia::render('Frontend/Product/Show', [
             'product' => fn () => ProductResource::make($product),
             'reviews' => fn () => ProductReviewResource::collection($reviews),
-            'reviewSubmitted' => fn() => Auth::check() && $product->reviews()->where('user_id', Auth::id())->exists(),
+            'reviewsEnabled' => config('shopen.product.reviews.enabled'),
+            'reviewSubmitted' => fn() => config('shopen.product.reviews.enabled') && Auth::check() && $product->reviews()->where('user_id', Auth::id())->exists(),
             'images' => fn () => $product->getImagesUrls(),
             'variants' => fn () => $this->getVariants($product),
             'configurableAttributes' => fn () => $this->getConfigurableAttributes($product),

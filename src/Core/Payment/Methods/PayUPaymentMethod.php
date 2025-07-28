@@ -96,7 +96,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
 
     public function isAvailable(): bool
     {
-        return !empty($this->config['pos_id']) &&
+        return parent::isAvailable() && !empty($this->config['pos_id']) &&
             !empty($this->config['signature_key']) &&
             !empty($this->config['oauth_client_id']);
     }
@@ -104,13 +104,13 @@ class PayUPaymentMethod extends AbstractPaymentMethod
     protected function getDefaultConfig(): array
     {
         return [
-            'pos_id' => config('payments.payu.pos_id'),
-            'signature_key' => config('payments.payu.signature_key'),
-            'oauth_client_id' => config('payments.payu.oauth_client_id'),
-            'oauth_client_secret' => config('payments.payu.oauth_client_secret'),
-            'api_url' => config('payments.payu.api_url', 'https://secure.snd.payu.com/api/v2_1'),
-            'continue_url' => config('payments.payu.continue_url'),
-            'notify_url' => config('payments.payu.notify_url'),
+            'pos_id' => config('payment.payu.pos_id'),
+            'signature_key' => config('payment.payu.signature_key'),
+            'oauth_client_id' => config('payment.payu.oauth_client_id'),
+            'oauth_client_secret' => config('payment.payu.oauth_client_secret'),
+            'api_url' => config('payment.payu.api_url', 'https://secure.snd.payu.com/api/v2_1'),
+            'continue_url' => config('payment.payu.continue_url'),
+            'notify_url' => config('payment.payu.notify_url'),
         ];
     }
 

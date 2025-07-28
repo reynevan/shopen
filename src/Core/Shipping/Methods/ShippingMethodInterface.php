@@ -11,4 +11,8 @@ interface ShippingMethodInterface
     public function getPrice(): float;
 
     public function jsonSerialize(): array;
+
+    public function isFreeShippingAvailable(): bool;
+
+    public function freeShippingThreshold(): int;
 }

@@ -61,7 +61,7 @@ export const useShippingStore = defineStore('shipping', () => {
             }, {
                 preserveState: true,
                 preserveScroll: true,
-                only: ['selectedShippingMethod', 'deliveryPoint', 'summary']
+                only: ['selectedShippingMethod', 'selectedPaymentMethod', 'deliveryPoint', 'summary', 'paymentMethods']
             })
     }
 

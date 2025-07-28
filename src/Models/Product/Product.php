@@ -265,8 +265,8 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             $data['rule_id'] = null;
         }
 
-        $price = $this->price;
-        if (!$price) {
+        $currentPrice = $this->price;
+        if (!$currentPrice) {
             $this->price()->create($data);
         } else {
             if ($data['final_price'] < $data['price']) {
@@ -274,6 +274,9 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
                     ->where('product_id', $this->id)
                     ->where('valid_to', '>', Carbon::now()->subDays(30))
                     ->min('price');
+                if (!$lowestHistoryPrice || $currentPrice->final_price < $lowestHistoryPrice) {
+                    $lowestHistoryPrice = $currentPrice->final_price;
+                }
                 $data['omnibus_price'] = $lowestHistoryPrice;
             } else {
                 $data['omnibus_price'] = null;
