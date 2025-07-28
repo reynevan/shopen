@@ -143,7 +143,6 @@ class ProductRepository
         foreach ($attributes as $attribute) {
             $product->loadAttribute($attribute);
         }
-
     }
 
     public function addAttributesUsedInList($products)

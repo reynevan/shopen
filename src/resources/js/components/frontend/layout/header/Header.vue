@@ -37,7 +37,7 @@ const auth = useAuthStore();
                     </div>
                 </div>
                 <div v-if="!auth.isLoggedIn">
-                    <a :href="route('login')">Logowanie</a> | <a href="{{ route('register') }}">Rejestracja</a>
+                    <Link :href="route('login')">Logowanie</Link> | <Link :href="route('register')">Rejestracja</Link>
                 </div>
                 <div class="ml-4">
                     <Minicart :items="cart.items" :itemsCount="cart.itemsCount" :subtotal="cart.subtotal"/>

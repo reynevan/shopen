@@ -20,6 +20,8 @@ trait Searchable
             'category_id' => $this->categories->pluck('id')->toArray(),
             'in_stock' => $this->isInStock(),
             'price' => $this->getFinalPrice(),
+            'rating' => $this->rating,
+            'reviews_count' => $this->reviews_count,
             'popularity' => $this->getPopularity(),
             'thumbnail_url' => $this->getThumbnails(),
             'mobile_thumbnail_url' => $this->getThumbnails(max: config('shopen.product.thumbnail.max_images_count'), mobile: true),

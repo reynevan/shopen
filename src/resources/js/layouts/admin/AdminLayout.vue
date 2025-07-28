@@ -9,7 +9,7 @@ import Sidebar from "@shopen/components/admin/layout/Sidebar.vue";
 <template>
     <Sidebar/>
     <div class="pl-[100px]">
-        <main>
+        <main class="px-4">
             <slot/>
         </main>
     </div>

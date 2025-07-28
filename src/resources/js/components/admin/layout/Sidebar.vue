@@ -15,6 +15,15 @@ import {Link} from "@inertiajs/vue3";
                 </Link>
             </li>
 
+            <li class="menu-item @if (Route::is('admin.products.reviews.*')) bg-neutral-300 @endif">
+                <Link :href="route('admin.products.reviews.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <i class="bi bi-box-seam text-4xl"></i>
+                    <div class="uppercase">Opinie</div>
+                </Link>
+            </li>
+
             <li class="menu-item @if (Route::is('admin.categories.*')) bg-neutral-300 @endif">
                 <Link :href="route('admin.categories.index')"
                    class="text-xs flex flex-col items-center"

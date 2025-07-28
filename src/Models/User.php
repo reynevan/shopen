@@ -3,15 +3,18 @@
 namespace Shopen\Models;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Shopen\Enums\Address\AddressType;
 use Shopen\Models\Order\Order;
+use Shopen\Models\Product\Review\ProductReview;
+use Shopen\Database\Factories\UserFactory;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, HasFactory;
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
@@ -36,6 +39,11 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
+
     public function isAdmin()
     {
         return $this->role === self::ROLE_ADMIN;
@@ -54,6 +62,10 @@ class User extends Authenticatable
     public function billingAddresses(): HasMany
     {
         return $this->hasMany(Address::class)->where('type', AddressType::BILLING)->orderByDesc('is_default');
+    }
+
+    public function reviews() {
+        return $this->hasMany(ProductReview::class);
     }
 
     public function defaultShippingAddress($strict = false)

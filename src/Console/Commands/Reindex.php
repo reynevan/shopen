@@ -61,6 +61,8 @@ class Reindex extends Command
         $mapping->boolean('in_stock');
         $mapping->integer('stock_qty');
         $mapping->integer('popularity');
+        $mapping->float('rating');
+        $mapping->integer('reviews_count');
         $mapping->keyword('category_id');
         $mapping->keyword('thumbnail_url', ['index' => false]);
         $mapping->keyword('mobile_thumbnail_url', ['index' => false]);

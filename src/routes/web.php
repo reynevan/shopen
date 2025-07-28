@@ -1,5 +1,8 @@
 <?php
 
+use Shopen\Http\Controllers\Frontend\Api\ProductReviewsController;
+use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
+use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewVoteController;
 use Illuminate\Support\Facades\Route;
 use Shopen\Http\Controllers\Frontend\Api\AttributesController;
 use Shopen\Http\Controllers\Frontend\Api\CartController as ApiCartController;
@@ -12,6 +15,8 @@ use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutUpdateController;
 use Shopen\Http\Controllers\Frontend\Api\CheckoutController as ApiCheckoutController;
 use Shopen\Http\Controllers\Frontend\HomeController;
+use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
+use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewUpdateController;
 use Shopen\Http\Controllers\Frontend\SearchController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrdersIndexController;
@@ -44,7 +49,7 @@ Route::middleware(['web'])->group(function () {
 
     Route::post('/zamowienie', [CheckoutOrderController::class, 'placeOrder'])->name('checkout.place-order');
 
-
+    Route::get('/produkt/{product}/opinie', [ProductReviewsController::class, 'index'])->name('api.products.reviews.index');
 });
 
 
@@ -59,6 +64,11 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::delete('/adresy/{adres?', [UserAddressesIndexController::class, 'index'])->name('user.addresses.destroy');
     Route::get('/zamowienia', [UserOrdersIndexController::class, 'index'])->name('user.orders.index');
     Route::get('/zamowienia/{order}', [UserOrderShowController::class, 'show'])->name('user.orders.show');
+
+    Route::post('/produkt/{product}/opinie', [ProductReviewStoreController::class, 'store'])->name('products.reviews.store');
+    Route::put('/produkt/opinie/{review}', [ProductReviewUpdateController::class, 'update'])->name('products.reviews.update');
+    Route::delete('/produkt/opinie/{review}', [ProductReviewDeleteController::class, 'delete'])->name('products.reviews.delete');
+    Route::post('/produkt/opinie/{review}/ocena', [ProductReviewsController::class, 'vote'])->name('api.products.reviews.vote');
 });
 
 require __DIR__.'/auth.php';

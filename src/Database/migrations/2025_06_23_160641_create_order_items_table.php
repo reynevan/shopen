@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->decimal('final_price', 10, 2);
-            $table->decimal('promo_code_discount_amount', 10, 2);
+            $table->decimal('promo_code_discount_amount', 10, 2)->default(0);
             $table->decimal('total', 10, 2);
             $table->timestamps();
 

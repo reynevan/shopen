@@ -73,6 +73,12 @@ const test = ref(false)
             </FormField>
 
             <FormField
+                label-for="ean"
+                label="EAN">
+                <Input v-model="product.ean"  id="ean"/>
+            </FormField>
+
+            <FormField
                 :required="true"
                 label-for="url_key"
                 label="Klucz URL">

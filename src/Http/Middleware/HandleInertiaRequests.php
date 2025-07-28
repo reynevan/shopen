@@ -60,6 +60,12 @@ class HandleInertiaRequests extends Middleware
                 'location' => $request->url(),
             ],
             'csrf_token' => csrf_token(),
+            'flash' => [
+                'success' => fn () => $request->session()->get('success'),
+                'error' => fn () => $request->session()->get('error'),
+                'warning' => fn () => $request->session()->get('warning'),
+                'info' => fn () => $request->session()->get('info'),
+            ],
         ];
         if ($this->context->isAdmin()) {
 

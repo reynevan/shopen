@@ -30,13 +30,13 @@ class Dispatcher
         $this->container = Container::getInstance();
         if ($urlRewrite->entity_type === 'product') {
             $controller = $this->container->make(ProductShowController::class);
-            $product = Product::query()->find($urlRewrite->entity_id);
+            $product = Product::query()->where('id', $urlRewrite->entity_id)->first();
             $parameters = $this->getParameters([$product], $controller, 'index');
             return $controller->index(...$parameters);
         }
         if ($urlRewrite->entity_type === 'category') {
             $controller = $this->container->make(CategoryShowController::class);
-            $category = Category::query()->find($urlRewrite->entity_id);
+            $category = Category::query()->where('is_active', true)->where('id', $urlRewrite->entity_id)->first();
             $parameters = $this->getParameters([$category], $controller, 'index');
             return $controller->index(...$parameters);
         }

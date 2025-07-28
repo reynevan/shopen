@@ -14,6 +14,7 @@ class SearchService
 {
     protected Client $client;
     protected ?int $categoryId = null;
+    protected array $ids = [];
     protected array $filters = [];
     protected ?string $sort = null;
     protected ?int $page = null;
@@ -34,6 +35,12 @@ class SearchService
     public function setCategoryId($categoryId): static
     {
         $this->categoryId = $categoryId;
+        return $this;
+    }
+
+    public function setIds(array $ids): static
+    {
+        $this->ids = $ids;
         return $this;
     }
 
@@ -69,14 +76,18 @@ class SearchService
 
     public function getProducts()
     {
+        if ($this->categoryId) {
+            $query =
+                ['bool' => [ 'filter' => ['term' => ['category_id' => $this->categoryId]]]];
+        } elseif (count($this->ids)) {
+            $query = ['terms' => ['id' => $this->ids]];
+        } else {
+            $query = [];
+        }
         $params = [
             'index' => 'shopen_products',
             'body' => [
-                'query' => [
-                    'bool' => [
-                        'filter' => ['term' => ['category_id' => $this->categoryId]],
-                    ]
-                ]
+                'query' => $query
             ],
         ];
         if ($this->limit) {

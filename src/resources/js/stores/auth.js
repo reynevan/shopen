@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import {computed, ref} from 'vue'
+import {computed} from 'vue'
 import {router, usePage} from "@inertiajs/vue3";
 
 export const useAuthStore = defineStore('auth', () => {

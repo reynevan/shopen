@@ -10,6 +10,7 @@ import { useForm} from "@inertiajs/vue3";
 import TextEditor from "@shopen/components/admin/form/input/TextEditor.vue";
 import {ref} from "vue";
 import ImageInput from "@shopen/components/admin/form/input/ImageInput.vue";
+import Toggle from "../../../../components/admin/form/input/Toggle.vue";
 
 const props = defineProps(['categories', 'category', 'attributes'])
 
@@ -104,6 +105,12 @@ const previewImage = (event) => {
                         label-for="name"
                         label="Nazwa">
                         <Input v-model="form.attributes.name" :required="true" id="name"/>
+                    </FormField>
+
+                    <FormField
+                        label-for="display_in_menu"
+                        label="Pokaż w menu">
+                        <Toggle v-model="form.attributes.display_in_menu" id="display_in_menu"/>
                     </FormField>
 
                     <FormField

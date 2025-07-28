@@ -14,6 +14,7 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
+            'ean' => $this->ean,
             'images' => MediaResource::collection($this->resource->getMedia()),
             'media' => $this->resource->getImagesUrls(),
             'price' => ProductPriceResource::make($this->whenLoaded('price')),

@@ -3,7 +3,8 @@
 const model = defineModel()
 const props = defineProps({
     label: {
-        type: String
+        type: String,
+        required: false
     },
     field: {
         type: String
@@ -21,7 +22,7 @@ const props = defineProps({
 <template>
     <div class="form-field w-full mb-4 group" :class="{'has-error': error}">
         <div class="w-full">
-            <label :for="field">
+            <label :for="field" v-if="label">
                 {{ props.label }} <span class="text-red-500 text-lg" v-if="required">*</span>
             </label>
             <slot name="default"/>

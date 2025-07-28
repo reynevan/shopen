@@ -19,8 +19,7 @@ Route::middleware(['guest', 'web'])->group(function () {
 
     Route::post('logowanie', [LoginController::class, 'store']);
 
-    Route::get('rejestracja', [RegisterController::class, 'create'])
-        ->name('register');
+    Route::get('rejestracja', [RegisterController::class, 'create']) ->name('register');
 
     Route::post('rejestracja', [RegisterController::class, 'store']);
 

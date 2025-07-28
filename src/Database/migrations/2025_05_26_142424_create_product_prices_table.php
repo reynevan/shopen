@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('special_price_from')->nullable();
             $table->date('special_price_to')->nullable();
             $table->decimal('special_price', 10)->nullable();
+            $table->decimal('omnibus_price', 10)->nullable();
             $table->foreignId('rule_id')->nullable();
             $table->foreign('rule_id')->references('id')->on('product_price_rules')->onDelete('cascade');
             $table->timestamps();

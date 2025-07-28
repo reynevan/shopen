@@ -1,74 +1,217 @@
 <script setup>
 import Flicking from "@egjs/vue3-flicking";
-import {defineProps, ref, useTemplateRef} from 'vue';
+import {defineProps, ref, useTemplateRef, watch, onMounted, onUnmounted} from 'vue';
 import IconChevron from "@shopen/components/icons/IconChevron.vue";
+import IconX from "@shopen/components/icons/IconX.vue";
 
 const props = defineProps(['images']);
 const flicking = useTemplateRef('flicking');
+const modalFlicking = useTemplateRef('modalFlicking');
 
 const previewIndex = ref(0);
+const isModalOpen = ref(false);
 
 const selectImage = (index) => {
     flicking.value.moveTo(index);
     previewIndex.value = index;
+};
+let supportsPassive = false;
+try {
+    window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
+        get: function () { supportsPassive = true; }
+    }));
+} catch(e) {}
+const wheelOpt = supportsPassive ? { passive: false } : false;
+const wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+function preventDefault(e) {
+    e.preventDefault();
 }
+
+function disableScroll() {
+    window.addEventListener('DOMMouseScroll', preventDefault, false);
+    window.addEventListener(wheelEvent, preventDefault, wheelOpt);
+    window.addEventListener('touchmove', preventDefault, wheelOpt);
+}
+
+function enableScroll() {
+    window.removeEventListener('DOMMouseScroll', preventDefault, false);
+    window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
+    window.removeEventListener('touchmove', preventDefault, wheelOpt);
+}
+
+const openModal = (index) => {
+    disableScroll();
+    previewIndex.value = index;
+    isModalOpen.value = true;
+    setTimeout(() => {
+        modalFlicking.value?.moveTo(index);
+    }, 50);
+};
+
+const closeModal = () => {
+    enableScroll();
+    isModalOpen.value = false;
+};
+
 const prevImage = async () => {
-    if (previewIndex.value <= 0) {
-        return;
-    }
+    if (previewIndex.value <= 0) return;
     previewIndex.value -= 1;
     try {
-        await flicking.value.moveTo(previewIndex.value);
-    } catch (e) {}
-}
-const nextImage = async () => {
-    if (previewIndex.value >= props.images.length - 1) {
-        return;
+        flicking.value?.moveTo(previewIndex.value);
+        modalFlicking.value?.moveTo(previewIndex.value);
+    } catch (e) {
     }
+};
+
+const nextImage = async () => {
+    if (previewIndex.value >= props.images.length - 1) return;
     previewIndex.value += 1;
     try {
-        await flicking.value.moveTo(previewIndex.value);
-    } catch (e) {}
-}
+        flicking.value?.moveTo(previewIndex.value);
+        modalFlicking.value?.moveTo(previewIndex.value);
+    } catch (e) {
+    }
+};
+
 const onPreviewChange = (event) => {
     previewIndex.value = event.index;
-}
+    modalFlicking.value?.moveTo(event.index);
+};
+
+const onModalPreviewChange = (event) => {
+    previewIndex.value = event.index;
+    flicking.value?.moveTo(event.index);
+};
+
+const handleKeydown = (e) => {
+    if (!isModalOpen.value) return;
+
+    switch (e.key) {
+        case 'Escape':
+            closeModal();
+            break;
+        case 'ArrowLeft':
+            e.preventDefault();
+            prevImage();
+            break;
+        case 'ArrowRight':
+            e.preventDefault();
+            nextImage();
+            break;
+    }
+};
+onMounted(() => {
+    window.addEventListener('keydown', handleKeydown);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown);
+});
+
+
 </script>
 
 <template>
     <div>
-        <div class="relative w-full sm:w-[700px] sm:h-[700px] mb-4 group">
+        <div class="relative w-full sm:w-[500px] sm:h-[500px] mb-4 group">
             <div v-if="previewIndex > 0" @click="prevImage"
-                class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 w-16 left-0 bg-white/30 opacity-0 duration-300 group-hover:opacity-100 transition-opacity cursor-pointer">
-                <IconChevron left lg/>
+                 class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 left-4">
+                <div
+                    class="p-4 rounded bg-white shadow hover:shadow-lg opacity-0 duration-300 group-hover:opacity-100 transition-all cursor-pointer">
+                    <IconChevron left md/>
+                </div>
             </div>
-            <Flicking :options="{ align: 'prev', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1 }"
-                      @changed="onPreviewChange"
-                      ref="flicking">
+            <Flicking
+                :options="{ align: 'prev', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1 }"
+                @changed="onPreviewChange"
+                ref="flicking">
                 <div v-for="(image, i) in images" :key="i"
                      class="flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                    <img class="img" :src="image.gallery_image" alt="">
+                    <img class="img cursor-zoom-in" :src="image.gallery_image" alt="" @click="openModal(i)">
                 </div>
             </Flicking>
-
             <div v-if="previewIndex < images.length - 1" @click="nextImage"
-                class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 w-16 right-0 bg-white/30 opacity-0 duration-300 group-hover:opacity-100 transition-opacity cursor-pointer">
-                <IconChevron right lg/>
+                 class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 right-4">
+                <div
+                    class="p-4 rounded bg-white shadow hover:shadow-lg opacity-0 duration-300 group-hover:opacity-100 transition-all cursor-pointer">
+                    <IconChevron right md/>
+                </div>
             </div>
         </div>
-
         <div class="flex">
             <div v-for="(image, i) in images"
                  @click="selectImage(i)"
-                 :class="{'border-primary border': i === previewIndex}"
-                 class="mr-4 w-[100px] h-[100px] bg-gray-100 flex items-center justify-center cursor-pointer">
+                 :class="{'border-strong': i === previewIndex}"
+                 class="mr-4 w-[100px] h-[100px] rounded hover:shadow transition-all duration-300 border bg-gray-100 flex items-center justify-center cursor-pointer">
                 <img :src="image.gallery_preview" alt="">
             </div>
         </div>
+
+        <transition name="fade">
+            <div v-if="isModalOpen"
+                 class="fixed inset-0 z-50 bg-white bg-opacity-90 flex flex-col md:flex-row">
+
+                <button @click="closeModal"
+                        class="absolute top-4 right-4 text-black text-3xl font-bold z-60 hover:scale-110 transition cursor-pointer">
+                    <IconX lg/>
+                </button>
+
+                <div class="order-2 md:order-1 flex-shrink-0 flex flex-row md:flex-col justify-start md:justify-center w-full md:w-auto md:h-screen items-center gap-2 p-4 overflow-x-auto md:overflow-y-auto">
+                    <div v-for="(image, i) in images"
+                         :key="i"
+                         @click="modalFlicking.moveTo(i); previewIndex = i"
+                         :class="['cursor-pointer border-2 rounded transition-all', i === previewIndex ? 'border-strong' : 'border-transparent']"
+                         class="w-20 h-20 flex-shrink-0 flex items-center justify-center bg-gray-100">
+                        <img :src="image.gallery_preview" class="max-w-full max-h-full rounded"
+                             :alt="`Miniatura ${i+1}`">
+                    </div>
+                </div>
+
+                <div class="relative flex-1 order-1 md:order-2 flex items-center justify-center p-4 min-h-0">
+                    <div v-if="previewIndex > 0"
+                         @click="prevImage"
+                         class="hidden md:block absolute left-8 top-1/2 -translate-y-1/2 z-60 cursor-pointer">
+                        <div class="p-4 rounded bg-white shadow hover:shadow-lg duration-300 transition-all cursor-pointer">
+                            <IconChevron left md/>
+                        </div>
+                    </div>
+                    <div v-if="previewIndex < images.length - 1"
+                         @click="nextImage"
+                         class="hidden md:block absolute right-8 top-1/2 -translate-y-1/2 z-60 cursor-pointer">
+                        <div class="p-4 rounded bg-white shadow hover:shadow-lg duration-300 transition-all cursor-pointer">
+                            <IconChevron right md/>
+                        </div>
+                    </div>
+
+                    <Flicking
+                        :options="{ align: 'center', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1 }"
+                        @changed="onModalPreviewChange"
+                        ref="modalFlicking"
+                        class="w-full h-full"
+                    >
+                        <div v-for="(image, i) in images" :key="i"
+                             class="flicking-panel flex items-center justify-center w-full h-full">
+                            <img :src="image.gallery_image"
+                                 class="max-h-full max-w-full object-contain rounded shadow-lg"
+                                 :alt="`Zdjęcie ${i+1}`">
+                        </div>
+                    </Flicking>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
+
 <style>
 .flicking-camera {
     align-items: stretch;
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.2s;
+}
+
+.fade-enter-from, .fade-leave-to {
+    opacity: 0;
 }
 </style>

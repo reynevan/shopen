@@ -4,7 +4,7 @@ namespace Shopen\Models\Category\Attribute\Value;
 
 use Illuminate\Database\Eloquent\Model;
 
-class CategoryAttributeBool extends Model
+class CategoryAttributeBool extends CategoryAttributeValue
 {
     protected $table = 'category_attribute_bool';
 

@@ -54,6 +54,11 @@ class AttributeRepository
         return static::ATTRIBUTE_MODEL::query()->where('is_used_in_list', true)->get();
     }
 
+    public function getVisibleInDetails(): Collection
+    {
+        return static::ATTRIBUTE_MODEL::query()->where('is_visible_in_details', true)->get();
+    }
+
     public function getFilterable(): Collection
     {
         if (isset($this->filterable[static::ATTRIBUTE_MODEL])) {

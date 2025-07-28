@@ -65,7 +65,7 @@ readonly class OrderService
                 'shipping_amount' => $totals['shipping_amount'],
                 'payment_amount' => $totals['payment_amount'],
                 'discount_amount' => $totals['discount_amount'],
-                'promo_code_discount_amount' => $totals['promo_code_discount_amount'],
+                'promo_code_discount_amount' => $totals['promo_code_discount_amount'] ?? 0,
                 'total_amount' => $totals['total_amount'],
                 'notes' => $options['notes'] ?? null,
             ]);
@@ -215,7 +215,7 @@ readonly class OrderService
                 'quantity' => $item->quantity,
                 'price' => $item->price,
                 'final_price' => $finalPrice,
-                'promo_code_discount_amount' => $promoCodeDiscountAmount,
+                'promo_code_discount_amount' => $promoCodeDiscountAmount ?? 0,
                 'total' => $item->final_price * $item->quantity,
             ]);
         }

@@ -6,7 +6,6 @@ use Carbon\Carbon;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Route;
@@ -24,9 +23,11 @@ use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
 use Shopen\Jobs\RecalculateDiscountPrices;
 use Shopen\Models\Address;
+use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Services\CustomAttributesService;
+use Shopen\Observers\ProductPriceObserver;
 
 class ShopenServiceProvider  extends ServiceProvider
 {
@@ -95,6 +96,8 @@ class ShopenServiceProvider  extends ServiceProvider
         });
 
         Event::listen(ProductPriceRuleUpdated::class, RecalculateDiscountPrices::class);
+
+        ProductPrice::observe(ProductPriceObserver::class);
 
         EncryptCookies::except('cart_uuid');
 

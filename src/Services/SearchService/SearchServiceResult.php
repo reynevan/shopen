@@ -16,16 +16,16 @@ class SearchServiceResult
     public function __construct(protected array $searchResult)
     {}
 
-    protected function parseProducts(): Collection
+    protected function parseProducts($sortIds = null): Collection
     {
         $time = microtime(true);
-        $ids = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
+        $resultIds = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
-        $sortIds = implode(',', $ids);
+        $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
             ->with('price')
-            ->whereIn('id', $ids)
-            ->orderByRaw("FIELD(id, $sortIds)")
+            ->whereIn('id', $resultIds)
+            ->orderByRaw("FIELD(id, $ids)")
             ->get();
 
         foreach ($products as $product) {
@@ -41,6 +41,8 @@ class SearchServiceResult
                     'mobile_thumbnail' => $source['mobile_thumbnail_url'][$i] ?? null,
                 ];
             }
+            $product->rating = round((float)$source['rating'] ?? 0, 2);
+            $product->reviews_count = $source['reviews_count'] ?? 0;
             $product->setCustomAttribute('images', $images);
         }
 
@@ -64,9 +66,10 @@ class SearchServiceResult
             $this->parseProducts(),
             $this->searchResult['hits']['total']['value'],
             32,
-            request()->page,
+            request()->strona,
             [
-                'path' => request()->url()
+                'path' => request()->url(),
+                'pageName' => 'strona'
             ]
         );
     }
@@ -74,6 +77,11 @@ class SearchServiceResult
     public function products(): Collection
     {
         return $this->parseProducts();
+    }
+
+    public function sortedProducts($sortIds): Collection
+    {
+        return $this->parseProducts($sortIds);
     }
 
     public function getAttributesFilters(): AnonymousResourceCollection

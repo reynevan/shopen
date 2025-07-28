@@ -15,7 +15,7 @@ class AttributeFactory extends Factory
 
     public function definition(): array
     {
-        $name = fake()->words(rand(1, 3), true);
+        $name = fake()->unique()->words(rand(1, 3), true);
         $frontendType = fake()->randomElement(['text', 'textarea', 'number', 'select', 'multiselect', 'date', 'price', 'bool']);
         if (in_array($frontendType, ['number', 'select', 'multiselect'])) {
             $backendType = 'int';

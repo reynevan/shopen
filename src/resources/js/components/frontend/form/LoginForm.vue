@@ -1,5 +1,5 @@
 <script setup>
-import {useForm} from "@inertiajs/vue3";
+import {useForm, Link} from "@inertiajs/vue3";
 
 const props = defineProps({
     redirectTo: {
@@ -52,12 +52,12 @@ const submit = () => {
         </div>
 
         <div class="mt-4">
-            <a class="mb-2 underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            <Link class="link-primary text-sm"
                href="route('password.request')">
                 Nie pamiętasz hasła?
-            </a>
+            </Link>
 
-            <button class="button-primary" type="submit">
+            <button class="button-primary mt-2" type="submit">
                 Zaloguj się
             </button>
         </div>

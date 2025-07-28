@@ -9,15 +9,17 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Inertia\Inertia;
+use Inertia\Response;
 use Shopen\Http\Controller;
 use Shopen\Models\User;
 
 class RegisterController extends Controller
 {
 
-    public function create(): View
+    public function create(): Response
     {
-        return $this->view('frontend.auth.register');
+        return Inertia::render('Frontend/Auth/Register');
     }
 
 
@@ -27,7 +29,7 @@ class RegisterController extends Controller
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required',  Rules\Password::defaults()],
         ]);
 
         $user = User::create([

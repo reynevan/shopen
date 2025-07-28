@@ -41,7 +41,7 @@ readonly class CategoryShowController
             ->setCategoryId($category->id)
             ->setFilters($this->filters)
             ->setSort(request()->query('sort'))
-            ->setPage(request()->query('page', 1))
+            ->setPage(request()->query('strona', 1))
             ->searchProducts();
         $products = $searchResult->paginatedProducts();
 
@@ -56,10 +56,20 @@ readonly class CategoryShowController
             'activeFilters' => fn() => $this->getActiveFilters('slug', 'slug'),
             'banners' => fn() => $this->bannerService->getForCategory($category),
             'category' => fn () => CategoryResource::make($category),
-            'subcategories' => fn() => CategoryResource::collection($category->children),
+            'subcategories' => fn() => (CategoryResource::collection($category->children)),
             'activeSort' => fn () => request()->query('sort') ?? $this->productSortRegistry->defaultKey(),
             'sortOptions' => fn () => $this->productSortRegistry->allOptions(),
+            'title' => fn () => $this->getTitle($category),
         ]);
+    }
+
+    protected function getTitle(Category $category = null): string
+    {
+        $title = [$category->name];
+        if (request()->query('strona') > 1) {
+            $title[] = 'Strona ' . request()->query('strona');
+        }
+        return implode(' - ', $title);
     }
 
     protected function getActiveFilters($attributesKey = 'code', $optionKey = 'id'): array

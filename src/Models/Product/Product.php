@@ -16,7 +16,9 @@ use Shopen\Models\Category\Category;
 use Shopen\Models\Interfaces\HasCustomAttributesInterface;
 use Shopen\Models\Product\Attribute\ProductAttribute;
 use Shopen\Models\Product\Price\ProductPrice;
+use Shopen\Models\Product\Price\ProductPriceHistoryItem;
 use Shopen\Models\Product\Price\ProductPriceRule;
+use Shopen\Models\Product\Review\ProductReview;
 use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
@@ -38,6 +40,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected $fillable = [
         'sku',
+        'ean',
         'stock_qty',
         'in_stock'
     ];
@@ -60,6 +63,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return [
             'id',
             'sku',
+            'ean',
             'stock_qty',
             'uses_stock',
             'in_stock',
@@ -102,7 +106,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
         $this
             ->addMediaConversion('gallery_image')
-            ->fit(Fit::Contain, 700, 700)
+            ->fit(Fit::Contain, 500, 500)
             ->quality(100)
             ->nonQueued();
     }
@@ -120,6 +124,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             foreach ($conversions as $conversion) {
                 $image[$conversion] = $mediaItem->getFullUrl($conversion);
             }
+            $image['original'] = $mediaItem->getFullUrl();
             $images[] = $image;
         }
         return $images;
@@ -174,6 +179,14 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $this->belongsToMany(Attribute::class, 'configurable_attributes');
     }
 
+    public function reviews() {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews() {
+        return $this->reviews()->approved();
+    }
+
     public function scopeSort(Builder $query, $sortField, $sortDir): Builder
     {
         return
@@ -204,6 +217,14 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     {
         $this->attributes['stock_qty'] = $value;
         $this->attributes['in_stock'] = $value > 0;
+    }
+
+    public function getReviewsCountAttribute() {
+        return $this->approvedReviews()->count();
+    }
+
+    public function getRatingAttribute() {
+        return (round((float)$this->approvedReviews()->avg('rating') * 10)) / 10;
     }
 
     public function shouldApplyPriceRule(ProductPriceRule $rule): bool
@@ -248,34 +269,18 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         if (!$price) {
             $this->price()->create($data);
         } else {
-            $this->price()->update($data);
-        }
-        if ($this->parent) {
-            $this->parent->syncPrice();
+            if ($data['final_price'] < $data['price']) {
+                $lowestHistoryPrice = ProductPriceHistoryItem::query()
+                    ->where('product_id', $this->id)
+                    ->where('valid_to', '>', Carbon::now()->subDays(30))
+                    ->min('price');
+                $data['omnibus_price'] = $lowestHistoryPrice;
+            } else {
+                $data['omnibus_price'] = null;
+            }
+            $this->price->update($data);
         }
         return $this;
-    }
-
-    public function syncPrice()
-    {
-        if (!$this->isConfigurable()) {
-            return;
-        }
-        $minPrice = null;
-        foreach ($this->variants as $product) {
-            if (!$product->price) {
-                continue;
-            }
-            if (!$minPrice || $minPrice->final_price > $product->price->final_price) {
-                $minPrice = $product->price;
-            }
-        }
-        if ($minPrice) {
-            $this->price->update([
-                'price' => $minPrice->price,
-                'final_price' => $minPrice->final_price
-            ]);
-        }
     }
 
     public function isConfigurable(): bool

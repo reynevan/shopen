@@ -3,7 +3,6 @@ import BaseModal from "@shopen/components/frontend/ui/BaseModal.vue";
 import {ref, watch} from "vue";
 import AddressForm from "@shopen/components/frontend/form/AddressForm.vue";
 import { useForm } from "@inertiajs/vue3";
-import {useAuthStore} from "@shopen/stores/auth.js";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 
 const emits = defineEmits(['onClose']);

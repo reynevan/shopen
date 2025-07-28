@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('sku');
+            $table->string('ean')->nullable();
             $table->string('type')->default(Shopen\Models\Product\Product::TYPE_SIMPLE);
             $table->foreignId('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('products')->onDelete('cascade');

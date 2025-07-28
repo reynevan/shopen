@@ -21,7 +21,8 @@ const props = defineProps({
     banners: {type: Object},
     category: {type: Object},
     subcategories: {type: Array},
-    sortOptions: {type: Array}
+    sortOptions: {type: Array},
+    title: {type: String}
 })
 
 const isMobileFiltersOpen = ref(false)
@@ -146,12 +147,18 @@ const totalActiveFiltersCount = computed(() => {
 
 <template>
     <Head>
+        <title>{{ title }}</title>
         <meta name="title" :content="category.seo.seo_title">
         <meta name="description" :content="category.seo.seo_description">
         <meta property="og:title" :content="category.seo.seo_title">
         <meta property="og:description" :content="category.seo.seo_description">
         <meta property="og:image" :content="category.image_url_desktop" v-if="category.image_url_desktop">
         <meta property="og:type" content="product.group">
+        <meta property="og:url" :content="category.url">
+        <link rel="canonical" :href="category.url"/>
+        <link rel="next" :href="category.url + '?strona=' + (products.meta.current_page + 1)" v-if="products.meta.last_page !== products.meta.current_page"/>
+        <link rel="prev" :href="category.url + '?strona=' + (products.meta.current_page - 1)" v-if="products.meta.current_page > 1"/>
+        <meta name="robots" content="index,follow,all">
     </Head>
     <div class="container mx-auto px-4">
         <BannersContainer :banners="banners.category_page_top"/>
