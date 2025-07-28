@@ -113,7 +113,7 @@ trait HasCustomAttributes
             if (!$attribute) {
                 continue;
             }
-            if ($attribute->frontend_type === 'multiselect' || $attribute->frontend_type === 'select') {
+            if ($attribute->isSelectable()) {
                 if (!is_array($value)) {
                     $value = [$value];
                 }
@@ -140,7 +140,7 @@ trait HasCustomAttributes
             'entity_id' => $this->id,
             'attribute_id' => $attribute->id,
         ];
-        if (!$value) {
+        if (!$value || (is_array($value) && count($value) === 0)) {
             $valueModel::query()
                 ->where($parameters)
                 ->delete();
