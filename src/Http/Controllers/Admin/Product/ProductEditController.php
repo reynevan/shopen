@@ -50,9 +50,7 @@ readonly class ProductEditController
             $price = $data['price'];
 
             foreach ($data['attributes'] as $key => $value) {
-                if ($value) {
-                    $product->setCustomAttribute($key, $value);
-                }
+                $product->setCustomAttribute($key, $value);
             }
             $product->fill(Arr::except($data, ['images', 'price', 'attributes', 'url_key']));
             $product->save();

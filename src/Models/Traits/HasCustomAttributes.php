@@ -114,23 +114,43 @@ trait HasCustomAttributes
                 continue;
             }
             if ($attribute->isSelectable()) {
-                if (!is_array($value)) {
-                    $value = [$value];
-                }
-                $valueModel = $attribute->getValueModel();
-                $valueModel::query()->where('entity_id', $this->id)->where('attribute_id', $attribute->id)->delete();
-                foreach ($value as $v) {
-                    if (is_string($v)) {
-                        $v = AttributeOption::query()->where('attribute_id', $attribute->id)->where('value', $v)->first()?->id;
-                    }
-                    $this->saveAttributeValue($attribute, $v, true);
-                }
+                $this->saveSelectableAttributeValue($attribute, $value, true);
+
             } else {
                 $this->saveAttributeValue($attribute, $value);
             }
         }
 
         return $this->afterSave();
+    }
+
+    protected function saveSelectableAttributeValue(Attribute $attribute, $values, $isMultiValue = false)
+    {
+        if (!is_array($values)) {
+            $values = [$values];
+        }
+        $valueModel = $attribute->getValueModel();
+        $parameters = [
+            'entity_id' => $this->id,
+            'attribute_id' => $attribute->id,
+        ];
+        $valueModel::query()
+            ->where($parameters)
+            ->delete();
+        if (!count($values)) {
+            return;
+        }
+        foreach ($values as $value) {
+            if (is_string($value)) {
+                $value = AttributeOption::query()->where('attribute_id', $attribute->id)->where('value', $value)->first()?->id;
+            }
+            $attributeValue = new $valueModel($parameters);
+            $attributeValue->attribute_id = $attribute->id;
+            $attributeValue->entity_id = $this->id;
+            $attributeValue->value = $value;
+            $attributeValue->store_id = 1;
+            $attributeValue->save();
+        }
     }
 
     protected function saveAttributeValue(Attribute $attribute, $value, $isMultiValue = false)
@@ -140,7 +160,7 @@ trait HasCustomAttributes
             'entity_id' => $this->id,
             'attribute_id' => $attribute->id,
         ];
-        if (!$value || (is_array($value) && count($value) === 0)) {
+        if (!$value) {
             $valueModel::query()
                 ->where($parameters)
                 ->delete();
