@@ -26,7 +26,7 @@ readonly class ProductShowController
         protected BannerService                 $bannerService,
         protected ProductReviewRepository       $productReviewRepository,
         protected RecentlyViewedProductsService $recentlyViewedProductsService,
-        protected ProductAttributeRepository     $productAttributeRepository,
+        protected ProductAttributeRepository    $productAttributeRepository
     )
     {
     }
@@ -42,16 +42,16 @@ readonly class ProductShowController
         $reviews = config('shopen.product.reviews.enabled') ? $this->productReviewRepository->getForProduct($product, request('opinie')) : [];
 
         return Inertia::render('Frontend/Product/Show', [
-            'product' => fn () => ProductResource::make($product),
-            'reviews' => fn () => ProductReviewResource::collection($reviews),
+            'product' => fn() => ProductResource::make($product),
+            'reviews' => fn() => ProductReviewResource::collection($reviews),
             'reviewsEnabled' => config('shopen.product.reviews.enabled'),
             'reviewSubmitted' => fn() => config('shopen.product.reviews.enabled') && Auth::check() && $product->reviews()->where('user_id', Auth::id())->exists(),
-            'images' => fn () => $product->getImagesUrls(),
-            'variants' => fn () => $this->getVariants($product),
-            'configurableAttributes' => fn () => $this->getConfigurableAttributes($product),
-            'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getVisibleInDetails()),
+            'images' => fn() => $product->getImagesUrls(),
+            'variants' => fn() => $this->getVariants($product),
+            'configurableAttributes' => fn() => $this->getConfigurableAttributes($product),
+            'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getVisibleInDetails()),
             'banners' => fn() => $this->bannerService->getForProduct($product),
-            'sort' => fn () => request('opinie'),
+            'sort' => fn() => request('opinie'),
             'recentlyViewedProducts' => fn() => ProductResource::collection($this->recentlyViewedProductsService->get(except: $product->id))
         ]);
     }

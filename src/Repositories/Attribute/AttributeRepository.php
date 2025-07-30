@@ -11,11 +11,21 @@ class AttributeRepository
 {
     const ATTRIBUTE_MODEL = Attribute::class;
 
+    protected array $attributeCodes = [];
+
     protected array $filterable = [];
 
     public function getByCode($code)
     {
         return static::ATTRIBUTE_MODEL::query()->where('code', $code)->first();
+    }
+
+    public function exists($code)
+    {
+        if (!isset($this->attributeCodes[self::ATTRIBUTE_MODEL]) || !count($this->attributeCodes[self::ATTRIBUTE_MODEL])) {
+            $this->attributeCodes[self::ATTRIBUTE_MODEL] = static::ATTRIBUTE_MODEL::query()->select(['code'])->get()->pluck('code')->toArray();
+        }
+        return isset($this->attributeCodes[self::ATTRIBUTE_MODEL][$code]);
     }
 
     public function getById($id)
@@ -26,6 +36,13 @@ class AttributeRepository
     public function getAll(): Collection
     {
         return static::ATTRIBUTE_MODEL::query()->get();
+    }
+
+    public function getAllByCode($codes)
+    {
+        return static::ATTRIBUTE_MODEL::query()
+            ->whereIn('code', $codes)
+            ->get();
     }
 
     public function getIndexable()

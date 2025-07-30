@@ -88,19 +88,19 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     {
         $this
             ->addMediaConversion('thumbnail')
-            ->fit(Fit::Contain, 200, 200)
+            ->fit(Fit::Fill, 200, 200)
             ->quality(100)
             ->nonQueued();
 
         $this
             ->addMediaConversion('thumbnail_mobile')
-            ->fit(Fit::Contain, 300, 300)
+            ->fit(Fit::Fill, 300, 300)
             ->quality(100)
             ->nonQueued();
 
         $this
             ->addMediaConversion('gallery_preview')
-            ->fit(Fit::Contain, 100, 100)
+            ->fit(Fit::Fill, 100, 100)
             ->quality(100)
             ->nonQueued();
 
@@ -149,7 +149,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     {
         $mediaUrl = $this->getFirstMediaUrl('default', 'thumbnail');
         if (!$mediaUrl) {
-            return $this->parent ? $this->parent->getThumbnailUrl() : null;
+           // return $this->parent ? $this->parent->getThumbnailUrl() : null;
         }
         return $mediaUrl;
     }
@@ -303,7 +303,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getUrl()
     {
-        return '/' . $this->urlRewrite?->request_path;
+        return config('app.url') . '/' . $this->urlRewrite?->request_path;
     }
 
     public function getVariantAttributes()

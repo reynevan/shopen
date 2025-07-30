@@ -71,6 +71,12 @@ trait HasCustomAttributes
         if (isset($this->customAttributes[$key])) {
             return $this->customAttributes[$key];
         }
+        if (in_array($key, $this->getOriginalAttributes())) {
+            return null;
+        }
+        if (!$this->getAttributeRepository()->exists($key)) {
+            return null;
+        }
         $attribute = $this->getAttributeClass()::query()->where('code', $key)->first();
         if (!$attribute) {
             return null;

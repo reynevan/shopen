@@ -55,9 +55,20 @@ class CustomAttributesService
         $this->loadAttributes($entities, $attributes);
     }
 
-    public function preloadCategoryAttributes(): void
+    public function loadAttributesToCollection($entities, $attributeCodes): void
     {
-        $attributes = $this->categoryAttributeRepository->getAll();
+        $attributeRepository = $this->getAttributeRepository($entities->first());
+        if (!$attributeRepository) {
+            return;
+        }
+        $attributes = $attributeRepository->getAllByCode($attributeCodes);
+
+        $this->loadAttributes($entities, $attributes);
+    }
+
+    public function preloadCategoryAttributes($codes = null): void
+    {
+        $attributes = $codes ? $this->categoryAttributeRepository->getAllByCode($codes) : $this->categoryAttributeRepository->getAll();
 
         foreach ($attributes as $attribute) {
             if ($attribute->frontend_type === 'multiselect') {

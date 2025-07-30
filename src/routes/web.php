@@ -25,12 +25,12 @@ use Shopen\Http\Controllers\Frontend\UserProfileController;
 use Shopen\Http\Dispatcher;
 
 Route::middleware(['web'])->group(function () {
-    Route::get('/', [HomeController::class, 'index']);
+    Route::get('/', [HomeController::class, 'index'])->name('home');
 
     //Route::get('/products/{product}', [ProductShowController::class, 'index']);
     //Route::get('/categories/{category}', [CategoryShowController::class, 'index']);
     Route::get('/szukaj', [SearchController::class, 'index'])->name('search');
-    Route::get('/koszyk', [CartIndexController::class, 'index']);
+    Route::get('/koszyk', [CartIndexController::class, 'index'])->name('cart.index');
     Route::get('/zamowienie', [CheckoutIndexController::class, 'index'])->name('checkout.index');
     Route::put('/zamowienie/adres-dostawy', [CheckoutUpdateController::class, 'updateShippingAddress'])->name('checkout.update-shipping-address');
     Route::put('/zamowienie/dane-platnosci', [CheckoutUpdateController::class, 'updateBillingAddress'])->name('checkout.update-billing-address');

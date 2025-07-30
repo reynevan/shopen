@@ -77,8 +77,7 @@ class SearchService
     public function getProducts()
     {
         if ($this->categoryId) {
-            $query =
-                ['bool' => [ 'filter' => ['term' => ['category_id' => $this->categoryId]]]];
+            $query = ['bool' => [ 'filter' => ['term' => ['category_id' => $this->categoryId]]]];
         } elseif (count($this->ids)) {
             $query = ['terms' => ['id' => $this->ids]];
         } else {

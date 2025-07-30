@@ -41,7 +41,7 @@ const submit = () => {
                 form.reset()
                 emits('onClose')
             },
-            only: ['product', 'reviews'],
+            only: ['product', 'reviews', 'flash', 'errors'],
             preserveScroll: true
         })
     } else {
@@ -50,7 +50,7 @@ const submit = () => {
                 form.reset()
                 emits('onClose')
             },
-            only: ['product', 'reviews', 'reviewSubmitted'],
+            only: ['product', 'reviews', 'reviewSubmitted', 'flash', 'errors'],
             preserveScroll: true
         });
     }
@@ -82,7 +82,7 @@ watch(() => props.review, (newReview) => {
                     <div class="mr-2">
                         <ProductThumbnailImage :product="product" size="sm"/>
                     </div>
-                    <div class="text-neutral-700">{{ product.name }}</div>
+                    <div class="text-lg text-neutral-700">{{ product.attributes.name }}</div>
                 </div>
                 <div class="py-4 mb-4 flex flex-col items-center justify-center">
                     <div class="mb-2">Twoja ocena</div>

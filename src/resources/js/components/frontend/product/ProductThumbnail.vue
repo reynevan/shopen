@@ -10,7 +10,7 @@ const props = defineProps(['product'])
 
 <template>
     <div
-        class="product-thumbnail flex flex-col justify-between group sm:m-2 w-1/2 sm:w-[200px] border-b hover:shadow-lg transition-all duration-500 rounded"
+        class="product-thumbnail mx-auto flex flex-col justify-between group sm:m-2 w-1/2 sm:w-[200px] border-b hover:shadow-lg transition-all duration-500 rounded"
         :class="{'in-stock': product.in_stock, 'out-of-stock': !product.in_stock}">
         <div>
             <div class="sm:w-[200px] sm:h-[200px] relative cursor-pointer overflow-hidden">
@@ -20,8 +20,8 @@ const props = defineProps(['product'])
                         <IconNoImage xl></IconNoImage>
                     </span>
                     <div class="sm:hidden"
-                         v-if="product.images && product.images.length > 0 && product.images[0].thumbnail_mobile">
-                        <img :src="product.images[0].thumbnail_mobile" alt=""
+                         v-if="product.images && product.images.length > 0 && product.images[0].mobile_thumbnail">
+                        <img :src="product.images[0].mobile_thumbnail" alt=""
                              loading="lazy">
                     </div>
                     <div class="hidden sm:block"

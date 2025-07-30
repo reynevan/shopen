@@ -23,6 +23,7 @@ class ProductPriceResource extends JsonResource
         return [
             'price' => Number::currency($this->price),
             'final_price' => Number::currency($this->final_price),
+            'final_price_raw' => $this->final_price,
             'omnibus_price' => $this->discount_amount ? Number::currency($this->omnibus_price) : null,
             'discount_amount' =>  $this->discount_amount ? Number::currency($this->discount_amount, '', null, $precision) : null,
             'discount_percent' =>  $this->discount_percent,

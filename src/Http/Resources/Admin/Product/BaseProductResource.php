@@ -1,0 +1,23 @@
+<?php
+
+namespace Shopen\Http\Resources\Admin\Product;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Shopen\Http\Resources\Admin\Product\ProductPriceResource;
+
+class BaseProductResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'sku' => $this->sku,
+            'price' => ProductPriceResource::make($this->whenLoaded('price')),
+            'url_key' => $this->urlRewrite?->request_path,
+            'is_configurable' => $this->resource->isConfigurable(),
+            'image' => $this->resource->getThumbnailUrl(),
+            'attributes' => $this->resource->getCustomAttributes(),
+        ];
+    }
+}

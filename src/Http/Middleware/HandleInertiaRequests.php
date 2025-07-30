@@ -6,7 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Number;
 use Inertia\Middleware;
 use Shopen\Core\Context;
+use Shopen\Facades\Breadcrumbs;
 use Shopen\Http\Resources\Cart\CartItemResource;
+use Shopen\Services\BreadcrumbsService;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Tighten\Ziggy\Ziggy;
@@ -91,6 +93,7 @@ class HandleInertiaRequests extends Middleware
             $data['menu'] = [
                 'categories' => fn() => app(MenuService::class)->getCategories(),
             ];
+            $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
         }
         return $data;
     }

@@ -9,6 +9,7 @@ import ProductPrice from "./components/ProductPrice.vue";
 import ProductReviews from "./components/ProductReviews.vue";
 import ReviewsInfo from "./components/ReviewsInfo.vue";
 import ProductsCarousel from "../../../components/frontend/product/ProductsCarousel.vue";
+import ProductStructredData from "../../../components/frontend/product/ProductStructredData.vue";
 
 defineOptions({layout: AppLayout})
 
@@ -66,5 +67,6 @@ const props = defineProps({
         </section>
 
         <BannersContainer :banners="banners.product_page_bottom"/>
+        <ProductStructredData :product="product"/>
     </div>
 </template>

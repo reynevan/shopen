@@ -57,6 +57,7 @@ trait Searchable
         foreach ($attributes as $attribute) {
             $values[$attribute->code] = $this->getAttribute($attribute->code);
         }
+        $values['is_active'] = $this->getAttribute('is_active');
         return $values;
     }
 

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
 use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
@@ -30,12 +31,13 @@ readonly class ProductEditController
 
     public function edit(Product $product): Response
     {
+        $this->customAttributesService->preloadCategoryAttributes(['name']);
         $this->customAttributesService->loadAllAttributes($product);
         $product->load('price');
         return Inertia::render('Admin/Product/Edit', [
             'product' => ProductResource::make($product),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => CategoryResource::collection($this->categoryRepository->getAll(0)),
+            'categories' => fn () => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
         ]);
     }
 

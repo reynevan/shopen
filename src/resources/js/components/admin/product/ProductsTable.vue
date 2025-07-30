@@ -63,14 +63,19 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn label="Zdjęcie" v-slot="data" width="70px">
-            <img :src="data.row.media[0].thumbnail"
+            <img :src="data.row.image"
                  width="50px"
                  class="border"
-                 v-if="data.row.media.length > 0">
+                 v-if="data.row.image">
         </TableColumn>
 
         <TableColumn field="sku" label="SKU" v-slot="data">
             {{ data.row.sku }}
+        </TableColumn>
+
+        <TableColumn field="is_active" label="Status" sortable v-slot="data">
+            <span v-if="data.row.attributes.is_active">Aktywny</span>
+            <span v-else>Nieaktywny</span>
         </TableColumn>
 
         <TableColumn field="name" label="Nazwa" sortable v-slot="data">

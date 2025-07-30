@@ -32,7 +32,7 @@ class ProductRepository
         return Product::query()->get();
     }
 
-    public function getPaginated($sortField, $sortDir, $searchQuery = null)
+    public function getPaginated($sortField, $sortDir, $searchQuery = null, $attributesToLoad = [])
     {
         $products = Product::query()
             ->select('products.*')
@@ -41,13 +41,16 @@ class ProductRepository
                     ->whereLike('sku', '%' . $searchQuery . '%')
                     ->filterByAttribute('name', '%' . $searchQuery . '%', 'OR');
             })
-            ->with('price')
+            ->with(['price', 'urlRewrite', 'media'])
             ->sort($sortField, $sortDir)
             ->paginate()
             ->withQueryString();
 
-        $this->customAttributesService->loadUsedInListAttributesToCollection($products);
-
+        if (count($attributesToLoad)) {
+            $this->customAttributesService->loadAttributesToCollection($products, $attributesToLoad);
+        } else {
+            $this->customAttributesService->loadUsedInListAttributesToCollection($products);
+        }
         return $products;
     }
 

@@ -26,6 +26,7 @@ class ProductResource extends JsonResource
             'rating' => $this->rating ?? 0,
             'reviews_count' => $this->reviews_count,
             'images' => $this->images,
+            'image' => $this->image,
             'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource)
         ];
         foreach ($this->resource->getCustomAttributes() as $key => $value) {

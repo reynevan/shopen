@@ -18,6 +18,7 @@ readonly class CategoriesIndexController
 
     public function index(): RedirectResponse
     {
+        $this->customAttributesService->preloadCategoryAttributes();
         $category = $this->categoryRepository->getAll(0)->first();
         return redirect(route('admin.categories.edit', $category));
     }

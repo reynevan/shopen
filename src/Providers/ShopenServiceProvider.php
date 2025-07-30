@@ -4,10 +4,13 @@ namespace Shopen\Providers;
 
 use Carbon\Carbon;
 use Illuminate\Cookie\Middleware\EncryptCookies;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
@@ -23,7 +26,10 @@ use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
 use Shopen\Jobs\RecalculateDiscountPrices;
 use Shopen\Models\Address;
+use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Price\ProductPrice;
+use Shopen\Models\Product\Product;
+use Shopen\Repositories\Attribute\AttributeRepository;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Services\CustomAttributesService;
@@ -33,7 +39,9 @@ class ShopenServiceProvider  extends ServiceProvider
 {
     public function boot(): void
     {
-
+        DB::listen(function ($query) {
+            Log::info($query->sql, ['Bindings' => $query->bindings, 'Time' => $query->time]);
+        });
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'shopen');
@@ -95,6 +103,18 @@ class ShopenServiceProvider  extends ServiceProvider
             return new PaymentMethodManager();
         });
 
+        $this->app->singleton(AttributeRepository::class, function ($app) {
+            return new AttributeRepository();
+        });
+
+        $this->app->singleton(ProductAttributeRepository::class, function ($app) {
+            return new ProductAttributeRepository();
+        });
+
+        $this->app->singleton(CategoryAttributeRepository::class, function ($app) {
+            return new CategoryAttributeRepository();
+        });
+
         Event::listen(ProductPriceRuleUpdated::class, RecalculateDiscountPrices::class);
 
         ProductPrice::observe(ProductPriceObserver::class);
@@ -113,6 +133,11 @@ class ShopenServiceProvider  extends ServiceProvider
         Route::model('address', Address::class);
 
         JsonResource::withoutWrapping();
+
+        Relation::morphMap([
+            'product' => Product::class,
+            'category' => Category::class,
+        ]);
 
     }
 

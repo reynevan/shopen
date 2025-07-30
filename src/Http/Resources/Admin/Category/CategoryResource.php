@@ -30,7 +30,7 @@ class CategoryResource extends JsonResource
             'image_url_desktop' => $this->image_path_desktop ? Storage::url($this->image_path_desktop) : null,
             'image_path_mobile' => $this->image_path_mobile,
             'image_url_mobile' => $this->image_path_mobile ? Storage::url($this->image_path_mobile) : null,
-            'seo' => SeoDetailResource::make($this->seo)
+            'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
         ];
     }
 

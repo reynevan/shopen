@@ -58,6 +58,15 @@ const test = ref(false)
     </FormHeader>
     <div class="form">
         <section v-if="attributes.length" class="py-10 max-w-4xl mx-auto">
+
+            <FormField
+                :required="true"
+                label="Aktywny" label-for="is_active">
+
+                <Toggle v-model="product.attributes.is_active" id="is_active"/>
+
+            </FormField>
+
             <FormField
                 :required="true"
                 label-for="name"
@@ -135,7 +144,7 @@ const test = ref(false)
 
             <template v-for="attribute in attributes" :key="attribute.id">
                 <FormField
-                    v-if="attribute && attribute.code !== 'name' && attribute.code !== 'description'"
+                    v-if="attribute && !attribute.is_system"
                     :required="!!attribute.is_required"
                     :label="attribute.name"
                     :label-for="'attribute-' + attribute.code"
