@@ -2,22 +2,23 @@
 
 namespace Shopen\Services;
 
-use Shopen\Core\Payment\PaymentMethodManager;
-use Shopen\Enums\Address\AddressType;
-use Shopen\Enums\Order\OrderStatus;
-use Shopen\Models\Cart\Cart;
-use Shopen\Models\Order\Order;
-use Shopen\Models\Order\OrderItem;
-use Shopen\Models\Order\OrderAddress;
-use Shopen\Models\Address;
-use Shopen\Mail\OrderPlaced;
-use Shopen\Mail\OrderStatusChanged;
-use Shopen\Core\Shipping\ShippingMethodManager;
-use Shopen\Models\Product\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Shopen\Core\Payment\PaymentMethodManager;
+use Shopen\Core\Shipping\ShippingMethodManager;
+use Shopen\Enums\Address\AddressType;
+use Shopen\Enums\Order\OrderStatus;
+use Shopen\Models\Address;
+use Shopen\Models\Cart\Cart;
+use Shopen\Models\Order\Order;
+use Shopen\Models\Order\OrderAddress;
+use Shopen\Models\Order\OrderItem;
+use Shopen\Models\Product\Product;
 use Shopen\Models\PromoCode;
+use Shopen\Mail\Order\OrderPlaced;
+use Shopen\Mail\Order\OrderStatusChanged;
 
 readonly class OrderService
 {
@@ -68,7 +69,9 @@ readonly class OrderService
                 'promo_code_discount_amount' => $totals['promo_code_discount_amount'] ?? 0,
                 'total_amount' => $totals['total_amount'],
                 'notes' => $options['notes'] ?? null,
+                'uuid' => Str::uuid()
             ]);
+
 
             $this->createOrderItems($order, $cart, $promoCode);
 
@@ -79,6 +82,8 @@ readonly class OrderService
             $cart->delete();
 
             $this->sendOrderPlacedNotification($order);
+
+            session(['guest_order_id' => $order->id]);
 
             return $order->load(['items', 'addresses']);
         });
@@ -248,7 +253,7 @@ readonly class OrderService
             'postal_code' => $address->postal_code,
             'country' => $address->country ?? 'Polska',
             'phone' => $address->phone,
-            'email' => $address->email,
+            'email' => $address->email ?? $order->user?->email ?? null,
         ]);
     }
 
@@ -290,7 +295,7 @@ readonly class OrderService
         try {
             $email = $order->getCustomerEmail();
             if ($email) {
-                Mail::to($email)->send(new OrderPlaced($order));
+                Mail::to($email)->queue(new OrderPlaced($order));
             }
         } catch (\Exception $e) {
             logger()->error('Failed to send order placed email', [
@@ -305,7 +310,7 @@ readonly class OrderService
         try {
             $email = $order->getCustomerEmail();
             if ($email) {
-                Mail::to($email)->send(new OrderStatusChanged($order, $oldStatus));
+                Mail::to($email)->queue(new OrderStatusChanged($order, $oldStatus));
             }
         } catch (\Exception $e) {
             logger()->error('Failed to send order status changed email', [

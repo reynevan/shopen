@@ -51,4 +51,9 @@ class Attribute extends Model
         return in_array($this->frontend_type, ['select', 'multiselect']);
     }
 
+    public function isMultiselect()
+    {
+        return $this->frontend_type === 'multiselect';
+    }
+
 }

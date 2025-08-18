@@ -16,13 +16,18 @@ class ProductResource extends JsonResource
             'sku' => $this->sku,
             'ean' => $this->ean,
             'images' => MediaResource::collection($this->resource->getMedia()),
-            'media' => $this->resource->getImagesUrls(),
             'price' => ProductPriceResource::make($this->whenLoaded('price')),
             'url_key' => $this->urlRewrite?->request_path,
             'attributes' => $this->resource->getCustomAttributes(),
             'variant_attributes' => $this->resource->getVariantAttributes(),
             'category_ids' => $this->categories->pluck('id')->toArray(),
             'is_configurable' => $this->resource->isConfigurable(),
+            'related_products' => BaseProductResource::collection($this->whenLoaded('relatedProducts')),
+            'related_products_ids' => $this->whenLoaded('relatedProducts', $this->relatedProducts()->pluck('related_product_id')->toArray()),
+            'cross_sell_products' => BaseProductResource::collection($this->whenLoaded('crossSells')),
+            'cross_sell_ids' => $this->whenLoaded('crossSells', $this->crossSells()->pluck('cross_sell_product_id')->toArray()),
+            'up_sell_products' => BaseProductResource::collection($this->whenLoaded('upSells')),
+            'up_sell_ids' => $this->whenLoaded('upSells', $this->upSells()->pluck('up_sell_product_id')->toArray()),
         ];
     }
 }

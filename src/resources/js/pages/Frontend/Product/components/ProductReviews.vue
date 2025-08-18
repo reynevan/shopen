@@ -4,7 +4,7 @@ import {ref, watch} from "vue";
 import ReviewItem from "./ReviewItem.vue";
 import axios from "axios";
 import Button from "@shopen/components/frontend/ui/Button.vue"
-import RatingDisplay from "@shopen/pages/Frontend/Product/components/RatingDisplay.vue";
+import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
 

@@ -1,1 +1,0 @@
-<checkout-shipping-method :method="{{ json_encode($block->getShippingMethod()) }}"></checkout-shipping-method>

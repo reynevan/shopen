@@ -18,8 +18,7 @@ class UpdateCategoryRequest extends FormRequest
         return [
             'is_active' => 'required|boolean',
             'attributes' => 'required|array',
-            'remove_image_desktop' => 'nullable|boolean',
-            'remove_image_mobile' => 'nullable|boolean',
+            'remove_image_menu' => 'nullable|boolean',
         ];
     }
 }

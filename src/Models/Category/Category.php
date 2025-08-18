@@ -10,10 +10,15 @@ use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
 use Shopen\Models\Traits\HasSeoDetails;
+use Spatie\Image\Enums\Fit;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Category extends Model implements HasCustomAttributesInterface
+class Category extends Model implements HasMedia, HasCustomAttributesInterface
 {
     use HasCustomAttributes, HasUrl, HasSeoDetails;
+    use InteractsWithMedia;
 
     const ENTITY_TYPE = 'category';
 
@@ -23,8 +28,6 @@ class Category extends Model implements HasCustomAttributesInterface
 
     protected $fillable = [
         'is_active',
-        'image_path_desktop',
-        'image_path_mobile',
     ];
 
     protected function getAttributeClass(): string
@@ -32,24 +35,43 @@ class Category extends Model implements HasCustomAttributesInterface
         return CategoryAttribute::class;
     }
 
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this
+            ->addMediaConversion('menu-image')
+            ->fit(Fit::Crop, 443, 375)
+            ->quality(100)
+            ->format('webp')
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('menu-image-2x')
+            ->fit(Fit::Crop, 886, 700)
+            ->quality(100)
+            ->format('webp')
+            ->nonQueued();
+    }
+
+    public function getMenuMedia()
+    {
+        if (!$this->getFirstMedia('menu-image')) {
+            return [];
+        }
+        $media = $this->getFirstMedia('menu-image');
+        return [
+            '443w' => $media->getFullUrl('menu-image'),
+            '886w' => $media->getFullUrl('menu-image-2x'),
+        ];
+    }
+
+    public function getMenuImageUrl()
+    {
+        return $this->getFirstMediaUrl('menu-image');
+    }
+
     public function getEntityType(): string
     {
         return self::ENTITY_TYPE;
-    }
-
-    protected function getOriginalAttributes(): array
-    {
-        return [
-            'id',
-            'parent_id',
-            'level',
-            'sort_index',
-            'created_at',
-            'updated_at',
-            'is_active',
-            'image_path_desktop',
-            'image_path_mobile',
-        ];
     }
 
     public function parent()

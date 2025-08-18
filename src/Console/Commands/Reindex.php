@@ -6,6 +6,7 @@ namespace Shopen\Console\Commands;
 use Elastic\Adapter\Indices\Index;
 use Elastic\Adapter\Indices\IndexManager;
 use Elastic\Adapter\Indices\Mapping;
+use Elastic\Adapter\Indices\Settings;
 use Illuminate\Console\Command;
 use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Product\Product;
@@ -14,13 +15,14 @@ use Shopen\Repositories\Product\ProductAttributeRepository;
 class Reindex extends Command
 {
 
-    public function __construct (
-        protected readonly IndexManager $indexManager,
+    public function __construct(
+        protected readonly IndexManager               $indexManager,
         protected readonly ProductAttributeRepository $productAttributeRepository,
     )
     {
         parent::__construct();
     }
+
     /**
      * The name and signature of the console command.
      *
@@ -40,7 +42,30 @@ class Reindex extends Command
      */
     public function handle()
     {
-        $indexName = config('scout.prefix').'products';
+        $settings = new Settings();
+        $settings->analysis([
+            'analyzer' => [
+                'autocomplete_analyzer' => [
+                    'tokenizer' => 'autocomplete_tokenizer',
+                    'filter' => [
+                        'lowercase',
+                    ],
+                ],
+            ],
+            'tokenizer' => [
+                'autocomplete_tokenizer' => [
+                    'type' => 'edge_ngram',
+                    'min_gram' => 2,
+                    'max_gram' => 20,
+                    'token_chars' => [
+                        'letter',
+                        'digit',
+                    ],
+                ],
+            ]
+        ]);
+
+        $indexName = config('scout.prefix') . 'products';
         if ($this->indexManager->exists($indexName)) {
             $this->indexManager->drop($indexName);
         }
@@ -50,6 +75,11 @@ class Reindex extends Command
             'analyzer' => 'polish',
             'boost' => 3,
             'fields' => [
+                'autocomplete' => [
+                    'type' => 'text',
+                    'analyzer' => 'autocomplete_analyzer',
+                    'search_analyzer' => 'standard'
+                ],
                 'keyword' => [
                     'type' => 'keyword',
                 ]
@@ -64,8 +94,7 @@ class Reindex extends Command
         $mapping->float('rating');
         $mapping->integer('reviews_count');
         $mapping->keyword('category_id');
-        $mapping->keyword('thumbnail_url', ['index' => false]);
-        $mapping->keyword('mobile_thumbnail_url', ['index' => false]);
+        $mapping->flattened('thumbnail', ['index' => false]);
         $mapping->text('searchable_attributes', ['analyzer' => 'polish']);
 
         $mapping->flattened('list_attributes', ['index' => false]);
@@ -86,7 +115,7 @@ class Reindex extends Command
                 $mapping->text($attribute->code);
             }
         }
-        $this->indexManager->create(new Index($indexName, $mapping));
+        $this->indexManager->create(new Index($indexName, $mapping, $settings));
 
 
         $this->call('scout:import', ['model' => Product::class]);

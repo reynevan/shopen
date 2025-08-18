@@ -63,9 +63,10 @@ class RecentlyViewedProductsService
 
     protected function getProductIds(): array
     {
-        if (Auth::check()) {
+        $user = Auth::user();
+        if ($user) {
             return UserProductView::query()
-                ->where('user_id', Auth::id())
+                ->where('user_id', $user->id)
                 ->orderByDesc('viewed_at')
                 ->limit(self::MAX_ITEMS)
                 ->pluck('product_id')

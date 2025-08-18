@@ -1,10 +1,7 @@
 <script setup>
 
-import IconCircleCheck from "@shopen/components/icons/IconCircleCheck.vue";
-import {useAuthStore} from "@shopen/stores/auth.js";
-import {computed, ref} from "vue";
+import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
 import {router, usePage} from "@inertiajs/vue3";
-import {useCoverStore} from "@shopen/stores/cover.js";
 import IconEdit from "../../../../components/icons/IconEdit.vue";
 import IconTrash from "../../../../components/icons/IconTrash.vue";
 
@@ -70,7 +67,7 @@ const edit = () => {
             <button v-if="selectable"
                     class="text-link cursor-pointer hover:text-accent-600 hover:bg-accent-100 rounded-lg text-sm transition-colors flex items-center gap-2 py-2 px-4"
                     @click="selectAddress">
-                <IconCircleCheck/>
+                <IconCheckCircle/>
                 Ustaw jako domyślny
             </button>
         </div>

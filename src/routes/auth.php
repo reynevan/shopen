@@ -14,14 +14,13 @@ use Shopen\Http\Controllers\Frontend\Auth\RegisterController;
 
 Route::middleware(['guest', 'web'])->group(function () {
 
-    Route::get('logowanie', [LoginController::class, 'create'])
-        ->name('login');
+    Route::get('logowanie', [LoginController::class, 'create'])->name('login');
 
     Route::post('logowanie', [LoginController::class, 'store']);
 
-    Route::get('rejestracja', [RegisterController::class, 'create']) ->name('register');
+    Route::get('rejestracja', [RegisterController::class, 'create'])->name('sign-up');
 
-    Route::post('rejestracja', [RegisterController::class, 'store']);
+    Route::post('rejestracja', [RegisterController::class, 'store'])->name('sign-up');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');

@@ -5,7 +5,6 @@ namespace Shopen\Http\Resources\Admin\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Number;
-use Shopen\Http\Resources\Admin\Product\ProductResource;
 
 class OrderItemResource extends JsonResource
 {
@@ -13,7 +12,7 @@ class OrderItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'product' => ProductResource::make($this->resource->product),
+            'product' => ProductResource::make($this->whenLoaded('product')),
             'sku' => $this->sku,
             'name' => $this->name,
             'quantity' => $this->quantity,

@@ -22,12 +22,13 @@ const form = useForm({
     seo: props.category?.seo ?? [],
     image_desktop: null,
     image_mobile: null,
+    image_menu: null,
     remove_image_desktop: false,
-    remove_image_mobile: false
+    remove_image_mobile: false,
+    remove_image_menu: false
 });
 
-const imageDesktop = ref(props.category?.image_url_desktop);
-const imageMobile = ref(props.category?.image_url_mobile);
+const imageMenu = ref(props.category?.menu_image_url);
 
 function simplifyArrayRecursive(data) {
     return data.map(item => ({
@@ -46,32 +47,17 @@ const save = () => {
     form.post(route('admin.categories.update', props.category.id), {})
 }
 
-
-const onDesktopFileSelect = (event) => {
-    form.image_desktop = event.target.files[0];
-    imageDesktop.value = previewImage(event);
-    form.remove_image_desktop = false;
+const onMenuFileSelect = (event) => {
+    form.image_menu= event.target.files[0];
+    imageMenu.value = previewImage(event);
+    form.remove_image_menu = false;
 }
 
-const removeImageDesktop = () => {
-    form.image_desktop = null;
-    imageDesktop.value = null;
-    if (props.category.image_url_desktop) {
-        form.remove_image_desktop = true;
-    }
-}
-
-const onMobileFileSelect = (event) => {
-    form.image_mobile = event.target.files[0];
-    imageMobile.value = previewImage(event);
-    form.remove_image_mobile = false;
-}
-
-const removeImageMobile = () => {
-    form.image_mobile = null;
-    imageMobile.value = null;
-    if (props.category.image_url_mobile) {
-        form.remove_image_mobile = true;
+const removeImageMenu = () => {
+    form.image_menu = null;
+    imageMenu.value = null;
+    if (props.category.menu_image_url) {
+        form.remove_image_menu = true;
     }
 }
 
@@ -120,25 +106,12 @@ const previewImage = (event) => {
                     </FormField>
 
                     <FormField
-                        label="Obraz (Desktop)"
-                        label-for="special_price_from"
-                        required>
-                        <ImageInput @input="onDesktopFileSelect" v-if="!imageDesktop"/>
-                        <div class="relative" v-if="imageDesktop">
-                            <img :src="imageDesktop">
-                            <button @click="removeImageDesktop" class="bg-red-500 text-white hover:bg-red-400 transition-colors rounded-full w-8 h-8 flex items-center justify-center absolute right-2 top-2 cursor-pointer">
-                                <i class="bi bi-x-lg"></i>
-                            </button>
-                        </div>
-                    </FormField>
-
-                    <FormField
-                        label="Obraz (Mobile)"
-                        label-for="special_price_from">
-                        <ImageInput @input="onMobileFileSelect" v-if="!imageMobile"/>
-                        <div class="relative" v-if="imageMobile">
-                            <img :src="imageMobile">
-                            <button @click="removeImageMobile" class="bg-red-500 text-white hover:bg-red-400 transition-colors rounded-full w-8 h-8 flex items-center justify-center absolute right-2 top-2 cursor-pointer">
+                        label="Obraz (Menu)"
+                        label-for="image_menu">
+                        <ImageInput @input="onMenuFileSelect" v-if="!imageMenu" id="image_menu"/>
+                        <div class="relative" v-if="imageMenu">
+                            <img :src="imageMenu">
+                            <button @click="removeImageMenu" class="bg-red-500 text-white hover:bg-red-400 transition-colors rounded-full w-8 h-8 flex items-center justify-center absolute right-2 top-2 cursor-pointer">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>

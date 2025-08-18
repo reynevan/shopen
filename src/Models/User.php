@@ -11,6 +11,7 @@ use Shopen\Enums\Address\AddressType;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Product\Review\ProductReview;
 use Shopen\Database\Factories\UserFactory;
+use Shopen\Models\ShoppingList\ShoppingList;
 
 class User extends Authenticatable
 {
@@ -66,6 +67,11 @@ class User extends Authenticatable
 
     public function reviews() {
         return $this->hasMany(ProductReview::class);
+    }
+
+    public function shoppingLists(): HasMany
+    {
+        return $this->hasMany(ShoppingList::class);
     }
 
     public function defaultShippingAddress($strict = false)

@@ -8,23 +8,23 @@ defineProps(['order'])
 </script>
 
 <template>
-    <div class="py-10">
+    <main class="py-10">
         <!-- Status zamówienia - wyeksponowany jako najważniejsza informacja -->
-        <div class="mb-6 rounded-lg p-4 border-l-4" :class="{
-      'border-blue-500 bg-blue-50': order.status === 'new',
-      'border-yellow-500 bg-yellow-50': order.status === 'processing' || order.status === 'paid',
-      'border-green-500 bg-green-50': order.status === 'shipped' || order.status === 'completed',
-      'border-red-500 bg-red-50': order.status === 'canceled' || order.status === 'refunded'
-    }">
+        <div class="mb-6 rounded-r-lg p-4 border-l-4" :class="{
+              'border-blue-500 bg-blue-50': order.status === 'new',
+              'border-yellow-500 bg-yellow-50': order.status === 'processing' || order.status === 'paid',
+              'border-green-500 bg-green-50': order.status === 'shipped' || order.status === 'completed',
+              'border-red-500 bg-red-50': order.status === 'canceled' || order.status === 'refunded'
+            }">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center">
                 <div>
                     <div class="text-sm text-gray-500 mb-1">Status zamówienia</div>
                     <div class="text-2xl font-bold" :class="{
-            'text-blue-700': order.status === 'new',
-            'text-yellow-700': order.status === 'processing' || order.status === 'paid',
-            'text-green-700': order.status === 'shipped' || order.status === 'completed',
-            'text-red-700': order.status === 'canceled' || order.status === 'refunded'
-          }">
+                        'text-blue-700': order.status === 'new',
+                        'text-yellow-700': order.status === 'processing' || order.status === 'paid',
+                        'text-green-700': order.status === 'shipped' || order.status === 'completed',
+                        'text-red-700': order.status === 'canceled' || order.status === 'refunded'
+                      }">
                         {{ order.status_label }}
                     </div>
                 </div>
@@ -92,5 +92,5 @@ defineProps(['order'])
             <h3 class="text-lg font-semibold mb-4">Podsumowanie</h3>
             <OrderAmounts :order="order"/>
         </div>
-    </div>
+    </main>
 </template>

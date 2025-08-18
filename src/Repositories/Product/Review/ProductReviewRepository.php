@@ -18,6 +18,7 @@ class ProductReviewRepository
     {
         return $product
             ->approvedReviews()
+            ->with('user')
             ->when($sortOption, function (Builder $query) use ($sortOption) {
                 if ($sortOption === 'najnowsze') {
                     $query->latest();

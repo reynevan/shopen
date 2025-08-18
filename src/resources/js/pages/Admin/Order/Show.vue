@@ -1,9 +1,10 @@
 <script setup>
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
-import OrderItems from "../../../components/admin/order/OrderItems.vue";
-import StatusHistory from "../../../components/admin/order/StatusHistory.vue";
-import Shipping from "../../../components/admin/order/Shipping.vue";
-import OrderSummary from "../../../components/admin/order/OrderSummary.vue";
+import OrderItems from "@shopen/pages/Admin/Order/components/OrderItems.vue";
+import StatusHistory from "@shopen/pages/Admin/Order/components/StatusHistory.vue";
+import Shipping from "@shopen/pages/Admin/Order/components/Shipping.vue";
+import OrderSummary from "@shopen/pages/Admin/Order/components/OrderSummary.vue";
+import Panel from "../../../components/admin/ui/Panel.vue";
 
 defineOptions({layout: AdminLayout})
 
@@ -15,27 +16,35 @@ const props = defineProps({
 <template>
     <div class="px-6 py-8">
         <div class="flex flex-col sm:flex-row gap-4">
-            <div class="panel w-full sm:w-1/2">
-                <div class="mb-4">
-                    <div class="flex justify-between mb-1 py-1 border-b">
-                        <div>Data złożenia</div>
-                        <div>{{ order.created_at }}</div>
-                    </div>
-                    <div class="flex justify-between mb-1 py-1 border-b">
-                        <div>Status</div>
-                        <div>{{ order.status_label }}</div>
-                    </div>
-                    <div class="flex justify-between mb-1 py-1 border-b">
-                        <div>Metoda wysyłki</div>
-                        <div>{{ order.shipping_method_label }}</div>
-                    </div>
-                    <div class="flex justify-between mb-1 py-1 border-b">
-                        <div>Metoda płatności</div>
-                        <div>{{ order.payment_method_label }}</div>
-                    </div>
+            <Panel width="w-1/2">
+                <template #header>
+                    Szczegóły
+                </template>
+
+                <div class="flex justify-between items-center mb-1 py-1 border-b">
+                    <div>Data złożenia</div>
+                    <div>{{ order.created_at }}</div>
                 </div>
-            </div>
-            <div class="panel w-full sm:w-1/2">
+                <div class="flex justify-between mb-1 py-1 border-b">
+                    <div>Status</div>
+                    <div>{{ order.status_label }}</div>
+                </div>
+                <div class="flex justify-between mb-1 py-1 border-b">
+                    <div>Metoda wysyłki</div>
+                    <div>{{ order.shipping_method_label }}</div>
+                </div>
+                <div class="flex justify-between mb-1 py-1 border-b">
+                    <div>Metoda płatności</div>
+                    <div>{{ order.payment_method_label }}</div>
+                </div>
+
+            </Panel>
+
+            <Panel width="w-1/2">
+                <template #header>
+                    Dane zamawiającego
+                </template>
+
                 <div class="mb-4 px-4 flex flex-wrap items-start">
                     <div class="w-full sm:w-1/2">
                         <div class="font-semibold text-lg mb-2">Adres wysyłki</div>
@@ -58,23 +67,40 @@ const props = defineProps({
                         </div>
                     </div>
                 </div>
-            </div>
+            </Panel>
         </div>
-        <div class="panel">
+
+        <Panel>
+            <template #header>
+                Produkty
+            </template>
             <OrderItems :items="order.items"/>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-4">
-            <div class="panel w-full sm:w-1/2">
+        </Panel>
+
+        <div class="flex flex-col items-start sm:flex-row gap-4">
+
+            <Panel width="w-1/2">
+                <template #header>
+                    Status
+                </template>
                 <StatusHistory :statusItems="order.status_history" :orderStatuses="orderStatusOptions" :order="order"/>
+            </Panel>
+
+            <div class="w-1/2">
+                <Panel>
+                    <template #header>
+                        Wysyłka
+                    </template>
+                    <Shipping :order="order"/>
+                </Panel>
+                <Panel>
+                    <template #header>
+                        Podsumowanie
+                    </template>
+                    <OrderSummary :order="order"/>
+                </Panel>
             </div>
-            <div class="panel w-full sm:w-1/2">
-                <OrderSummary :order="order"/>
-            </div>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-4">
-            <div class="panel w-full sm:w-1/2">
-                <Shipping :order="order"/>
-            </div>
+
         </div>
     </div>
 </template>

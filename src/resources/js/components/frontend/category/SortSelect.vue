@@ -15,7 +15,7 @@ const onChange = () => {
 </script>
 
 <template>
-    <div class="flex items-center">
+    <div class="flex items-center" data-ai="sort">
         <label for="sort-by" class="whitespace-nowrap mr-2 text-sm font-medium text-gray-700">
             Sortuj:
         </label>

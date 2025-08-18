@@ -4,7 +4,6 @@ namespace Shopen\Http\Resources\Admin\Product;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Shopen\Http\Resources\Admin\Product\ProductPriceResource;
 
 class BaseProductResource extends JsonResource
 {
@@ -14,6 +13,7 @@ class BaseProductResource extends JsonResource
             'id' => $this->id,
             'sku' => $this->sku,
             'price' => ProductPriceResource::make($this->whenLoaded('price')),
+            'stock_qty' => $this->stock_qty,
             'url_key' => $this->urlRewrite?->request_path,
             'is_configurable' => $this->resource->isConfigurable(),
             'image' => $this->resource->getThumbnailUrl(),

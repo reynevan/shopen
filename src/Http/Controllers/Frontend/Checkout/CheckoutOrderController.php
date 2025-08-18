@@ -3,6 +3,9 @@
 namespace Shopen\Http\Controllers\Frontend\Checkout;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
+use Inertia\Inertia;
+use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Services\CartService;
 use Shopen\Services\OrderService;
 
@@ -10,7 +13,8 @@ readonly class CheckoutOrderController
 {
     public function __construct(
         protected OrderService $orderService,
-        protected CartService $cartService
+        protected CartService $cartService,
+        protected PaymentMethodManager $paymentMethodManager,
     )
     {
 
@@ -48,6 +52,15 @@ readonly class CheckoutOrderController
                 'notes' => $data['notes'] ?? null
             ]
         );
+
+        $paymentMethod = $this->paymentMethodManager->get($order->payment_method);
+
+        $payment = $paymentMethod->initializePayment($order);
+        if ($paymentMethod->requiresRedirect()) {
+            return Inertia::location($paymentMethod->getPaymentUrl($payment));
+        }
+
+        return redirect(route('checkout.success', $order->uuid));
 
     }
 }

@@ -12,6 +12,7 @@ use Illuminate\Validation\Rules;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Controller;
+use Shopen\Models\Order\Order;
 use Shopen\Models\User;
 
 class RegisterController extends Controller
@@ -19,7 +20,20 @@ class RegisterController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('Frontend/Auth/Register');
+        $data = [];
+        if (session('guest_order_id')) {
+            $order = Order::find(session('guest_order_id'));
+            if ($order && $address = $order->shippingAddress) {
+                $data = [
+                    'user' => [
+                        'first_name' => $address->first_name,
+                        'last_name' => $address->last_name,
+                        'email' => $address->email,
+                    ]
+                ];
+            }
+        }
+        return Inertia::render('Frontend/Auth/Register', $data);
     }
 
 
@@ -44,6 +58,18 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
+        if (session('guest_order_id')) {
+            $order = Order::find(session('guest_order_id'));
+            $order->update(['user_id' => $user->id]);
+
+            session()->forget('guest_order_id');
+
+            return redirect(route('user.orders.index'));
+        }
+
+        if ($request->filled('redirectTo')) {
+            return redirect()->to($request->input('redirectTo'));
+        }
         return redirect('/');
     }
 }

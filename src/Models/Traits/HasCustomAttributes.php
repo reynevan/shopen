@@ -17,8 +17,6 @@ trait HasCustomAttributes
 {
     protected abstract function getAttributeClass(): string;
 
-    protected abstract function getOriginalAttributes(): array;
-
     protected function beforeSave(): ?bool
     {
         return true;
@@ -45,10 +43,18 @@ trait HasCustomAttributes
 
     public function setAttribute($key, $value)
     {
-        if (in_array($key, $this->getOriginalAttributes())) {
-            return parent::setAttribute($key, $value);
+        if ($this->getAttributeRepository()->exists($key)) {
+            return $this->setCustomAttribute($key, $value);
         }
-        return $this->setCustomAttribute($key, $value);
+        return parent::setAttribute($key, $value);
+    }
+
+    public function getAttribute($key)
+    {
+        if ($this->getAttributeRepository()->exists($key)) {
+            return $this->getCustomAttribute($key);
+        }
+        return parent::getAttribute($key);
     }
 
     public function setCustomAttribute($key, $value): static
@@ -57,50 +63,39 @@ trait HasCustomAttributes
         return $this;
     }
 
+    public function getCustomAttribute($key)
+    {
+        if (isset($this->customAttributes[$key]) && $this->customAttributes[$key]) {
+            return $this->customAttributes[$key];
+        }
+        if (!$this->getAttributeRepository()->exists($key)) {
+            return null;
+        }
+        return $this->loadAttribute($key);
+    }
+
     public function getCustomAttributes(): array
     {
         return $this->customAttributes;
     }
 
-    public function getAttribute($key)
-    {
-        $value = parent::getAttribute($key);
-        if ($value) {
-            return $value;
-        }
-        if (isset($this->customAttributes[$key])) {
-            return $this->customAttributes[$key];
-        }
-        if (in_array($key, $this->getOriginalAttributes())) {
-            return null;
-        }
-        if (!$this->getAttributeRepository()->exists($key)) {
-            return null;
-        }
-        $attribute = $this->getAttributeClass()::query()->where('code', $key)->first();
-        if (!$attribute) {
-            return null;
-        }
-        return $this->loadAttribute($attribute);
-    }
-
     public function getAttributeTextValue($attribute)
     {
-        if (!is_a($attribute, Attribute::class)) {
-            $attribute = $this->getAttributeClass()::query()->where('code', $attribute)->first();
-        }
+        $attribute = $this->fetchAttribute($attribute);
         if (!$attribute) {
             return null;
         }
-        $valueModel = $attribute->getValueModel();
-        $attributeValue = $valueModel::query()->where('entity_id', $this->id)->where('attribute_id', $attribute->id)->first();
-        if (!$attributeValue) {
+        $value = $this->loadAttribute($attribute);
+        if (!$attribute->isSelectable()) {
+            return $value;
+        }
+        if (!$value || (is_array($value) && count($value) === 0)) {
             return null;
         }
-        if (!$attribute->isSelectable()) {
-            return $attributeValue->value;
+        if ($attribute->isMultiselect()) {
+            return AttributeOption::query()->where('attribute_id', $attribute->id)->whereIn('id', $value)->get()->pluck('value')->values()->toArray();
         }
-        $option = AttributeOption::query()->where('attribute_id', $attribute->id)->where('id', $attributeValue->value)->first();
+        $option = AttributeOption::query()->where('attribute_id', $attribute->id)->where('id', $value)->first();
         return $option->value ?? null;
     }
 
@@ -256,12 +251,14 @@ trait HasCustomAttributes
                 ->first();
             $attributeValue = $attributeValue->value ?? null;
         }
-        $this->customAttributes[$attribute->code] = $attributeValue ?? null;
-        if ($this->customAttributes[$attribute->code]) {
-            return $this->customAttributes[$attribute->code];
+        if ($attributeValue) {
+            $this->customAttributes[$attribute->code] = $attributeValue;
+            return $attributeValue;
         }
         if ($this->parent_id && $this->parent) {
-            return $this->parent->getAttribute($attribute->code);
+            $attributeValue = $this->parent->loadAttribute($attribute);
+            $this->customAttributes[$attribute->code] = $attributeValue ?? null;
+            return $attributeValue ?? null;
         }
         return null;
     }

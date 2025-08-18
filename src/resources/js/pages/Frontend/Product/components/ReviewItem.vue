@@ -1,15 +1,15 @@
 <script setup>
 import {router, usePage} from '@inertiajs/vue3';
 import {useAuthStore} from "@shopen/stores/auth.js";
-import RatingDisplay from "./RatingDisplay.vue";
+import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
 import IconThumbUp from "@shopen/components/icons/IconThumbUp.vue";
 import IconThumbDown from "@shopen/components/icons/IconThumbDown.vue";
-import IconCircleCheck from "@shopen/components/icons/IconCircleCheck.vue";
+import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconEdit from "@shopen/components/icons/IconEdit.vue";
 import IconTrash from "@shopen/components/icons/IconTrash.vue";
 import axios from "axios";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import IconLoader from "../../../../components/icons/IconLoader.vue";
 
 const props = defineProps({
@@ -21,6 +21,8 @@ const auth = useAuthStore();
 const page = usePage();
 
 const loading = ref(false);
+
+const editable = computed(() => auth.user && props.review.user.id === auth.user.id);
 
 const edit = () => {
     emits('onEdit', props.review);
@@ -59,13 +61,13 @@ const submitVote = (voteValue) => {
             <div class="author-info">
                 <div class="author-name font-semibold">{{ review.user.first_name }}</div>
                 <div v-if="review.is_verified_purchase" class="verified-badge flex items-center gap-2 mt-1">
-                    <span class="text-green-600"><IconCircleCheck/></span>
+                    <span class="text-green-600"><IconCheckCircle/></span>
                     <span class="text-neutral-600 text-sm">Zweryfikowany zakup</span>
                 </div>
             </div>
 
             <!-- Przyciski Edytuj i Usuń -->
-            <div v-if="review.editable" class="flex items-center gap-2">
+            <div v-if="editable" class="flex items-center gap-2">
                 <button
                     @click.prevent="edit"
                     class="px-3 py-1 cursor-pointer flex items-center gap-2 text-sm text-link-600 hover:text-link-800 hover:bg-link-50 rounded transition-colors duration-200"

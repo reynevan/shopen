@@ -7,11 +7,11 @@ use Shopen\Repositories\Product\ProductRepository;
 use Shopen\Http\Resources\Admin\Product\BaseProductResource;
 
 readonly class ProductsIndexController
-{
-    public function __construct(
-        private ProductRepository $productRepository
-    )
-    {}
+    {
+        public function __construct(
+            private ProductRepository $productRepository
+        )
+        {}
 
     public function index()
     {

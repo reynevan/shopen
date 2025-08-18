@@ -44,22 +44,18 @@ const close = () => {
 };
 
 const showMessage = () => {
-    // Najpierw zamknij obecną wiadomość
     show.value = false;
 
-    // Wyczyść poprzedni timeout
     if (timeoutId) {
         clearTimeout(timeoutId);
     }
 
-    // Użyj nextTick aby Vue zdążył przerenderować
     setTimeout(() => {
         show.value = true;
         timeoutId = setTimeout(() => close(), 5000);
     }, 100);
 };
 
-// Obserwuj zmiany w props.flash zamiast computed message
 watch(
     () => page.props.flash,
     (newFlash) => {
@@ -70,7 +66,6 @@ watch(
     { deep: true }
 );
 
-// Osobny watcher dla błędów
 watch(
     () => page.props.errors,
     (newErrors) => {
@@ -81,7 +76,6 @@ watch(
     { deep: true }
 );
 
-// Początkowe sprawdzenie przy montowaniu
 if (message.value) {
     showMessage();
 }

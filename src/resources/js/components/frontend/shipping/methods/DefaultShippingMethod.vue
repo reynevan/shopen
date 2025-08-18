@@ -2,7 +2,7 @@
 
 import {useShippingStore} from "@shopen/stores/shipping.js";
 import IconCircle from "@shopen/components/icons/IconCircle.vue";
-import IconCircleCheck from "@shopen/components/icons/IconCircleCheck.vue";
+import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
 
@@ -23,11 +23,11 @@ const selectMethod = () => {
 <div>
     <div
          class="flex justify-between items-center px-4 py-2 mb-2 cursor-pointer rounded transition-colors hover:bg-accent/10 border"
-         :class="{'bg-accent/10 border-accent': isSelected, 'border-transparent':  !isSelected}"
+         :class="[isSelected ? 'bg-accent/10 border-strong': 'border-transparent']"
          @click="selectMethod">
         <div class="flex">
-            <div class="pt-1 mr-2 text-accent">
-                <IconCircleCheck v-if="isSelected"></IconCircleCheck>
+            <div class="pt-1 mr-2 text-neutral-700">
+                <IconCheckCircle v-if="isSelected"/>
                 <IconCircle v-else></IconCircle>
             </div>
             <div>

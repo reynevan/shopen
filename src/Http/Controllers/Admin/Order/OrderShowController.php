@@ -3,14 +3,21 @@
 namespace Shopen\Http\Controllers\Admin\Order;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Enums\Order\OrderStatus;
 use Shopen\Http\Requests\Admin\Order\ShipRequest;
 use Shopen\Http\Requests\Admin\Order\UpdateOrderStatusRequest;
 use Shopen\Http\Resources\Admin\Order\OrderResource;
+use Shopen\Mail\Order\OrderPlaced;
+use Shopen\Mail\Order\OrderProcessing;
+use Shopen\Mail\Order\OrderRefunded;
+use Shopen\Mail\Order\OrderShipped;
 use Shopen\Models\Order\Order;
 use Shopen\Repositories\Order\OrderRepository;
+use Shopen\Mail\Order\OrderCancelled;
+use Shopen\Mail\Order\OrderDelivered;
 
 readonly class OrderShowController
 {
@@ -35,6 +42,35 @@ readonly class OrderShowController
         $order->status = $data['status'];
         $order->save();
         $order->statusHistoryItems()->create($data);
+
+        if (!$data['email_notification']) {
+            return back();
+        }
+
+        $contactEmail = $order->getCustomerEmail();
+        if (!$contactEmail) {
+            return back();
+        }
+        switch ($order->status) {
+            case OrderStatus::NEW:
+                Mail::to($contactEmail)->queue(new OrderPlaced($order, $data['comment']));
+                break;
+            case OrderStatus::PROCESSING:
+                Mail::to($contactEmail)->queue(new OrderProcessing($order, $data['comment']));
+                break;
+            case OrderStatus::SHIPPED:
+                Mail::to($contactEmail)->queue(new OrderShipped($order, $data['comment']));
+                break;
+            case OrderStatus::DELIVERED:
+                Mail::to($contactEmail)->queue(new OrderDelivered($order, $data['comment']));
+                break;
+            case OrderStatus::CANCELLED:
+                Mail::to($contactEmail)->queue(new OrderCancelled($order, $data['comment']));
+                break;
+            case OrderStatus::REFUNDED:
+                Mail::to($contactEmail)->queue(new OrderRefunded($order, $data['comment']));
+                break;
+        }
 
         return back();
     }

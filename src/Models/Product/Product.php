@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Shopen\Core\Support\DB;
 use Shopen\Database\Factories\ProductFactory;
@@ -19,6 +21,7 @@ use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Price\ProductPriceHistoryItem;
 use Shopen\Models\Product\Price\ProductPriceRule;
 use Shopen\Models\Product\Review\ProductReview;
+use Shopen\Models\ShoppingList\ShoppingList;
 use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
@@ -74,6 +77,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         ];
     }
 
+    protected function getThumbnailSizes(): array
+    {
+        return [150, 250, 350];
+    }
+
     protected static function newFactory()
     {
         return ProductFactory::new();
@@ -86,33 +94,61 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function registerMediaConversions(?Media $media = null): void
     {
+        foreach ($this->getThumbnailSizes() as $size) {
+            $this
+                ->addMediaConversion('thumbnail-' . $size)
+                ->fit(Fit::Crop, $size, $size)
+                ->quality(100)
+                ->format('webp')
+                ->nonQueued();
+
+            $this
+                ->addMediaConversion('thumbnail-' . ($size * 2))
+                ->fit(Fit::Crop, ($size * 2), ($size * 2))
+                ->quality(100)
+                ->format('webp')
+                ->nonQueued();
+        }
+
         $this
-            ->addMediaConversion('thumbnail')
-            ->fit(Fit::Fill, 200, 200)
+            ->addMediaConversion('gallery-preview-100')
+            ->fit(Fit::Crop, 100, 100)
             ->quality(100)
+            ->format('webp')
             ->nonQueued();
 
         $this
-            ->addMediaConversion('thumbnail_mobile')
-            ->fit(Fit::Fill, 300, 300)
+            ->addMediaConversion('thumbnail-mail')
+            ->fit(Fit::Crop, 65, 65)
             ->quality(100)
+            ->format('jpg')
             ->nonQueued();
 
         $this
-            ->addMediaConversion('gallery_preview')
-            ->fit(Fit::Fill, 100, 100)
+            ->addMediaConversion('gallery-preview-200')
+            ->fit(Fit::Crop, 200, 200)
             ->quality(100)
+            ->format('webp')
             ->nonQueued();
 
         $this
-            ->addMediaConversion('gallery_image')
+            ->addMediaConversion('gallery-image-500')
             ->fit(Fit::Contain, 500, 500)
             ->quality(100)
+            ->format('webp')
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('gallery-image-1000')
+            ->fit(Fit::Contain, 1000, 1000)
+            ->quality(100)
+            ->format('webp')
             ->nonQueued();
     }
 
     public function getImagesUrls(): array
     {
+        return [];
         $conversions = ['thumbnail', 'gallery_preview', 'gallery_image', 'thumbnail_mobile'];
         $media = $this->getMedia();
         if ($media->isEmpty() && $this->parent) {
@@ -130,14 +166,19 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $images;
     }
 
-    public function getThumbnails($max = 2, $mobile = false)
+    public function getThumbnails($max = 2)
     {
         $thumbnails = [];
         foreach ($this->getMedia() as $i => $mediaItem) {
             if ($i >= $max) {
                 break;
             }
-            $thumbnails[] = $mediaItem->getFullUrl($mobile ? 'thumbnail_mobile' : 'thumbnail');
+            $media = [];
+            foreach ($this->getThumbnailSizes() as $size) {
+                $media[$size . 'w'] = $mediaItem->getFullUrl('thumbnail-' . $size);
+                $media[($size * 2) . 'w'] = $mediaItem->getFullUrl('thumbnail-' . ($size * 2));
+            }
+            $thumbnails[] = $media;
         }
         if (!count($thumbnails) && $this->parent) {
             return $this->parent->getThumbnails();
@@ -147,9 +188,18 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getThumbnailUrl(): ?string
     {
-        $mediaUrl = $this->getFirstMediaUrl('default', 'thumbnail');
+        $mediaUrl = $this->getFirstMediaUrl('default', 'thumbnail-150');
         if (!$mediaUrl) {
-           // return $this->parent ? $this->parent->getThumbnailUrl() : null;
+            return $this->parent ? $this->parent->getThumbnailUrl() : null;
+        }
+        return $mediaUrl;
+    }
+
+    public function getMailThumbnailUrl(): ?string
+    {
+        $mediaUrl = $this->getFirstMediaUrl('default', 'thumbnail-mail');
+        if (!$mediaUrl) {
+            return $this->parent ? $this->parent->getThumbnailUrl() : null;
         }
         return $mediaUrl;
     }
@@ -185,6 +235,41 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function approvedReviews() {
         return $this->reviews()->approved();
+    }
+
+    public function crossSells(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_cross_sells',
+            'product_id',
+            'cross_sell_product_id'
+        );
+    }
+
+    public function upSells(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'product_up_sells',
+            'product_id',
+            'up_sell_product_id'
+        );
+    }
+
+    public function relatedProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Product::class,
+            'related_products',
+            'product_id',
+            'related_product_id'
+        );
+    }
+
+    public function shoppingLists(): BelongsToMany
+    {
+        return $this->belongsToMany(ShoppingList::class, 'shopping_list_product');
     }
 
     public function scopeSort(Builder $query, $sortField, $sortDir): Builder

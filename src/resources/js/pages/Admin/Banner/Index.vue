@@ -1,7 +1,6 @@
 <script setup>
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
 import BannersTable from "../../../components/admin/banner/BannersTable.vue";
-import FormHeader from "../../../components/admin/form/FormHeader.vue";
 import {Link} from "@inertiajs/vue3";
 
 defineOptions({layout: AdminLayout})

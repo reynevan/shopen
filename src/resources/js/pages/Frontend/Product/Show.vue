@@ -8,14 +8,17 @@ import BannersContainer from "@shopen/components/frontend/banner/BannersContaine
 import ProductPrice from "./components/ProductPrice.vue";
 import ProductReviews from "./components/ProductReviews.vue";
 import ReviewsInfo from "./components/ReviewsInfo.vue";
-import ProductsCarousel from "../../../components/frontend/product/ProductsCarousel.vue";
-import ProductStructredData from "../../../components/frontend/product/ProductStructredData.vue";
+import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarousel.vue";
+import ProductStructredData from "@shopen/components/frontend/product/ProductStructredData.vue";
+import Button from "@shopen/components/frontend/ui/Button.vue";
+import AddToShoppingListButton from "../../../components/frontend/shoppingList/AddToShoppingListButton.vue";
 
 defineOptions({layout: AppLayout})
 
 const props = defineProps({
     product: {type: Object, required: true},
-    recentlyViewedProducts: {type: Object},
+    recentlyViewedProducts: {type: Array},
+    relatedProducts: {type: Array},
     reviews: {type: Object},
     reviewsEnabled: {type: Boolean},
     sort: {type: String},
@@ -32,27 +35,43 @@ const props = defineProps({
 <template>
     <div class="product-show">
         <BannersContainer :banners="banners.product_page_top"/>
+
+
         <div class="flex flex-col sm:flex-row py-10 px-6">
             <section class="mr-0 sm:mr-6">
                 <Gallery :images="images"/>
             </section>
             <section>
-                <div class="text-xl">
-                    {{ attributes.name }}
+                <div>
+                    <AddToShoppingListButton :product="product"/>
+                </div>
+                <div class="text-3xl mb-2">
+                    {{ product.attributes.name }}
                 </div>
                 <ReviewsInfo :product="product"/>
 
-                @block('product.show.stock-status')
                 <div class="mt-4 mb-4">
                     <ProductPrice :price="product.price"/>
                 </div>
+
                 <VariantSelect :variants="variants"/>
-                <AddToCartButton :productId="product"></AddToCartButton>
+
+                <AddToCartButton :productId="product.id" v-if="product.in_stock"></AddToCartButton>
+                <div v-else>
+                    <Button type="disabled" disabled>
+                        Produkt chwilowo niedostępny
+                    </Button>
+                </div>
                 <div>
                     <ProductAttributes :product="product" :attributes="attributes"/>
                 </div>
             </section>
         </div>
+
+        <section v-if="relatedProducts && relatedProducts.length">
+            <h2 class="section-title">Zobacz też</h2>
+            <ProductsCarousel :products="relatedProducts"/>
+        </section>
 
         <section v-if="reviewsEnabled">
             <h2 class="section-title">

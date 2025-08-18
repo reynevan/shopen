@@ -35,17 +35,22 @@ readonly class ProductShowController
     {
         $this->recentlyViewedProductsService->add($product);
 
+        $product->load(['price', 'relatedProducts.price', 'urlRewrite']);
+
         $this->productRepository->loadAttributes($product);
-        $product->load(['price']);
+
         $product->image = $product->getThumbnailUrl();
 
         $reviews = config('shopen.product.reviews.enabled') ? $this->productReviewRepository->getForProduct($product, request('opinie')) : [];
 
+        $user = Auth::user();
+
         return Inertia::render('Frontend/Product/Show', [
             'product' => fn() => ProductResource::make($product),
+            'relatedProducts' => fn() => ProductResource::collection($this->productRepository->getRelatedProducts($product)),
             'reviews' => fn() => ProductReviewResource::collection($reviews),
             'reviewsEnabled' => config('shopen.product.reviews.enabled'),
-            'reviewSubmitted' => fn() => config('shopen.product.reviews.enabled') && Auth::check() && $product->reviews()->where('user_id', Auth::id())->exists(),
+            'reviewSubmitted' => fn() => config('shopen.product.reviews.enabled') && $user && $product->reviews()->where('user_id', $user->id)->exists(),
             'images' => fn() => $product->getImagesUrls(),
             'variants' => fn() => $this->getVariants($product),
             'configurableAttributes' => fn() => $this->getConfigurableAttributes($product),
@@ -58,7 +63,6 @@ readonly class ProductShowController
 
     protected function getVariants(Product $product)
     {
-
         return $this->productRepository->getProductVariants($product);
     }
 

@@ -1,6 +1,6 @@
 <script setup>
 
-import RatingDisplay from "@shopen/pages/Frontend/Product/components/RatingDisplay.vue";
+import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
 import {computed} from "vue";
 
 const props = defineProps(['product'])

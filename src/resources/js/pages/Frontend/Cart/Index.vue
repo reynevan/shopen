@@ -1,14 +1,21 @@
 <script setup>
 import {computed} from 'vue'
-import {Link, usePage} from '@inertiajs/vue3'
-import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
+import {Head, Link, usePage} from '@inertiajs/vue3'
+import CheckoutLayout from "@shopen/layouts/frontend/CheckoutLayout.vue";
 import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
 import {useCartStore} from "@shopen/stores/cart.js";
 import {useAuthStore} from "@shopen/stores/auth.js";
+import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarousel.vue";
+import IconLoader from "@shopen/components/icons/IconLoader.vue";
+import Button from "@shopen/components/frontend/ui/Button.vue";
 
-defineOptions({ layout: AppLayout })
+defineOptions({layout: CheckoutLayout})
+
+const props = defineProps({
+    crossSellProducts: {type: Array}
+})
 
 const page = usePage();
 const cart = computed(() => page.props.cart);
@@ -17,86 +24,139 @@ const auth = useAuthStore()
 const cartStore = useCartStore();
 
 const onQtyChange = (item, qty) => {
+    item.loading = true;
     cartStore.updateItem(item.id, qty)
 }
-
+const removeItem = (item) => {
+    cartStore.removeItem(item);
+}
 </script>
 
 <template>
-    <div class="flex items-start">
-        <table class="w-full mr-8">
-            <thead>
-            <tr>
-                <th class="w-[50px]"></th>
-                <th class="w-[120px]"></th>
-                <th class="text-left">Produkt</th>
-                <th class="w-[100px] text-right">Cena</th>
-                <th class="w-[200px] text-center">Ilość</th>
-                <th class="w-[150px] text-right">Kwota</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr v-for="item in cart.items" :key="item.id" class="cart-item py-2 border-b asd">
-                <td>
-                    <div @click="removeItem(item)" class="cursor-pointer">
-                        <IconX lg/>
-                    </div>
-                </td>
-                <td class="py-2">
-                    <div class="mr-2 w-[100px] h-[100px] flex items-center justify-center text-no-image-icon bg-no-image-bg">
-                        <img v-if="item.product.image" :src="item.product.image" :alt="item.product.name" class="w-full h-full">
-                        <IconNoImage md v-if="!item.product.image"/>
-                    </div>
-                </td>
-                <td class="text-left">
-                    <div class="text-lg font-semibold">
-                        <a :href="item.product.url">
-                            {{ item.product.name }}
-                        </a>
-                    </div>
-                    <div v-if="item.product.attributes">
-                        <div v-for="attribute in item.product.attributes">
-                            <span>{{ attribute.name }}</span>: <span>{{ attribute.value }}</span>
-                        </div>
-                    </div>
-                </td>
-                <td class="">
-                    <div class="text-right">{{ item.price }}</div>
-                </td>
-                <td class="">
-                    <div class="flex justify-center">
-                        <AmountInput :value="item.quantity" @onChange="(val) => onQtyChange(item, val)"></AmountInput>
-                    </div>
-                </td>
-                <td class="">
-                    <div class="text-right text-accent text-lg font-semibold">
-                        {{ item.totalPrice }}
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
-        <div class="bg-primary-bg p-4 sticky top-8 min-w-sm">
-            <div class="text-xl border-b pb-2 mb-2">
-                Podsumowanie
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <div>Kwota:</div>
-                <div>{{ cart.subtotal }}</div>
-            </div>
-            <div class="flex justify-between items-center mb-2">
-                <div>Wysyłka od:</div>
-                <div>{{ cart.shipping }}</div>
-            </div>
-            <div class="flex justify-between items-end">
-                <div>Do zapłaty:</div>
-                <div class="text-xl text-accent font-semibold">
-                    {{ cart.total }}
-                </div>
-            </div>
-            <Link :href="route(auth.isLoggedIn ? 'checkout.index' : 'checkout.login')" class="button-primary block mt-4" >
-                Do kasy
+    <Head>
+        <title>Koszyk</title>
+    </Head>
+    <!-- Użycie semantycznego tagu <main> dla głównej treści strony -->
+    <main class="container mx-auto px-4 py-8">
+
+        <!-- Dodano nagłówek H1 - kluczowy dla SEO i dostępności -->
+        <h1 class="text-3xl font-semibold mb-6 sr-only">Koszyk</h1>
+
+        <div v-if="!cart.items || cart.items.length === 0" class="text-center py-16">
+            <h2 class="text-2xl font-semibold mb-4">Twój koszyk jest pusty</h2>
+            <p class="text-gray-600 mb-6">Dodaj produkty do koszyka, aby kontynuować zakupy.</p>
+            <Link :href="route('home')" class="button-primary">
+                Wróć do sklepu
             </Link>
         </div>
-    </div>
+
+        <div v-else class="flex flex-col lg:flex-row lg:items-start gap-8">
+
+            <!-- Lista produktów - zamiana tabeli na listę semantyczną -->
+            <section class="w-full lg:flex-1" aria-labelledby="cart-items-heading">
+                <h2 id="cart-items-heading" class="text-2xl font-semibold mb-4">Koszyk</h2>
+                <!-- Użycie <ul> dla listy produktów jest bardziej semantyczne niż <table> -->
+                <ul class="space-y-4">
+                    <li v-for="item in cart.items" :key="item.id"
+                        class="flex flex-col md:flex-row items-center gap-4 p-4 rounded-lg bg-body">
+
+                        <!-- Obraz produktu -->
+                        <div
+                            class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center rounded-md overflow-hidden">
+                            <Link :href="item.product.url">
+                                <img v-if="item.product.image" :src="item.product.image" :alt="item.product.name"
+                                     class="w-full h-full object-cover">
+                                <IconNoImage md v-else/>
+                            </Link>
+                        </div>
+
+                        <!-- Szczegóły produktu i akcje -->
+                        <div class="flex-1 w-full flex flex-col md:flex-row md:justify-between gap-4">
+                            <!-- Nazwa i atrybuty -->
+                            <div class="flex-1">
+                                <Link :href="item.product.url" class="text-lg hover:underline">
+                                    {{ item.product.name }}
+                                </Link>
+                                <div v-if="item.product.attributes" class="text-sm text-gray-600 mt-1">
+                                    <div v-for="attribute in item.product.attributes" :key="attribute.name">
+                                        <span>{{ attribute.name }}</span>: <span class="font-medium">{{
+                                            attribute.value
+                                        }}</span>
+                                    </div>
+                                </div>
+                                <!-- Ukryte etykiety dla urządzeń mobilnych - poprawa dostępności -->
+                                <div class="md:hidden mt-2 text-sm">
+                                    Cena: <span class="font-semibold">{{ item.price }}</span>
+                                </div>
+                            </div>
+
+                            <!-- Cena jednostkowa (widoczna na większych ekranach) -->
+                            <div class="hidden md:flex items-center justify-end w-28">
+                                <span class="text-right">{{ item.price }}</span>
+                            </div>
+
+                            <!-- Ilość -->
+                            <div class="flex items-center justify-between md:justify-center w-full md:w-40">
+                                <span class="md:hidden font-medium">Ilość:</span>
+                                <AmountInput :value="item.quantity" :disabled="item.loading"
+                                             @onChange="(val) => onQtyChange(item, val)"/>
+                            </div>
+
+                            <!-- Kwota -->
+                            <div class="flex items-center justify-between md:justify-end w-full md:w-32">
+                                <span class="md:hidden font-medium">Kwota:</span>
+                                <div class="text-lg font-semibold text-right min-w-[80px]">
+                                    <IconLoader v-if="item.loading" class="mx-auto"/>
+                                    <span v-else>{{ item.total_final_price }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-auto flex justify-end md:justify-center pt-2 md:pt-0">
+                            <button @click="removeItem(item)" class="text-gray-500 hover:text-red-600 transition-colors"
+                                    aria-label="Usuń produkt z koszyka">
+                                <IconX lg/>
+                            </button>
+                        </div>
+                    </li>
+                </ul>
+            </section>
+
+            <aside class="w-full lg:w-80 bg-primary-bg mt-12 p-6 rounded-lg shadow lg:sticky top-8 bg-body">
+                <h2 class="text-xl font-semibold border-b pb-3 mb-4">Podsumowanie</h2>
+                <dl class="space-y-2 mb-8">
+                    <div class="flex justify-between items-center">
+                        <dt class="text-gray-700">Wartość produktów:</dt>
+                        <dd class="font-medium">{{ cart.subtotal }}</dd>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <dt class="text-gray-700">Wysyłka od:</dt>
+                        <dd class="font-medium">{{ cart.shipping }}</dd>
+                    </div>
+                    <div class="border-t my-4"></div>
+                    <div class="flex justify-between items-end">
+                        <dt class="text-lg font-semibold">Do zapłaty:</dt>
+                        <dd class="text-2xl font-bold text-primary">
+                            {{ cart.total }}
+                        </dd>
+                    </div>
+                </dl>
+                <div>
+                    <Link :href="route(auth.isLoggedIn ? 'checkout.index' : 'checkout.login')">
+                        <Button type="secondary" full-width>
+                            Przejdź do kasy
+                        </Button>
+                    </Link>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Sekcja Cross-Sell -->
+        <section v-if="crossSellProducts && crossSellProducts.length" class="mt-16"
+                 aria-labelledby="cross-sell-heading">
+            <h2 id="cross-sell-heading" class="section-title">Może jeszcze to Ci się przyda</h2>
+            <ProductsCarousel :products="crossSellProducts"/>
+        </section>
+
+    </main>
 </template>

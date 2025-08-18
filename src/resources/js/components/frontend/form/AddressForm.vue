@@ -10,6 +10,11 @@ const props = defineProps(['errors', 'address']);
 </script>
 
 <template>
+
+    <FormField v-if="!auth.isLoggedIn && address.type === 'shipping'" field="email" label="Adres e-mail" :error="errors.email" required>
+        <input type="text" id="email" autocomplete="email" v-model="address.email">
+    </FormField>
+
     <div class="flex flex-wrap sm:flex-nowrap">
         <FormField field="first_name" label="Imię" :error="errors.first_name" class="sm:mr-2 sm:mb-0" required>
             <input type="text" id="first_name" autocomplete="given-name" v-model="address.first_name">
@@ -29,10 +34,6 @@ const props = defineProps(['errors', 'address']);
             <input type="text" id="nip" autocomplete="family-name" v-model="address.nip">
         </FormField>
     </div>
-
-    <FormField v-if="!auth.isLoggedIn && address.type === 'shipping'" field="email" label="Adres e-mail" :error="errors.email" required>
-        <input type="text" id="email" autocomplete="email" v-model="address.email">
-    </FormField>
 
     <FormField field="address_line" label="Ulica, numer budynku / numer lokalu" :error="errors.address_line" required>
         <input type="text" id="address_line" autocomplete="street-address" v-model="address.address_line">
@@ -54,7 +55,7 @@ const props = defineProps(['errors', 'address']);
             <input type="text" id="phone" v-model="address.phone">
         </FormField>
 
-        <FormField field="is_default" label="Adres domyślny" :error="errors.is_default" required>
+        <FormField v-if="!auth.isLoggedIn" field="is_default" label="Adres domyślny" :error="errors.is_default" required>
             <input type="checkbox" id="is_default" v-model="address.is_default">
         </FormField>
     </div>

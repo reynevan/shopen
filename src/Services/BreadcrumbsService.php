@@ -13,37 +13,16 @@ class BreadcrumbsService
 {
     protected array $breadcrumbs = [];
 
-    /**
-     * Tablica przechowująca zarejestrowane callbacki dla nazwanych tras.
-     * Klucz to nazwa trasy, wartość to funkcja (Closure).
-     *
-     * @var array<string, Closure>
-     */
     protected array $registeredRoutes = [];
 
     public function __construct(protected Request $request)
-    {
-        // "Strona główna" jest teraz dodawana na początku każdej generacji,
-        // co daje większą elastyczność zarejestrowanym callbackom.
-    }
+    {}
 
-    /**
-     * Rejestruje generator breadcrumbów dla konkretnej nazwy trasy.
-     *
-     * @param string $routeName Nazwa trasy (np. 'products.show')
-     * @param Closure $callback Funkcja, która generuje breadcrumbs.
-     *                          Otrzymuje instancję serwisu i parametry trasy jako argumenty.
-     */
     public function register(string $routeName, Closure $callback): void
     {
         $this->registeredRoutes[$routeName] = $callback;
     }
 
-    /**
-     * Generuje i zwraca tablicę breadcrumbs.
-     *
-     * @return array
-     */
     public function generate(): array
     {
         $this->breadcrumbs = [];
@@ -87,22 +66,16 @@ class BreadcrumbsService
         return $this->finalize();
     }
 
-    /**
-     * Publiczna metoda 'add', aby można było jej używać w callbackach.
-     *
-     * @param string $name
-     * @param string|null $url
-     */
+    public function remove()
+    {
+        $this->breadcrumbs = [];
+    }
+
     public function add(string $name, ?string $url): void
     {
         $this->breadcrumbs[] = ['name' => $name, 'url' => $url];
     }
 
-    /**
-     * Ustawia URL ostatniego elementu na null, oznaczając go jako aktywny.
-     *
-     * @return array
-     */
     protected function finalize(): array
     {
         if (count($this->breadcrumbs) > 1) {
@@ -117,7 +90,7 @@ class BreadcrumbsService
         $current = $category;
         while ($current) {
             array_unshift($categoryPath, [
-                'name' => $current->name,
+                'name' => $current->getCustomAttribute('name'),
                 'url' => $this->getCategoryUrl($current),
             ]);
             $current = $current->parent;
@@ -128,25 +101,24 @@ class BreadcrumbsService
     protected function generateForProduct(Product $product): void
     {
         $refererUrl = $this->request->header('referer');
-        $categoryFromReferer = null;
+        $refererRewrite = null;
 
         if ($refererUrl) {
             $refererPath = ltrim(parse_url($refererUrl, PHP_URL_PATH), '/');
-            $refererRewrite = UrlRewrite::where('request_path', $refererPath)
+            $refererRewrite = UrlRewrite::query()
+                ->with('entity')
+                ->where('request_path', $refererPath)
                 ->where('entity_type', 'category')
                 ->first();
-            if ($refererRewrite) {
-                $categoryFromReferer = Category::find($refererRewrite->entity_id);
-            }
         }
 
-        if ($categoryFromReferer) {
-            $this->generateForCategory($categoryFromReferer);
+        if ($refererRewrite) {
+            $this->generateForCategory($refererRewrite->entity);
         } else {
             // Logika fallback...
         }
 
-        $this->add($product->name, $this->getProductUrl($product));
+        $this->add($product->getCustomAttribute('name'), $this->getProductUrl($product));
     }
 
     protected function getCategoryUrl(Category $category): string

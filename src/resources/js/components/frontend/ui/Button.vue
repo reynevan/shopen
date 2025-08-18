@@ -17,7 +17,7 @@ const props = defineProps({
     type: {
         type: String,
         default: 'primary',
-        validator: (value) => ['primary', 'secondary', 'ghost', 'danger', 'success'].includes(value)
+        validator: (value) => ['primary', 'secondary', 'ghost', 'disabled', 'danger', 'success'].includes(value)
     },
     size: {
         type: String,
@@ -32,19 +32,24 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    shadow: {
+        type: Boolean,
+        default: true
+    }
 })
 
 const sizeClasses = {
-    sm: 'h-8 px-3 text-sm',
-    md: 'h-10 px-4 text-base',
-    lg: 'h-12 px-6 text-base',
-    xl: 'h-14 px-8 text-lg'
+    sm: 'py-1 px-3 text-sm',
+    md: 'py-2 px-4 text-base',
+    lg: 'py-3 px-6 text-base',
+    xl: 'py-4 px-8 text-lg'
 }
 
 const typeClasses = {
-    primary: 'bg-accent-600 text-white hover:bg-accent-700 active:bg-accent-800 disabled:bg-accent-300',
-    secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 disabled:bg-gray-100 disabled:text-gray-400',
-    ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:text-gray-400',
+    primary: 'bg-accent hover:bg-accent-hover disabled:bg-accent/70',
+    secondary: 'bg-secondary text-white hover:bg-secondary-hover disabled:bg-secondary/50 disabled:text-gray-300',
+    ghost: 'bg-transparent text-gray-700 hover:bg-accent active:bg-accent/90 disabled:text-gray-400',
+    disabled: 'bg-gray-600 text-gray-200',
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-300',
     success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 disabled:bg-green-300'
 }
@@ -53,14 +58,15 @@ const typeClasses = {
 <template>
     <button
         :class="[
-      'inline-flex items-center justify-center rounded-lg transition-all duration-200 cursor-pointer',
-      'focus:outline-none focus:ring-2 focus:ring-offset-2',
-      'disabled:cursor-not-allowed disabled:opacity-50',
-      sizeClasses[size],
-      typeClasses[type],
-      fullWidth && 'w-full',
-      props.class
-    ]"
+          'inline-flex items-center justify-center duration-300 cursor-pointer transition-all',
+          'disabled:cursor-not-allowed disabled:opacity-50',
+          !disabled && shadow ? 'hover:shadow-lg' : '',
+          sizeClasses[size],
+          typeClasses[type],
+          fullWidth && 'w-full',
+          props.class,
+          props.class.indexOf('rounded') >= 0 ? '' : 'rounded'
+        ]"
         :type="role"
         :disabled="disabled || loading"
     >
@@ -73,8 +79,6 @@ const typeClasses = {
         size === 'xl' && 'w-6 h-6'
       ]"
         />
-        <span v-else>
-      <slot />
-    </span>
+      <slot v-else />
     </button>
 </template>

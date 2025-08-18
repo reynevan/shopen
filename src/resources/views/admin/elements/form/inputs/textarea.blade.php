@@ -1,1 +1,0 @@
-<textarea name="" id="" name="{{ $attribute->code }}">{{ $value }}</textarea>

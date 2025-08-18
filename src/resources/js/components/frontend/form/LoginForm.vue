@@ -1,5 +1,7 @@
 <script setup>
 import {useForm, Link} from "@inertiajs/vue3";
+import Button from "@shopen/components/frontend/ui/Button.vue";
+import FormField from "@shopen/components/frontend/form/FormField.vue";
 
 const props = defineProps({
     redirectTo: {
@@ -16,30 +18,24 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {
-
-    });
+    form.post(route('login'), {});
 };
 </script>
 
 <template>
     <form @submit.prevent="submit">
 
-        <div class="form-field mb-4">
-            <label for="email" class="text-sm">Email:</label>
-            <input id="email" v-model="form.email" type="email" name="email" required autofocus autocomplete="username"/>
-        </div>
+        <FormField label="Email" field="email" :error="form.errors.email">
+            <input type="text" v-model="form.email" required autofocus>
+        </FormField>
 
-        <div class="form-field mb-4">
-            <label for="password" class="text-sm">Hasło</label>
-
+        <FormField label="Hasło" field="password" :error="form.errors.password">
             <input id="password"
                    v-model="form.password"
                    type="password"
                    name="password"
                    required autocomplete="current-password"/>
-
-        </div>
+        </FormField>
 
         <div class="block form-field">
             <label for="remember_me" class="inline-flex items-center">
@@ -52,14 +48,18 @@ const submit = () => {
         </div>
 
         <div class="mt-4">
-            <Link class="link-primary text-sm"
-               href="route('password.request')">
-                Nie pamiętasz hasła?
-            </Link>
+            <div>
+                <Link class="link-primary text-sm"
+                      href="route('password.request')">
+                    Nie pamiętasz hasła?
+                </Link>
+            </div>
 
-            <button class="button-primary mt-2" type="submit">
-                Zaloguj się
-            </button>
+            <div class="flex justify-center mt-4">
+                <Button type="secondary" role="submit" full-width>
+                    Zaloguj się
+                </Button>
+            </div>
         </div>
     </form>
 </template>

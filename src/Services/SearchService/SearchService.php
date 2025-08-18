@@ -4,8 +4,8 @@ namespace Shopen\Services\SearchService;
 
 use App\Support\ProductSorting\ProductSortRegistry;
 use Elastic\Elasticsearch\Client;
-use Illuminate\Support\Arr;
 use Elastic\Elasticsearch\ClientBuilder;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use stdClass;
@@ -13,24 +13,24 @@ use stdClass;
 class SearchService
 {
     protected Client $client;
+
     protected ?int $categoryId = null;
     protected array $ids = [];
     protected array $filters = [];
+    protected ?string $searchQuery = null;
     protected ?string $sort = null;
     protected ?int $page = null;
     protected ?int $perPage = null;
     protected ?int $limit = null;
 
     public function __construct(
-        protected ProductSortRegistry  $productSortRegistry,
+        protected ProductSortRegistry $productSortRegistry,
         protected ProductAttributeRepository $productAttributeRepository,
-    )
-    {
+    ) {
         $this->client = ClientBuilder::create()
             ->setHosts(['localhost:9200'])
             ->build();
     }
-
 
     public function setCategoryId($categoryId): static
     {
@@ -47,6 +47,12 @@ class SearchService
     public function setFilters(array $filters): static
     {
         $this->filters = $filters;
+        return $this;
+    }
+
+    public function setSearchQuery(?string $searchQuery): static
+    {
+        $this->searchQuery = $searchQuery;
         return $this;
     }
 
@@ -77,18 +83,20 @@ class SearchService
     public function getProducts()
     {
         if ($this->categoryId) {
-            $query = ['bool' => [ 'filter' => ['term' => ['category_id' => $this->categoryId]]]];
+            $query = ['bool' => ['filter' => ['term' => ['category_id' => $this->categoryId]]]];
         } elseif (count($this->ids)) {
             $query = ['terms' => ['id' => $this->ids]];
         } else {
             $query = [];
         }
+
         $params = [
             'index' => 'shopen_products',
             'body' => [
                 'query' => $query
             ],
         ];
+
         if ($this->limit) {
             $params['body']['size'] = $this->limit;
         }
@@ -98,10 +106,10 @@ class SearchService
         return new SearchServiceResult($result);
     }
 
-
     public function searchProducts(): SearchServiceResult
     {
         $time = microtime(true);
+
         $params = [
             'index' => 'shopen_products',
             'body' => [
@@ -113,9 +121,10 @@ class SearchService
                 'aggs' => $this->buildAggregationsArray(),
             ],
         ];
+
         if ($this->page) {
             $perPage = $this->perPage ?? config('shopen.product.per_page');
-            $from = ( max(intval($this->page), 1) - 1) * $perPage;
+            $from = (max(intval($this->page), 1) - 1) * $perPage;
             $params['body']['from'] = $from;
             $params['body']['size'] = $perPage;
         } elseif ($this->limit) {
@@ -125,13 +134,18 @@ class SearchService
         if (config('shopen.product.show_out_of_stock')) {
             $params['body']['sort'][] = ['in_stock' => 'desc'];
         }
+
         $sorter = $this->productSortRegistry->findByKey($this->sort);
         if ($sorter) {
             $params['body']['sort'][] = $sorter->build();
         }
 
+        $this->addSearchFilter($params);
+
         $result = $this->client->search($params)->asArray();
+
         config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
+
         return new SearchServiceResult($result);
     }
 
@@ -146,6 +160,14 @@ class SearchService
         return $queryFilters;
     }
 
+    private function addSearchFilter(array &$params): void
+    {
+        if (!$this->searchQuery) {
+            return;
+        }
+
+        $params['body']['query']['bool']['must'] = $this->getSearchQueryFilter();
+    }
 
     private function addCategoryFilter(array &$queryFilters): void
     {
@@ -153,7 +175,6 @@ class SearchService
             $queryFilters[] = ['term' => ['category_id' => $this->categoryId]];
         }
     }
-
 
     private function addAttributeFilters(array &$queryFilters, array $allFilters, ?string $excludeAttribute): void
     {
@@ -167,7 +188,6 @@ class SearchService
         }
     }
 
-
     private function addPriceRangeFilter(array &$queryFilters, array $allFilters): void
     {
         $range = [];
@@ -175,7 +195,6 @@ class SearchService
         if (isset($allFilters['price_min'])) {
             $range['gte'] = $allFilters['price_min'];
         }
-
         if (isset($allFilters['price_max'])) {
             $range['lte'] = $allFilters['price_max'];
         }
@@ -188,24 +207,29 @@ class SearchService
     protected function buildAggregationsArray(): array
     {
         $aggregations = [];
+
         foreach ($this->productAttributeRepository->getFilterable() as $attribute) {
-            $aggregation = [];
-            if (in_array($attribute->code, array_keys($this->filters))) {
-                $aggregation['global'] = new stdClass();
-                $aggregation['aggs'] = [
-                    'filters' => [
-                        'filter' => [
-                            'bool' => [
-                                'filter' => $this->buildFiltersArray($this->filters, $attribute->code),
-                            ]
+            $hasFilter = in_array($attribute->code, array_keys($this->filters));
+
+            if ($hasFilter) {
+                $aggregation = [
+                    'global' => new stdClass(),
+                    'aggs' => [
+                        'filters' => [
+                            'filter' => [
+                                'bool' => [
+                                    'filter' => $this->buildFiltersArray($this->filters, $attribute->code),
+                                ],
+                            ],
+                            'aggs' => [
+                                'count' => ['terms' => ['field' => $attribute->code]],
+                            ],
                         ],
-                        'aggs' => [
-                            'count' => [
-                                'terms' => ['field' => $attribute->code],
-                            ]
-                        ]
                     ],
                 ];
+                if ($this->searchQuery) {
+                    $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+                }
             } else {
                 $aggregation = [
                     'filter' => [
@@ -214,35 +238,52 @@ class SearchService
                         ],
                     ],
                     'aggs' => [
-                        'count' => [
-                            'terms' => [
-                                'field' => $attribute->code
-                            ],
-                        ],
+                        'count' => ['terms' => ['field' => $attribute->code]],
                     ],
                 ];
+                if ($this->searchQuery) {
+                    $aggregation['filter']['bool']['must'] = $this->getSearchQueryFilter();
+                }
             }
+
             $aggregations[$attribute->code] = $aggregation;
         }
 
-        $aggregations['price_stats'] =  [
+        $aggregations['price_stats'] = [
             'global' => new stdClass(),
             'aggs' => [
                 'filters' => [
                     'filter' => [
                         'bool' => [
-                            'filter' => $this->buildFiltersArray(Arr::except($this->filters, ['price_min', 'price_max', 'sort']))
-                        ]
+                            'filter' => $this->buildFiltersArray(
+                                Arr::except($this->filters, ['price_min', 'price_max', 'sort'])
+                            ),
+                        ],
                     ],
                     'aggs' => [
                         'min_price' => ['min' => ['field' => 'price']],
                         'max_price' => ['max' => ['field' => 'price']],
-                    ]
-                ]
-            ]
+                    ],
+                ],
+            ],
         ];
+
+        if ($this->searchQuery) {
+            $aggregations['price_stats']['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+        }
 
         return $aggregations;
     }
 
+    private function getSearchQueryFilter(): array
+    {
+        return [
+            'match' => [
+                'name.autocomplete' => [
+                    'query' => $this->searchQuery,
+                    'fuzziness' => 'AUTO',
+                ],
+            ],
+        ];
+    }
 }

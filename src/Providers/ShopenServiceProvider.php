@@ -3,6 +3,7 @@
 namespace Shopen\Providers;
 
 use Carbon\Carbon;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,6 +26,7 @@ use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
 use Shopen\Jobs\RecalculateDiscountPrices;
+use Shopen\Listeners\MergeGuestShoppingLists;
 use Shopen\Models\Address;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Price\ProductPrice;
@@ -32,16 +34,18 @@ use Shopen\Models\Product\Product;
 use Shopen\Repositories\Attribute\AttributeRepository;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Services\CartService;
 use Shopen\Services\CustomAttributesService;
 use Shopen\Observers\ProductPriceObserver;
+use Shopen\Services\ShoppingListService;
 
 class ShopenServiceProvider  extends ServiceProvider
 {
     public function boot(): void
     {
-        DB::listen(function ($query) {
+        /*DB::listen(function ($query) {
             Log::info($query->sql, ['Bindings' => $query->bindings, 'Time' => $query->time]);
-        });
+        });*/
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'shopen');
@@ -95,6 +99,10 @@ class ShopenServiceProvider  extends ServiceProvider
             );
         });
 
+        $this->app->singleton(CartService::class, function ($app) {
+            return new CartService(request());
+        });
+
         $this->app->singleton(ShippingMethodManager::class, function ($app) {
             return new ShippingMethodManager();
         });
@@ -115,7 +123,12 @@ class ShopenServiceProvider  extends ServiceProvider
             return new CategoryAttributeRepository();
         });
 
+        $this->app->singleton(ShoppingListService::class, function ($app) {
+            return new ShoppingListService();
+        });
+
         Event::listen(ProductPriceRuleUpdated::class, RecalculateDiscountPrices::class);
+        Event::listen(Login::class, MergeGuestShoppingLists::class);
 
         ProductPrice::observe(ProductPriceObserver::class);
 
@@ -138,6 +151,8 @@ class ShopenServiceProvider  extends ServiceProvider
             'product' => Product::class,
             'category' => Category::class,
         ]);
+
+
 
     }
 

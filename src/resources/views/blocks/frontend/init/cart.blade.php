@@ -1,1 +1,0 @@
-<init-cart :cart="{{ json_encode($block->getCart()) }}"></init-cart>

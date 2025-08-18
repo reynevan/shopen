@@ -11,7 +11,9 @@ class CategoryRepository
     {
         return Category::query()
             ->when($maxChildrenLevel !== false, function ($query) use ($maxChildrenLevel) {
-                return $query->where('level', '<=', $maxChildrenLevel);
+                return $query
+                    ->with(['children'])
+                    ->where('level', '<=', $maxChildrenLevel);
             })
             ->orderBy('level')
             ->orderBy('sort_index')

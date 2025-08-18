@@ -33,7 +33,7 @@ readonly class ProductEditController
     {
         $this->customAttributesService->preloadCategoryAttributes(['name']);
         $this->customAttributesService->loadAllAttributes($product);
-        $product->load('price');
+        $product->load(['price', 'relatedProducts.price', 'crossSells.price', 'upSells.price']);
         return Inertia::render('Admin/Product/Edit', [
             'product' => ProductResource::make($product),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
@@ -43,9 +43,18 @@ readonly class ProductEditController
 
     public function update(Product $product): RedirectResponse
     {
+        $validated = request()->validate([
+            'cross_sell_ids'   => 'nullable|array',
+            'cross_sell_ids.*' => 'exists:products,id',
+            'up_sell_ids'      => 'nullable|array',
+            'up_sell_ids.*'    => 'exists:products,id',
+            'related_ids'      => 'nullable|array',
+            'related_ids.*'    => 'exists:products,id',
+        ]);
+
         DB::beginTransaction();
         try {
-            $data = request()->post('product');
+            $data = request()->post();
 
             $images = request()->post('images');
 
@@ -54,7 +63,7 @@ readonly class ProductEditController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::except($data, ['images', 'price', 'attributes', 'url_key']));
+            $product->fill(Arr::only($data, ['sku', 'ean']));
             $product->save();
 
             $product->createUrlRewrite($data['url_key']);
@@ -63,9 +72,17 @@ readonly class ProductEditController
 
             $product->setPrice($price);
 
+            $product->relatedProducts()->sync($data['related_products_ids'] ?? []);
+            $product->crossSells()->sync($data['cross_sell_ids'] ?? []);
+            $product->upSells()->sync($data['up_sell_ids'] ?? []);
+
             RecalculateProductPrice::dispatch($product->id);
 
             $this->updateImages($product, $images);
+
+            foreach ($product->variants as $variant) {
+                $variant->searchable();
+            }
 
             DB::commit();
         } catch (\Exception $e) {

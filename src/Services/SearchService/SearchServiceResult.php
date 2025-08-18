@@ -20,10 +20,13 @@ class SearchServiceResult
     {
         $time = microtime(true);
         $resultIds = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
+        if (!$resultIds || !count($resultIds)) {
+            return new Collection();
+        }
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
-            ->with('price')
+            ->with(['price', 'urlRewrite'])
             ->whereIn('id', $resultIds)
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
@@ -33,17 +36,9 @@ class SearchServiceResult
             foreach ($source['list_attributes'] ?? [] as $code => $value) {
                 $product->setCustomAttribute($code, $value);
             }
-            $imagesCount = max(count($source['thumbnail_url']), count($source['mobile_thumbnail_url']));
-            $images = [];
-            for ($i = 0; $i < $imagesCount; $i++) {
-                $images[] = [
-                    'thumbnail' => $source['thumbnail_url'][$i] ?? null,
-                    'mobile_thumbnail' => $source['mobile_thumbnail_url'][$i] ?? null,
-                ];
-            }
             $product->rating = round((float)$source['rating'] ?? 0, 2);
             $product->reviews_count = $source['reviews_count'] ?? 0;
-            $product->setCustomAttribute('images', $images);
+            $product->images = $source['thumbnail_url'];
         }
 
         config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
@@ -86,7 +81,6 @@ class SearchServiceResult
 
     public function getAttributesFilters(): AnonymousResourceCollection
     {
-        $time = microtime(true);
        $attributeOptionsCount = [];
         foreach ($this->searchResult['aggregations'] as $aggregation) {
             foreach ($aggregation['count']['buckets'] ?? $aggregation['filters']['count']['buckets'] ?? [] as $bucket) {
@@ -102,11 +96,9 @@ class SearchServiceResult
 
             $attribute->options = $attribute
                 ->options
-                ->sortBy('value')
-                ->filter(fn($option) => $option->count > 0);
+                ->sortBy('value');
         }
-        $attributes = FilterResource::collection($attributes);
-        config('app.debug') && Log::debug('[TIME] getAttributesFilters: ' . (microtime(true) - $time));
+        $attributes = FilterResource::collection($attributes->filter(fn($attr) => $attr->options->sum('count') > 0));
         return $attributes;
     }
 }

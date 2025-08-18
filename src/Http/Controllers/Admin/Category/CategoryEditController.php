@@ -45,28 +45,15 @@ readonly class CategoryEditController
                 $category->setCustomAttribute($key, $value);
             }
         }
-        if ($request->hasFile('image_desktop')) {
-            if ($category->image_path_desktop) {
-                Storage::disk('public')->delete($category->image_path_desktop);
-            }
-            $validated['image_path_desktop'] = $request->file('image_desktop')->store('categories', 'public');
-        } elseif ($validated['remove_image_desktop']) {
-            $category->image_path_desktop = null;
-            if (Storage::exists('public/categories/' . $category->image_path_desktop)) {
-                Storage::delete('public/categories/' . $category->image_path_desktop);
-            }
-        }
 
-        if ($request->hasFile('image_mobile')) {
-            if ($category->image_path_mobile) {
-                Storage::disk('public')->delete($category->image_path_mobile);
-            }
-            $validated['image_path_mobile'] = $request->file('image_mobile')->store('categories', 'public');
-        } elseif ($validated['remove_image_mobile']) {
-            $category->image_path_mobile = null;
-            if (Storage::exists('public/categories/' . $category->image_path_mobile)) {
-                Storage::delete('public/categories/' . $category->image_path_mobile);
-            }
+        if ($request->hasFile('image_menu')) {
+            $category->clearMediaCollection('menu-image');
+            $category
+                ->addMedia($request->file('image_menu'))
+                ->toMediaCollection('menu-image');
+
+        } elseif ($validated['remove_image_menu']) {
+            $category->clearMediaCollection('menu-image');
         }
 
         unset($validated['attributes']);

@@ -2,7 +2,10 @@
 
 namespace Shopen\Core\Payment\Methods;
 
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use OpenPayU_Configuration;
+use OpenPayU_Order;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 
@@ -16,7 +19,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
             $response = $this->createPayUOrder($order, $payment);
 
             $payment->update([
-                'gateway_transaction_id' => $response['orderId'] ?? null,
+                'gateway_transaction_id' => $response->orderId ?? null,
                 'gateway_data' => $response,
             ]);
 
@@ -104,41 +107,45 @@ class PayUPaymentMethod extends AbstractPaymentMethod
     protected function getDefaultConfig(): array
     {
         return [
+            'env' => config('payment.payu.env'),
             'pos_id' => config('payment.payu.pos_id'),
             'signature_key' => config('payment.payu.signature_key'),
             'oauth_client_id' => config('payment.payu.oauth_client_id'),
             'oauth_client_secret' => config('payment.payu.oauth_client_secret'),
-            'api_url' => config('payment.payu.api_url', 'https://secure.snd.payu.com/api/v2_1'),
+            'api_url' => config('payment.payu.api_url'),
             'continue_url' => config('payment.payu.continue_url'),
             'notify_url' => config('payment.payu.notify_url'),
         ];
     }
 
-    private function createPayUOrder(Order $order, Payment $payment): array
+    private function createPayUOrder(Order $order, Payment $payment): object
     {
+        OpenPayU_Configuration::setEnvironment($this->config['env']);
+        OpenPayU_Configuration::setMerchantPosId($this->config['pos_id']);
+        OpenPayU_Configuration::setSignatureKey($this->config['signature_key']);
+        OpenPayU_Configuration::setOauthClientId($this->config['oauth_client_id']);
+        OpenPayU_Configuration::setOauthClientSecret($this->config['oauth_client_secret']);
+
         $orderData = [
             'notifyUrl' => $this->config['notify_url'],
-            'continueUrl' => $this->config['continue_url'],
+            'continueUrl' => route('checkout.success', $order),
             'customerIp' => request()->ip(),
             'merchantPosId' => $this->config['pos_id'],
             'description' => 'Order ' . $order->order_number,
             'currencyCode' => 'PLN',
-            'totalAmount' => intval($order->total_amount * 100), // PayU expects amount in grosze
+            'totalAmount' => intval($order->total_amount * 100),
             'extOrderId' => $payment->transaction_id,
             'products' => $this->buildPayUProducts($order),
             'buyer' => $this->buildPayUBuyer($order),
         ];
 
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $this->getAccessToken(),
-            'Content-Type' => 'application/json',
-        ])->post($this->config['api_url'] . '/orders', $orderData);
+        $response = OpenPayU_Order::create($orderData);
 
-        if (!$response->successful()) {
+        if ($response->getStatus() !== OpenPayU_Order::SUCCESS) {
             throw new \Exception('PayU API error: ' . $response->body());
         }
 
-        return $response->json();
+        return $response->getResponse();
     }
 
     private function buildPayUProducts(Order $order): array
@@ -154,29 +161,14 @@ class PayUPaymentMethod extends AbstractPaymentMethod
 
     private function buildPayUBuyer(Order $order): array
     {
-        $billingAddress = $order->billingAddress();
+        $billingAddress = $order->billingAddress;
 
         return [
-            'email' => $order->user->email,
+            'email' => $billingAddress->email,
             'firstName' => $billingAddress->first_name ?? $order->user->first_name,
             'lastName' => $billingAddress->last_name ?? $order->user->last_name,
             'phone' => $billingAddress->phone ?? '',
         ];
-    }
-
-    private function getAccessToken(): string
-    {
-        $response = Http::asForm()->post($this->config['api_url'] . '/oauth/authorize', [
-            'grant_type' => 'client_credentials',
-            'client_id' => $this->config['oauth_client_id'],
-            'client_secret' => $this->config['oauth_client_secret'],
-        ]);
-
-        if (!$response->successful()) {
-            throw new \Exception('Failed to get PayU access token');
-        }
-
-        return $response->json()['access_token'];
     }
 
     private function mapPayUStatusToPaymentStatus(string $payuStatus): string

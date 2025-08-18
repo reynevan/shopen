@@ -24,7 +24,8 @@
         "tightenco/ziggy": "^2.5",
         "laravel/scout": "^10.16",
         "babenkoivan/elastic-scout-driver-plus": "^5.1",
-        "babenkoivan/elastic-scout-driver": "^4.0"
+        "babenkoivan/elastic-scout-driver": "^4.0",
+        "fedeisas/laravel-mail-css-inliner": "^5.4"
     },
     "require-dev": {
         "orchestra/canvas": "^10.0"

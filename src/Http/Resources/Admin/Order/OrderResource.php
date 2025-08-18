@@ -33,6 +33,7 @@ class OrderResource extends JsonResource
             'delivery_point_code' => $this->delivery_point_code,
             'shipped_at' => $this->shipped_at,
             'shipping_tracking_code' => $this->shipping_tracking_code,
+            'items_count' => $this->items_count
         ];
     }
 }

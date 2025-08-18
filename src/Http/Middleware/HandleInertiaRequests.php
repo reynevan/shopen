@@ -11,6 +11,7 @@ use Shopen\Http\Resources\Cart\CartItemResource;
 use Shopen\Services\BreadcrumbsService;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
+use Shopen\Services\ShoppingListService;
 use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
@@ -60,6 +61,7 @@ class HandleInertiaRequests extends Middleware
             'ziggy' => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
+                'name' => $request->route()->getName()
             ],
             'csrf_token' => csrf_token(),
             'flash' => [
@@ -73,18 +75,15 @@ class HandleInertiaRequests extends Middleware
 
         } else {
             $data['cart'] = function () use ($request) {
-                $itemsCount = 0;
                 $subtotal = 0;
                 $items = [];
                 if ($this->cartService->hasCart()) {
                     $cart = $this->cartService->getCart();
                     $items = CartItemResource::collection($cart->items)->toArray($request);
-                    $itemsCount = $cart->itemCount();
                     $subtotal = $cart->totalPrice();
                 }
 
                 return [
-                    'itemsCount' => $itemsCount,
                     'items' => $items,
                     'subtotal' => Number::currency($subtotal)
                 ];
@@ -94,6 +93,11 @@ class HandleInertiaRequests extends Middleware
                 'categories' => fn() => app(MenuService::class)->getCategories(),
             ];
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
+            $data['shoppingLists'] = fn () => app(ShoppingListService::class)
+                ->getCurrentUserListsQuery()
+                ->withCount('products')
+                ->orderBy('name')
+                ->get();
         }
         return $data;
     }

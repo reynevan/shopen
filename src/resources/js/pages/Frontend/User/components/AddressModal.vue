@@ -55,13 +55,17 @@ const save = () => {
 </script>
 
 <template>
-    <BaseModal :show="props.show">
+    <BaseModal :show="props.show" @onClose="emits('onClose')" :closable-cover="false">
+        <template #header>
+            <span v-if="address.type === 'shipping'">Adres dostawy</span>
+            <span v-else>Dane do płatności</span>
+        </template>
         <div class="mb-6">
             <AddressForm :address="form" :errors="form.errors"></AddressForm>
         </div>
-        <div class="flex items-center gap-2">
+        <template #buttons>
             <Button type="cancel" @click="emits('onClose')">Anuluj</Button>
             <Button type="primary" @click="save" :loading="form.processing">Zapisz</Button>
-        </div>
+        </template>
     </BaseModal>
 </template>

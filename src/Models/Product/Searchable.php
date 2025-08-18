@@ -10,12 +10,17 @@ trait Searchable
 {
     use \Elastic\ScoutDriverPlus\Searchable;
 
+    public function shouldBeSearchable(): bool
+    {
+        return $this->is_active && $this->type === 'simple';
+    }
+
     public function toSearchableArray()
     {
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            'name' => $this->getCustomAttribute('name'),
+            'description' => $this->getCustomAttribute('description'),
             'sku' => $this->sku,
             'category_id' => $this->categories->pluck('id')->toArray(),
             'in_stock' => $this->isInStock(),
@@ -24,7 +29,6 @@ trait Searchable
             'reviews_count' => $this->reviews_count,
             'popularity' => $this->getPopularity(),
             'thumbnail_url' => $this->getThumbnails(),
-            'mobile_thumbnail_url' => $this->getThumbnails(max: config('shopen.product.thumbnail.max_images_count'), mobile: true),
             'searchable_attributes' => $this->getSearchableAttributeValue(),
             'list_attributes' => $this->getListAttributes(),
             ...$this->getIndexableAttributesValues()
@@ -55,9 +59,9 @@ trait Searchable
         $values = [];
         $attributes = app(ProductAttributeRepository::class)->getIndexable();
         foreach ($attributes as $attribute) {
-            $values[$attribute->code] = $this->getAttribute($attribute->code);
+            $values[$attribute->code] = $this->getCustomAttribute($attribute->code);
         }
-        $values['is_active'] = $this->getAttribute('is_active');
+        $values['is_active'] = $this->getCustomAttribute('is_active');
         return $values;
     }
 
@@ -66,7 +70,11 @@ trait Searchable
         $attributes = app(ProductAttributeRepository::class)->getSearchable();
         $product = $this;
         return $attributes->reduce(function ($value, $attribute) use ($product) {
-            return $value . ' ' . $product->getAttributeTextValue($attribute);
+            $textValue = $product->getAttributeTextValue($attribute);
+            if (is_array($textValue)) {
+                $textValue = implode(',', $textValue);
+            }
+            return $value . ' ' . $textValue;
         });
     }
 }

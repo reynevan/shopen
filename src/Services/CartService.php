@@ -5,6 +5,7 @@ namespace Shopen\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Shopen\Enums\Address\AddressType;
 use Shopen\Models\Address;
 use Shopen\Models\Cart\Cart;
@@ -25,8 +26,12 @@ class CartService
 
     protected function initializeCart(): void
     {
-        if (Auth::check()) {
-            $this->cart = Cart::where('user_id', Auth::id())->first();
+        $user = Auth::user();
+        if ($user) {
+            $this->cart = Cart::query()
+                ->with(['items', 'items.product', 'items.product.urlRewrite'])
+                ->where('user_id', $user->id)
+                ->first();
             $this->mergeGuestCartIfExists();
         } else {
             $this->setGuestCartIfExists();
@@ -46,9 +51,10 @@ class CartService
         if ($this->cart) {
             return $this->cart;
         }
-        if (Auth::check()) {
+        $user = Auth::user();
+        if ($user) {
             $this->cart = Cart::create([
-                'user_id' => Auth::id(),
+                'user_id' => $user->id,
                 'uuid' => null
             ]);
             $this->mergeGuestCartIfExists();

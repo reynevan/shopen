@@ -1,1 +1,0 @@
-<products :category-id="{{ $category->id }}" :sort-options="{{ json_encode($block->getSortOptions()) }}"></products>

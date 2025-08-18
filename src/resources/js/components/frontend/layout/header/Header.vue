@@ -1,55 +1,81 @@
 <script setup>
 
-import MenuButton from "@shopen/components/frontend/layout/header/MenuButton.vue";
-import Minicart from "@shopen/components/frontend/cart/Minicart.vue";
-import {usePage, Link} from "@inertiajs/vue3";
-import {computed} from "vue";
+import {Link} from "@inertiajs/vue3";
+import IconProfile from "@shopen/components/icons/IconProfile.vue";
+import Button from "@shopen/components/frontend/ui/Button.vue";
+import SearchBox from "./SearchBox.vue";
+import MinicartButton from "../../cart/MinicartButton.vue";
+import UserMenu from "./UserMenu.vue";
 import {useAuthStore} from "@shopen/stores/auth.js";
-import NavCategories from "@shopen/components/frontend/layout/header/NavCategories.vue";
-
-const page = usePage();
-const cart = computed(() => page.props.cart);
+import IconHeart from "../../../icons/IconHeart.vue";
+import Navigation from "./Navigation.vue";
+import MobileMenu from "./MobileMenu.vue";
 
 const auth = useAuthStore();
+
+
 </script>
 
 <template>
-    <header class="header py-6 sticky top-0 sm:relative z-10">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center">
-                <div class="visible sm:hidden mr-4">
-                    <MenuButton/>
+    <header class="header mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 sticky top-0 sm:relative z-10">
+        <div class="mx-auto container px-4">
+            <div class="flex flex-col sm:gap-4 sm:flex-row justify-between items-center">
+                <div class="hidden sm:block">
+                    <Link href="/">
+                        <img src="/img/shopen-logo.png" alt="Shopen"/>
+                    </Link>
                 </div>
-                <div class="font-2xl flex justify-center">
-                    LOGO
+                <div class="flex items-center w-full order-2 sm:order-1">
+                    <div class="visible sm:hidden mr-4">
+                        <MobileMenu/>
+                    </div>
+                    <SearchBox/>
                 </div>
-            </div>
-            <div class="flex justify-between items-center mx-6">
+                <div class="flex justify-between items-center sm:gap-2 mx-6 order-1 sm:order-2">
+                    <div class="sm:hidden">
+                        <Link href="/">
+                            <img src="/img/shopen-logo-mobile.png" alt="Shopen"/>
+                        </Link>
+                    </div>
 
-                <div class="group" v-if="auth.isLoggedIn">
-                    <div class="">
-                        <Link :href="route('user.orders.index')">Moje konto</Link>
-                    </div>
-                    <div class="absolute invisible group-hover:visible">
-                        <div>
-                            <span @click="auth.logout">Wyloguj</span>
+                    <div class="user-menu-btn group relative">
+                        <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-border-light">
+                            <Link :href="route('user.orders.index')" class="flex items-center gap-2">
+                                <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
+                                <IconProfile size="2xl"/>
+                            </Link>
                         </div>
+                        <UserMenu/>
                     </div>
-                </div>
-                <div v-if="!auth.isLoggedIn">
-                    <Link :href="route('login')">Logowanie</Link> | <Link :href="route('register')">Rejestracja</Link>
-                </div>
-                <div class="ml-4">
-                    <Minicart :items="cart.items" :itemsCount="cart.itemsCount" :subtotal="cart.subtotal"/>
+
+                    <Button type="ghost" :shadow="false">
+                        <MinicartButton/>
+                    </Button>
+
+                    <Button type="ghost" :shadow="false">
+                        <Link :href="route('shopping-lists.index')" title="Listy zakupowe">
+                            <IconHeart size="2xl"/>
+                        </Link>
+                    </Button>
+
                 </div>
             </div>
         </div>
+        <div class="nav-panel z-auto relative hidden sm:block">
+            <Navigation/>
+        </div>
     </header>
-    <div class="nav-panel z-30 sm:z-auto transition-[left] duration-500 top-0 bottom-0 fixed sm:relative" id="nav-panel">
-        <NavCategories/>
-    </div>
 </template>
-
-<style scoped>
-
+<style >
+.user-menu-btn:hover::after {
+    height: 6px;
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 1px;
+    right: 1px;
+    background-color: var(--color-header);
+    z-index: 51;
+    opacity: 100%;
+}
 </style>

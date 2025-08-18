@@ -17,7 +17,7 @@ class UserAddressesIndexController
 
     public function index()
     {
-        return Inertia::render('Frontend/User/Addresses', [
+        return Inertia::render('Frontend/User/Addresses/Index', [
                 'defaultShippingAddress' => fn() => Auth::user()->defaultShippingAddress(true),
                 'defaultBillingAddress' => fn() => Auth::user()->defaultBillingAddress(true),
                 'shippingAddresses' => fn () => $this->addressRepository->getUserShippingAddresses(Auth::user(), false),

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Shopen\Core\Payment\PaymentMethodManager;
+use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Order\OrderStatus;
 use Shopen\Models\PromoCode;
 use Shopen\Models\User;
@@ -16,6 +18,7 @@ class Order extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'user_id',
         'promo_code_id',
         'order_number',
@@ -153,5 +156,23 @@ class Order extends Model
             $total += $item->total;
         }
         return $total;
+    }
+
+    public function getShippingMethodName()
+    {
+        if (!$this->shipping_method) {
+            return null;
+        }
+        $shippingMethod = app(ShippingMethodManager::class)->get($this->shipping_method);
+        return $shippingMethod ? $shippingMethod->getName() : null;
+    }
+
+    public function getPaymentMethodName()
+    {
+        if (!$this->payment_method) {
+            return null;
+        }
+        $paymentMethod = app(PaymentMethodManager::class)->get($this->payment_method);
+        return $paymentMethod ? $paymentMethod->getName() : null;
     }
 }

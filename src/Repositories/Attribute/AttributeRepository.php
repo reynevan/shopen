@@ -25,7 +25,7 @@ class AttributeRepository
         if (!isset($this->attributeCodes[self::ATTRIBUTE_MODEL]) || !count($this->attributeCodes[self::ATTRIBUTE_MODEL])) {
             $this->attributeCodes[self::ATTRIBUTE_MODEL] = static::ATTRIBUTE_MODEL::query()->select(['code'])->get()->pluck('code')->toArray();
         }
-        return isset($this->attributeCodes[self::ATTRIBUTE_MODEL][$code]);
+        return in_array($code, $this->attributeCodes[self::ATTRIBUTE_MODEL]);
     }
 
     public function getById($id)
@@ -35,7 +35,9 @@ class AttributeRepository
 
     public function getAll(): Collection
     {
-        return static::ATTRIBUTE_MODEL::query()->get();
+        return static::ATTRIBUTE_MODEL::query()
+            ->with(['options'])
+            ->get();
     }
 
     public function getAllByCode($codes)
@@ -73,7 +75,10 @@ class AttributeRepository
 
     public function getVisibleInDetails(): Collection
     {
-        return static::ATTRIBUTE_MODEL::query()->where('is_visible_in_details', true)->get();
+        return static::ATTRIBUTE_MODEL::query()
+            ->with(['options'])
+            ->where('is_visible_in_details', true)
+            ->get();
     }
 
     public function getFilterable(): Collection

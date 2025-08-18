@@ -7,22 +7,23 @@ import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import IconCartPlus from "@shopen/components/icons/IconCartPlus.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
+import Button from "@shopen/components/frontend/ui/Button.vue";
 
 const cart = useCartStore();
 const minicart = useMiniCartStore();
 
-const props = defineProps(['productId'])
+const props = defineProps({
+    productId: {
+        type: Number
+    }
+})
 
 
 const qty = ref(1);
 
 const addToCart = async () => {
-    let productId = props.productId;
-
-    const added = await cart.addToCart(productId, qty.value);
-    if (added) {
-        minicart.open();
-    }
+    await cart.addToCart(props.productId, qty.value);
+    minicart.open();
 }
 
 const updateQty = (newQty) => {
@@ -31,17 +32,17 @@ const updateQty = (newQty) => {
 </script>
 
 <template>
-    <div class="flex items-stretch">
+    <div class="flex items-stretch gap-4">
         <AmountInput :value="qty" @onChange="updateQty" :min="1"></AmountInput>
-        <button @click="addToCart"
-                :disabled="cart.addingToCart"
-                class="button-primary ml-4">
+        <Button @click="addToCart"
+                type="success"
+                :disabled="cart.addingToCart[productId]">
             <div class="flex items-center">
-                <IconCartPlus md v-if="!cart.addingToCart"></IconCartPlus>
-                <IconLoader md v-if="cart.addingToCart"></IconLoader>
+                <IconCartPlus size="xl" v-if="!cart.addingToCart[productId]"></IconCartPlus>
+                <IconLoader md v-if="cart.addingToCart[productId]"></IconLoader>
                 <span class="ml-4">Dodaj do koszyka</span>
             </div>
-        </button>
+        </Button>
     </div>
 </template>
 

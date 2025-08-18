@@ -17,8 +17,6 @@ return new class extends Migration
             $table->integer('level')->unsigned();
             $table->boolean('is_active')->default(true);
             $table->integer('sort_index')->default(0);
-            $table->string('image_path_desktop')->nullable();
-            $table->string('image_path_mobile')->nullable();
             $table->timestamps();
         });
         Schema::table('categories', function (Blueprint $table) {

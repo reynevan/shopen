@@ -19,7 +19,3 @@ const openMenu = () =>  {
 <template>
     <IconMenu @click="openMenu"></IconMenu>
 </template>
-
-<style scoped>
-
-</style>

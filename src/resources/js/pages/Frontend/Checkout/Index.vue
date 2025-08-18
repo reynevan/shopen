@@ -1,16 +1,35 @@
 <script setup>
-import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
-import CheckoutValidationError from "@shopen/components/frontend/checkout/CheckoutValidationError.vue";
-import CheckoutShippingAddressForm from "@shopen/components/frontend/checkout/CheckoutShippingAddressForm.vue";
-import CheckoutBillingAddressForm from "@shopen/components/frontend/checkout/CheckoutBillingAddressForm.vue";
-import CheckoutNotes from "@shopen/components/frontend/checkout/CheckoutNotes.vue";
-import CheckoutSummary from "@shopen/components/frontend/checkout/CheckoutSummary.vue";
-import CheckoutShippingMethods from "@shopen/components/frontend/checkout/CheckoutShippingMethods.vue";
-import CheckoutPaymentMethods from "@shopen/components/frontend/checkout/CheckoutPaymentMethods.vue";
+import CheckoutLayout from "@shopen/layouts/frontend/CheckoutLayout.vue";
+import CheckoutValidationError from "@shopen/pages/Frontend/Checkout/components/CheckoutValidationError.vue";
+import CheckoutShippingAddressForm from "@shopen/pages/Frontend/Checkout/components/CheckoutShippingAddressForm.vue";
+import CheckoutBillingAddressForm from "@shopen/pages/Frontend/Checkout/components/CheckoutBillingAddressForm.vue";
+import CheckoutNotes from "@shopen/pages/Frontend/Checkout/components/CheckoutNotes.vue";
+import CheckoutSummary from "@shopen/pages/Frontend/Checkout/components/CheckoutSummary.vue";
+import CheckoutShippingMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutShippingMethods.vue";
+import CheckoutPaymentMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutPaymentMethods.vue";
 
-defineOptions({ layout: AppLayout })
+defineOptions({ layout: CheckoutLayout })
 
-defineProps(['shippingMethods', 'paymentMethods', 'summary', 'addresses', 'promoCode'])
+defineProps({
+    shippingMethods: {
+        type: Array,
+    },
+    paymentMethods: {
+        type: Array,
+    },
+    summary: {
+        type: Object
+    },
+    addresses: {
+        type: Object
+    },
+    promoCode: {
+        type: Object
+    },
+    notesEnabled: {
+        type: Boolean
+    }
+})
 
 </script>
 
@@ -42,12 +61,10 @@ defineProps(['shippingMethods', 'paymentMethods', 'summary', 'addresses', 'promo
                 <CheckoutPaymentMethods :methods="paymentMethods"/>
             </div>
 
-            @if (config('checkout.notes_active'))
-            <div class="bg-white mb-4 px-4 py-6">
+            <div class="bg-white mb-4 px-4 py-6" v-if="notesEnabled">
                 <div class="checkout-section-title">Dodatkowe informacje</div>
                 <CheckoutNotes/>
             </div>
-            @endif
         </div>
 
         <div class="w-full xl:w-1/3 sticky top-6 pl-4">

@@ -33,7 +33,8 @@ readonly class CheckoutIndexController
             'addresses' => fn() => $this->getAddresses(),
             'selectedShippingAddress' => fn() => $this->cartService->getCart()?->shippingAddress->address_id ?? null,
             'selectedBillingAddress' => fn() => $this->cartService->getCart()?->billingAddress->address_id ?? null,
-            'promoCode' => fn() => $this->cartService->getCart()->promoCode?->code
+            'promoCode' => fn() => $this->cartService->getCart()->promoCode?->code,
+            'notesEnabled' => config('shopen.checkout.notes.enabled')
         ]);
     }
 
@@ -80,11 +81,18 @@ readonly class CheckoutIndexController
         $cart = $this->cartService->getCart();
         $productsTotal = $cart->totalPrice();
         $productsSubtotal = $cart->subtotalPrice();
-        $shipping = 0;
+        $shippingAmount = 0;
         if ($shippingCode = $this->cartService->getCart()->shipping_method) {
             $method = $this->shippingMethodManager->get($shippingCode);
             if ($method) {
-                $shipping = $method->getPrice();
+                $shippingAmount = $method->getPrice();
+            }
+        }
+        $paymentAmount = 0;
+        if ($paymentCode = $this->cartService->getCart()->payment_method) {
+            $method = $this->paymentMethodManager->get($paymentCode);
+            if ($method) {
+                $paymentAmount = $method->getPrice();
             }
         }
         $discount = 0;
@@ -95,13 +103,14 @@ readonly class CheckoutIndexController
                 $this->cartService->setPromoCode(null);
             }
         }
-        $total = $productsTotal + $shipping - $discount;
+        $total = $productsTotal + $shippingAmount + $paymentAmount - $discount;
 
         return
             [
                 'productsSubtotal' => Number::currency($productsSubtotal),
                 'productsTotal' => Number::currency($productsTotal),
-                'shipping' => Number::currency($shipping),
+                'shipping' => Number::currency($shippingAmount),
+                'payment' => Number::currency($paymentAmount),
                 'hasDiscount' => $discount > 0,
                 'discount' => Number::currency($discount),
                 'total' => Number::currency($total),

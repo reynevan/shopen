@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Controller;
 use Shopen\Http\Requests\Admin\Auth\LoginRequest;
+use Shopen\Models\Order\Order;
 
 class LoginController extends Controller
 {
@@ -27,6 +28,15 @@ class LoginController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+
+        if (session('guest_order_id')) {
+            $order = Order::find(session('guest_order_id'));
+            $order->update(['user_id' => Auth::id()]);
+
+            session()->forget('guest_order_id');
+
+            return redirect(route('user.orders.index'));
+        }
 
         if ($request->filled('redirectTo')) {
             return redirect()->to($request->input('redirectTo'));

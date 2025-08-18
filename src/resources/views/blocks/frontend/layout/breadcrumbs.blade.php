@@ -1,1 +1,0 @@
-<breadcrumbs :product="{{ $block->getCurrentProductJson() }}" :category="{{ $block->getCurrentCategoryJson() }}"></breadcrumbs>

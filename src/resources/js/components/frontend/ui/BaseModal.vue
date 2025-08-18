@@ -4,13 +4,12 @@ import IconX from "@shopen/components/icons/IconX.vue";
 
 const emits = defineEmits(['onClose']);
 
-const modalContent = useTemplateRef('modal-content');
-
+const cover = useTemplateRef('cover')
 const onCoverCLick = (e) => {
-    if (!props.closable) {
+    if (!props.closableCover) {
         return;
     }
-    if (modalContent.value && (modalContent.value.contains(e.target) || modalContent.value === e.target)) {
+    if (cover.value !== e.target) {
         return;
     }
     emits('onClose');
@@ -23,17 +22,25 @@ const close = (e) => {
 };
 
 const props = defineProps({
-    'show': {
+    show: {
         type: Boolean,
         default: false
     },
-    'closable': {
+    closable: {
         type: Boolean,
         default: true
     },
-    'class': {
+    closableCover: {
+        type: Boolean,
+        default: true
+    },
+    class: {
         type: String,
         default: ''
+    },
+    size : {
+        type: String,
+        default: 'md'
     }
 });
 
@@ -45,19 +52,23 @@ const props = defineProps({
         <transition name="modal-transition">
             <div v-if="show"
                  @click="onCoverCLick"
-                 class="fixed inset-0 flex items-center justify-center z-30">
-                <div class="modal-backdrop absolute inset-0 bg-black/60"></div>
-                <div ref="modal-content"
-                     :class="props.class"
-                     class="modal-content relative bg-white rounded-lg shadow-xl max-h-[100vh] overflow-y-auto">
-                    <div class="py-4 px-8 mb-4 border-b text-lg relative" v-if="$slots.header">
+                 class="fixed inset-0 flex items-center justify-center z-100">
+                <div ref="cover" class="modal-backdrop absolute inset-0 bg-black/60"></div>
+                <div :class="props.class"
+                     class="modal-content relative bg-white rounded-lg max-h-[100vh] shadow-xl flex flex-col">
+                    <div class="py-4 px-8 mb-4 border-b text-lg bg-white shadow relative flex-shrink-0" v-if="$slots.header">
                         <slot name="header"/>
-                        <button v-if="closable" class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer" @click="close">
+                        <button v-if="closable" class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer" @click="emits('onClose')">
                             <IconX md/>
                         </button>
                     </div>
-                    <div class="px-8 pb-8">
+                    <div class="overflow-y-auto flex-1 min-h-0" :class="size === 'sm' ? 'pb-2 px-4' : 'pb-8 px-8'">
                         <slot/>
+                    </div>
+                    <div class="py-4 px-8 mt-4 border-t text-lg flex-shrink-0" v-if="$slots.buttons">
+                        <div class="flex items-center justify-center gap-6">
+                            <slot name="buttons"/>
+                        </div>
                     </div>
                 </div>
             </div>

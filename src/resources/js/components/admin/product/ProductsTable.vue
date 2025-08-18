@@ -2,7 +2,7 @@
 
 import DataTable from "../table/DataTable.vue";
 import TableColumn from "../table/TableColumn.vue";
-import {onMounted, ref} from "vue";
+import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
 import Input from "../form/input/Input.vue";
 
@@ -22,9 +22,7 @@ const onSort = (field, dir) => {
     router.get(route('admin.products.index'), {
         sort: field,
         dir: dir
-    }, {
-
-    })
+    }, {})
 }
 
 const onSearch = () => {
@@ -32,9 +30,7 @@ const onSearch = () => {
         sort: sort,
         dir: dir,
         q: search.value
-    }, {
-
-    })
+    }, {})
 }
 
 </script>
@@ -50,7 +46,6 @@ const onSearch = () => {
 
     <DataTable
         table-class="w-full"
-        head-class="bg-neutral-700 text-neutral-200 py-2"
         td-class="py-2"
         @onSort="onSort"
         :default-sort="[sort, dir]"
@@ -63,10 +58,16 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn label="Zdjęcie" v-slot="data" width="70px">
-            <img :src="data.row.image"
-                 width="50px"
-                 class="border"
-                 v-if="data.row.image">
+            <div class="min-h-[50px]">
+                <img :src="data.row.image"
+                     width="50px"
+                     class="border"
+                     v-if="data.row.image">
+            </div>
+        </TableColumn>
+
+        <TableColumn field="name" label="Nazwa" sortable v-slot="data">
+            {{ data.row.attributes.name }}
         </TableColumn>
 
         <TableColumn field="sku" label="SKU" v-slot="data">
@@ -78,8 +79,8 @@ const onSearch = () => {
             <span v-else>Nieaktywny</span>
         </TableColumn>
 
-        <TableColumn field="name" label="Nazwa" sortable v-slot="data">
-            {{ data.row.attributes.name }}
+        <TableColumn field="stock_qty" label="Ilość" sortable v-slot="data">
+            {{ data.row.stock_qty }}
         </TableColumn>
 
         <TableColumn field="price" label="Bazowa Cena" sortable v-slot="data" width="135px">
@@ -91,7 +92,7 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn label="-" v-slot="data" width="100px">
-            <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer">Edytuj</Link>
+            <Link :href="route('admin.products.edit', data.row.id)" class="text-link cursor-pointer">Edytuj</Link>
         </TableColumn>
 
     </DataTable>

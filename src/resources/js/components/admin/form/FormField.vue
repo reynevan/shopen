@@ -19,7 +19,7 @@ const props = defineProps({
     <div class="flex mb-4 items-stretch">
         <div class="w-[20rem] mr-4 pt-2">
             <div>
-                <label class="font-semibold text-right w-full block" :for="labelFor">
+                <label class="text-right w-full block" :for="labelFor">
                     {{ props.label }} <span v-if="props.required" class="text-red-400">*</span>
                 </label>
             </div>

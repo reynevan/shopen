@@ -10,6 +10,7 @@ use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Price\ProductPriceRule;
 use Shopen\Models\Product\Product;
 use Shopen\Services\CustomAttributesService;
+use Shopen\Services\SearchService\SearchService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class ProductRepository
@@ -18,6 +19,7 @@ class ProductRepository
         protected readonly ProductAttributeRepository $attributeRepository,
         protected readonly ProductSortRegistry        $productSortRegistry,
         protected readonly CustomAttributesService    $customAttributesService,
+        protected readonly SearchService              $searchService,
     )
     {
     }
@@ -54,36 +56,6 @@ class ProductRepository
         return $products;
     }
 
-    public function getForSlider($categoryId, $limit = 20)
-    {
-        return Product::query()
-            ->whereHas('category', function (Builder $query) use ($categoryId) {
-                $query->where('id', $categoryId);
-            })
-            ->limit($limit)
-            ->get();
-    }
-
-    public function getForCategory(Category $category, $filters = [], $sortKey = null)
-    {
-        $time = microtime(true);
-        $products = $this
-            ->getQueryForCategory($category, $filters)
-            ->when($sorter = $this->productSortRegistry->findByKey($sortKey), function ($query) use ($sorter, $sortKey) {
-                //$sorter->apply($query, $sortKey);
-            })
-            ->load(['price'])
-            ->paginate(32)->withQueryString();
-        $products->setCollection($products->models());
-
-        $this->addAttributesUsedInList($products);
-        $this->addThumbnails($products);
-
-        app()->hasDebugModeEnabled() && Log::debug('[TIME] products: ' . ( microtime(true) - $time));
-
-        return $products;
-    }
-
     public function getMatchingForPriceRule(ProductPriceRule $productPriceRule)
     {
         return $this->getQueryMatchingForPriceRule($productPriceRule)->get();
@@ -111,7 +83,10 @@ class ProductRepository
 
         $parent = $product->parent;
         $configurableAttributes = $parent->configurableAttributes;
-        $variants = Product::where('parent_id', $product->parent_id)->get();
+        $variants = Product::query()
+            ->with(['urlRewrite'])
+            ->where('parent_id', $product->parent_id)
+            ->get();
 
         return $configurableAttributes->map(function ($attribute) use ($variants, $product, $configurableAttributes) {
             $filteredVariants = $variants->filter(function ($variant) use ($product, $attribute, $configurableAttributes) {
@@ -197,5 +172,14 @@ class ProductRepository
         foreach ($products as $product) {
             $product->setThumbnails($thumbnails[$product->id] ?? $thumbnails[$product->parent_id] ?? []);
         }
+    }
+
+    public function getRelatedProducts(Product $product)
+    {
+        $productIds = $product->relatedProducts->pluck('id')->unique()->toArray();
+        if (!count($productIds)) {
+            return new Collection();
+        }
+        return $this->searchService->setIds($productIds)->getProducts()->sortedProducts($productIds);
     }
 }

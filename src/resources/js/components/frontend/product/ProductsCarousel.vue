@@ -2,7 +2,7 @@
 import Flicking from "@egjs/vue3-flicking";
 import {ref, useTemplateRef} from "vue";
 import IconChevron from "../../icons/IconChevron.vue";
-import ProductThumbnail from "./ProductThumbnail.vue";
+import ProductThumbnail from "@shopen/components/frontend/product/thumbnail/ProductThumbnail.vue";
 
 defineProps(['products'])
 const flicking = useTemplateRef('flickingRef');
@@ -73,7 +73,10 @@ const handleNext = async () => {
             :options="options"
             class="overflow-hidden"
         >
-            <ProductThumbnail v-for="product in products" :product="product" :key="product.id"/>
+            <div v-for="product in products" :key="product.id"
+                 class="flex items-stretch justify-center w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 2xl:w-1/7">
+                <ProductThumbnail :product="product" size="sm"/>
+            </div>
         </Flicking>
 
         <!-- Next Button -->

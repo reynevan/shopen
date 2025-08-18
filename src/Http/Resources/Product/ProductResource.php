@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Shopen\Http\Resources\MediaResource;
 use Shopen\Http\Resources\Product\Review\ProductReviewResource;
 use Shopen\Services\ShippingService;
+use Shopen\Services\ShoppingListService;
 
 class ProductResource extends JsonResource
 {
@@ -23,11 +24,13 @@ class ProductResource extends JsonResource
             'price' => ProductPriceResource::make($this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
-            'rating' => $this->rating ?? 0,
+            'rating' => $this->resource->rating,
             'reviews_count' => $this->reviews_count,
             'images' => $this->images,
             'image' => $this->image,
-            'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource)
+            'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource),
+            'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
+            'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id)
         ];
         foreach ($this->resource->getCustomAttributes() as $key => $value) {
             $data['attributes'][$key] = $value;
