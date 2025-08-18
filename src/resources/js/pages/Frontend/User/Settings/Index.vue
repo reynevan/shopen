@@ -34,7 +34,11 @@ const removeAccount = async () => {
         message: 'Czy na pewno chcesz usunąć konto?',
         confirmButtonText: 'Tak, usuń',
         cancelButtonText: 'Anuluj',
+        confirmButtonType: 'danger'
     });
+    if (!isConfirmed) {
+        return;
+    }
 }
 </script>
 
@@ -77,13 +81,10 @@ const removeAccount = async () => {
                            required autocomplete="current-password"/>
                 </FormField>
 
-                <div class="mt-4">
-
-                    <div class="flex justify-center mt-4">
-                        <Button type="secondary" role="submit">
-                            Zapisz zmiany
-                        </Button>
-                    </div>
+                <div class="flex justify-center mt-4">
+                    <Button type="secondary" role="submit">
+                        Zapisz zmiany
+                    </Button>
                 </div>
 
             </form>
@@ -94,9 +95,11 @@ const removeAccount = async () => {
                 Usunięcie konta spowoduje trwałe usunięcie Twoich danych oraz historii zamówień. Tej operacji nie można
                 cofnąć.
             </p>
-            <Button type="primary" @click="removeAccount">
-                Usuń konto
-            </Button>
+            <div class="flex justify-center mt-4">
+                <Button type="primary" @click="removeAccount">
+                    Usuń konto
+                </Button>
+            </div>
         </section>
     </main>
 </template>

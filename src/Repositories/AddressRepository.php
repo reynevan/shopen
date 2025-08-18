@@ -22,6 +22,16 @@ class AddressRepository
         }
     }
 
+    public function selectFirstDefaultAddress(User $user, $type)
+    {
+        $user->addresses()
+            ->where('type', $type)
+            ->oldest()
+            ->limit(1)
+            ->update(['is_default' => 1]);
+
+    }
+
     public function getUserShippingAddresses(User $user, $withDefault = true): Collection
     {
         return $this->getUserAddresses($user, AddressType::SHIPPING, $withDefault);

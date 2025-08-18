@@ -47,7 +47,7 @@ const sizeClasses = {
 
 const typeClasses = {
     primary: 'bg-accent hover:bg-accent-hover disabled:bg-accent/70',
-    secondary: 'bg-secondary text-white hover:bg-secondary-hover disabled:bg-secondary/50 disabled:text-gray-300',
+    secondary: 'bg-secondary text-white hover:text-gray-100 hover:bg-secondary-hover disabled:bg-secondary/50 disabled:text-gray-300',
     ghost: 'bg-transparent text-gray-700 hover:bg-accent active:bg-accent/90 disabled:text-gray-400',
     disabled: 'bg-gray-600 text-gray-200',
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-300',

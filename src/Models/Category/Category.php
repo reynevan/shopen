@@ -23,7 +23,8 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
     const ENTITY_TYPE = 'category';
 
     protected $casts = [
-        'is_active' => 'bool'
+        'is_active' => 'bool',
+        'level' => 'int',
     ];
 
     protected $fillable = [

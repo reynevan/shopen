@@ -83,9 +83,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/api/users/billing-addresses/{address}', [ApiUsersController::class, 'updateBillingAddress'])->name('api.users.billing-addresses.update');
     Route::post('/api/users/shipping-addresses/', [ApiUsersController::class, 'storeShippingAddress'])->name('api.users.shipping-addresses.store');
     Route::put('/api/users/shipping-addresses/{address}', [ApiUsersController::class, 'updateShippingAddress'])->name('api.users.shipping-addresses.update');
+    Route::put('/api/users/addresses/{address}/default', [ApiUsersController::class, 'setAddressDefault'])->name('api.users.addresses.update-default');
+    Route::delete('/api/users/addresses/{address}', [ApiUsersController::class, 'removeAddress'])->name('api.users.addresses.destroy');
 
     Route::get('/dane-do-zamowien', [UserAddressesIndexController::class, 'index'])->name('user.addresses.index');
-    Route::delete('/adresy/{adres}', [UserAddressesIndexController::class, 'index'])->name('user.addresses.destroy');
     Route::get('/zamowienia', [UserOrdersIndexController::class, 'index'])->name('user.orders.index');
     Route::get('/zamowienia/{order}', [UserOrderShowController::class, 'show'])->name('user.orders.show');
     Route::get('/ustawienia', [UserSettingsIndexController::class, 'index'])->name('user.settings.index');

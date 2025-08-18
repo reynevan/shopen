@@ -64,8 +64,8 @@ const save = () => {
             <AddressForm :address="form" :errors="form.errors"></AddressForm>
         </div>
         <template #buttons>
-            <Button type="cancel" @click="emits('onClose')">Anuluj</Button>
-            <Button type="primary" @click="save" :loading="form.processing">Zapisz</Button>
+            <Button type="cancel" full-width @click="emits('onClose')">Anuluj</Button>
+            <Button type="secondary" full-width @click="save" :loading="form.processing">Zapisz</Button>
         </template>
     </BaseModal>
 </template>

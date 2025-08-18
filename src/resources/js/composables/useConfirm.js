@@ -19,11 +19,8 @@ export function useConfirm() {
             const app = createApp({
                 render() {
                     return h(ConfirmationModal, {
-                        // Przekazujemy wszystkie opcje, ale już bez `show`
                         ...options,
 
-                        // Te funkcje zostaną wywołane z opóźnieniem przez setTimeout
-                        // wewnątrz ConfirmationModal, po zakończeniu animacji wyjścia.
                         onConfirm: () => {
                             cleanup();
                             resolve(true);

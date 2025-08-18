@@ -21,6 +21,10 @@ const props = defineProps({
         type: String,
         default: 'Anuluj',
     },
+    confirmButtonType: {
+        type: String,
+        default: 'secondary'
+    }
 });
 
 const emit = defineEmits(['confirm', 'cancel']);
@@ -80,7 +84,7 @@ const handleCancel = () => handleAction('cancel');
             </Button>
             <Button
                 @click="handleConfirm"
-                type="secondary">
+                :type="confirmButtonType">
                 {{ props.confirmButtonText }}
             </Button>
         </template>
