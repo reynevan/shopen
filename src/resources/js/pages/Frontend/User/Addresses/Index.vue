@@ -33,11 +33,12 @@ const addAddress = (type, isDefault) => {
 </script>
 
 <template>
-    <Head title="Dane do zamówień" />
+    <Head title="Dane do zamówień"/>
     <Heading title="Dane do zamówień"/>
     <main>
         <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
-            <div class="w-1/2 flex flex-col">
+
+            <div class="w-full sm:w-1/2 flex flex-col">
                 <h3 class="text-xl mb-2">Domyślny adres dostawy</h3>
                 <div class="border rounded w-full h-full">
                     <AddressThumbnail
@@ -47,15 +48,15 @@ const addAddress = (type, isDefault) => {
                         :address="defaultShippingAddress"/>
                     <div v-else class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
                         <Button type="secondary"
-                            @click="() => addAddress('shipping', true)"
-                            class="max-w-[200px]">
+                                @click="() => addAddress('shipping', true)"
+                                class="max-w-[200px]">
                             <span>Dodaj adres</span>
                             <IconPlus/>
                         </Button>
                     </div>
                 </div>
             </div>
-            <div class="w-1/2 flex flex-col">
+            <div class="w-full sm:w-1/2 flex flex-col">
                 <h3 class="text-xl mb-2">Domyślny adres rozliczeniowy</h3>
                 <div class="border rounded w-full h-full">
                     <AddressThumbnail
@@ -63,9 +64,10 @@ const addAddress = (type, isDefault) => {
                         @onEdit="editAddress"
                         :selectable="false"
                         :address="defaultBillingAddress"/>
-                    <div v-else class="flex items-center justify-center w-full h-full sm:w-auto">
+                    <div v-else class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
                         <Button type="secondary"
-                            @click="() => addAddress('billing', true)">
+                                @click="() => addAddress('billing', true)"
+                                class="max-w-[200px]">
                             <span>Dodaj adres</span>
                             <IconPlus/>
                         </Button>
@@ -75,15 +77,17 @@ const addAddress = (type, isDefault) => {
         </div>
         <div class="mb-6">
             <h3 class="text-xl mb-2">Dodatkowe adresy dostawy</h3>
-            <div class="flex border rounded">
-                <AddressThumbnail v-for="address in shippingAddresses"
-                                  @onEdit="editAddress"
-                                  :key="address.id"
-                                  :selectable="true"
-                                  :address="address"/>
+            <div class="flex flex-col sm:flex-row items-center sm:items-start border rounded">
+                <div class="border-b border-light sm:border-0"
+                     v-for="address in shippingAddresses"
+                     :key="address.id">
+                    <AddressThumbnail @onEdit="editAddress"
+                                      :selectable="true"
+                                      :address="address"/>
+                </div>
                 <div class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
                     <Button type="secondary"
-                        @click="() => addAddress('shipping', false)">
+                            @click="() => addAddress('shipping', false)">
                         <span>Dodaj adres</span>
                         <IconPlus/>
                     </Button>
@@ -92,15 +96,17 @@ const addAddress = (type, isDefault) => {
         </div>
         <div>
             <h3 class="text-xl mb-2">Dodatkowe adresy rozliczeniowe</h3>
-            <div class="flex border rounded">
-                <AddressThumbnail v-for="address in billingAddresses"
-                                  @onEdit="editAddress"
-                                  :key="address.id"
+            <div class="flex flex-col sm:flex-row items-center sm:items-start border rounded">
+                <div class="border-b border-light sm:border-0"
+                     v-for="address in billingAddresses"
+                     :key="address.id">
+                <AddressThumbnail @onEdit="editAddress"
                                   :selectable="true"
                                   :address="address"/>
+                </div>
                 <div class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
                     <Button type="secondary"
-                        @click="() => addAddress('billing', false)">
+                            @click="() => addAddress('billing', false)">
                         <span>Dodaj adres</span>
                         <IconPlus/>
                     </Button>

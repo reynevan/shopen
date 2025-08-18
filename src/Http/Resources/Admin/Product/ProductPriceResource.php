@@ -16,8 +16,10 @@ class ProductPriceResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'price' => Number::currency($this->price),
-            'final_price' => Number::currency($this->final_price),
+            'price' => $this->price,
+            'price_formatted' => Number::currency($this->price),
+            'final_price' => $this->final_price,
+            'final_price_formatted' => Number::currency($this->final_price),
             'special_price' => $this->special_price,
             'special_price_from' => $this->special_price_from?->format('Y-m-d'),
             'special_price_to' => $this->special_price_to?->format('Y-m-d'),

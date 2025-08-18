@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
-import Gallery from "@shopen/components/frontend/product/Gallery.vue";
+import Gallery from "@shopen/pages/Frontend/Product/components/Gallery/Gallery.vue";
 import AddToCartButton from "@shopen/components/frontend/product/AddToCartButton.vue";
 import VariantSelect from "@shopen/pages/Frontend/Product/components/VariantSelect.vue";
 import ProductAttributes from "@shopen/pages/Frontend/Product/components/ProductAttributes.vue";

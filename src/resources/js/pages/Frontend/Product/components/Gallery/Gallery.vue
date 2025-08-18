@@ -3,6 +3,8 @@ import Flicking from "@egjs/vue3-flicking";
 import {defineProps, ref, useTemplateRef, watch, onMounted, onUnmounted} from 'vue';
 import IconChevron from "@shopen/components/icons/IconChevron.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
+import PreviewImage from "./PreviewImage.vue";
+import GalleryImage from "./GalleryImage.vue";
 
 const props = defineProps(['images']);
 const flicking = useTemplateRef('flicking');
@@ -127,7 +129,7 @@ onUnmounted(() => {
                 ref="flicking">
                 <div v-for="(image, i) in images" :key="i"
                      class="flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                    <img class="img cursor-zoom-in" :src="image.gallery_image" alt="" @click="openModal(i)">
+                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)"/>
                 </div>
             </Flicking>
             <div v-if="previewIndex < images.length - 1" @click="nextImage"
@@ -142,8 +144,9 @@ onUnmounted(() => {
             <div v-for="(image, i) in images"
                  @click="selectImage(i)"
                  :class="{'border-strong': i === previewIndex}"
-                 class="mr-4 w-[100px] h-[100px] rounded hover:shadow transition-all duration-300 border bg-gray-100 flex items-center justify-center cursor-pointer">
-                <img :src="image.gallery_preview" alt="">
+                 class="mr-4 w-[100px] h-[100px] rounded hover:shadow transition-all duration-300 border bg-gray-100
+                        flex items-center justify-center cursor-pointer box-content">
+                <PreviewImage :image="image.gallery_preview"/>
             </div>
         </div>
 
@@ -161,9 +164,9 @@ onUnmounted(() => {
                          :key="i"
                          @click="modalFlicking.moveTo(i); previewIndex = i"
                          :class="['cursor-pointer border-2 rounded transition-all', i === previewIndex ? 'border-strong' : 'border-transparent']"
-                         class="w-20 h-20 flex-shrink-0 flex items-center justify-center bg-gray-100">
-                        <img :src="image.gallery_preview" class="max-w-full max-h-full rounded"
-                             :alt="`Miniatura ${i+1}`">
+                         class="w-20 h-20 flex-shrink-0 flex items-center justify-center bg-gray-100 box-content">
+
+                        <PreviewImage :image="image.gallery_preview"/>
                     </div>
                 </div>
 
@@ -191,9 +194,8 @@ onUnmounted(() => {
                     >
                         <div v-for="(image, i) in images" :key="i"
                              class="flicking-panel flex items-center justify-center w-full h-full">
-                            <img :src="image.gallery_image"
-                                 class="max-h-full max-w-full object-contain rounded shadow-lg"
-                                 :alt="`Zdjęcie ${i+1}`">
+                            <img :src="image.original"
+                                 class="max-h-full max-w-full object-contain rounded shadow-lg">
                         </div>
                     </Flicking>
                 </div>

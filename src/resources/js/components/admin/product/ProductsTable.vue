@@ -84,11 +84,11 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn field="price" label="Bazowa Cena" sortable v-slot="data" width="135px">
-            {{ data.row.price ? data.row.price.price : '' }}
+            {{ data.row.price ? data.row.price.price_formatted : '' }}
         </TableColumn>
 
         <TableColumn field="final_price" label="Cena" sortable v-slot="data" width="135px">
-            {{ data.row.price ? data.row.price.final_price : '' }}
+            {{ data.row.price ? data.row.price.final_price_formatted : '' }}
         </TableColumn>
 
         <TableColumn label="-" v-slot="data" width="100px">

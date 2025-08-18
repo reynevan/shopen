@@ -82,6 +82,16 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return [150, 250, 350];
     }
 
+    protected function getGalleryPreviewSize(): int
+    {
+        return 100;
+    }
+
+    protected function getGalleryImageSize(): int
+    {
+        return 500;
+    }
+
     protected static function newFactory()
     {
         return ProductFactory::new();
@@ -111,36 +121,36 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         }
 
         $this
-            ->addMediaConversion('gallery-preview-100')
-            ->fit(Fit::Crop, 100, 100)
-            ->quality(100)
-            ->format('webp')
-            ->nonQueued();
-
-        $this
             ->addMediaConversion('thumbnail-mail')
             ->fit(Fit::Crop, 65, 65)
             ->quality(100)
             ->format('jpg')
             ->nonQueued();
 
+
         $this
-            ->addMediaConversion('gallery-preview-200')
-            ->fit(Fit::Crop, 200, 200)
+            ->addMediaConversion('gallery-preview-' . $this->getGalleryPreviewSize())
+            ->fit(Fit::Crop, $this->getGalleryPreviewSize(), $this->getGalleryPreviewSize())
+            ->quality(100)
+            ->format('webp')
+            ->nonQueued();
+        $this
+            ->addMediaConversion('gallery-preview-' . ($this->getGalleryPreviewSize() * 2))
+            ->fit(Fit::Crop, $this->getGalleryPreviewSize() * 2, $this->getGalleryPreviewSize() * 2)
             ->quality(100)
             ->format('webp')
             ->nonQueued();
 
         $this
-            ->addMediaConversion('gallery-image-500')
-            ->fit(Fit::Contain, 500, 500)
+            ->addMediaConversion('gallery-image-' . $this->getGalleryImageSize())
+            ->fit(Fit::Contain, $this->getGalleryImageSize(), $this->getGalleryImageSize())
             ->quality(100)
             ->format('webp')
             ->nonQueued();
 
         $this
-            ->addMediaConversion('gallery-image-1000')
-            ->fit(Fit::Contain, 1000, 1000)
+            ->addMediaConversion('gallery-image-' . ($this->getGalleryImageSize() * 2))
+            ->fit(Fit::Contain, $this->getGalleryImageSize() * 2, $this->getGalleryImageSize() * 2)
             ->quality(100)
             ->format('webp')
             ->nonQueued();
@@ -148,18 +158,22 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getImagesUrls(): array
     {
-        return [];
-        $conversions = ['thumbnail', 'gallery_preview', 'gallery_image', 'thumbnail_mobile'];
         $media = $this->getMedia();
         if ($media->isEmpty() && $this->parent) {
             $media = $this->parent->getMedia();
         }
         $images = [];
         foreach ($media as $mediaItem) {
-            $image = [];
-            foreach ($conversions as $conversion) {
-                $image[$conversion] = $mediaItem->getFullUrl($conversion);
-            }
+            $image = [
+                'gallery_preview' => [
+                    $this->getGalleryPreviewSize() . 'w' => $mediaItem->getFullUrl('gallery-preview-' . $this->getGalleryPreviewSize()),
+                    ($this->getGalleryPreviewSize() * 2) . 'w' => $mediaItem->getFullUrl('gallery-preview-' . ($this->getGalleryPreviewSize() * 2)),
+                ],
+                'gallery_image' => [
+                    $this->getGalleryImageSize() . 'w' => $mediaItem->getFullUrl('gallery-image-' . $this->getGalleryImageSize()),
+                    ($this->getGalleryImageSize() * 2) . 'w' => $mediaItem->getFullUrl('gallery-image-' . ($this->getGalleryImageSize() * 2)),
+                ]
+            ];
             $image['original'] = $mediaItem->getFullUrl();
             $images[] = $image;
         }
@@ -229,11 +243,13 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $this->belongsToMany(Attribute::class, 'configurable_attributes');
     }
 
-    public function reviews() {
+    public function reviews()
+    {
         return $this->hasMany(ProductReview::class);
     }
 
-    public function approvedReviews() {
+    public function approvedReviews()
+    {
         return $this->reviews()->approved();
     }
 
@@ -304,11 +320,13 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         $this->attributes['in_stock'] = $value > 0;
     }
 
-    public function getReviewsCountAttribute() {
+    public function getReviewsCountAttribute()
+    {
         return $this->approvedReviews()->count();
     }
 
-    public function getRatingAttribute() {
+    public function getRatingAttribute()
+    {
         return (round((float)$this->approvedReviews()->avg('rating') * 10)) / 10;
     }
 
