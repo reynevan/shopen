@@ -6,6 +6,7 @@ import CategoryInput from "@shopen/components/admin/form/input/Category/Category
 
 const props = defineProps({
     form: {type: Object, required: true},
+    categories: { type: Array }
 })
 </script>
 

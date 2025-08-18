@@ -68,7 +68,7 @@ const activeSection = ref('general');
         <div class="form">
             <section v-if="attributes.length" class="py-10 max-w-4xl mx-auto">
 
-                <GeneralSection v-show="activeSection === 'general'" :form="form"/>
+                <GeneralSection v-show="activeSection === 'general'" :form="form" :categories="categories"/>
 
                 <section v-show="0">
                     <FormField

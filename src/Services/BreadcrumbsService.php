@@ -112,7 +112,7 @@ class BreadcrumbsService
                 ->first();
         }
 
-        if ($refererRewrite) {
+        if ($refererRewrite && $refererRewrite->entity) {
             $this->generateForCategory($refererRewrite->entity);
         } else {
             // Logika fallback...

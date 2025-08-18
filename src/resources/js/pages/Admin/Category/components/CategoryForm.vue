@@ -148,7 +148,3 @@ const previewImage = (event) => {
         </div>
     </div>
 </template>
-
-<style scoped>
-
-</style>
