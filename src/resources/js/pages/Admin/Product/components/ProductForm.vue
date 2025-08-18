@@ -70,7 +70,7 @@ const activeSection = ref('general');
 
                 <GeneralSection v-show="activeSection === 'general'" :form="form" :categories="categories"/>
 
-                <section v-show="0">
+                <section>
                     <FormField
                         :required="true"
                         label-for="price"
