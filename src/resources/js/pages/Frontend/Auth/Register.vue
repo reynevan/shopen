@@ -2,6 +2,7 @@
 import AuthLayout from "@shopen/layouts/frontend/AuthLayout.vue";
 import RegisterForm from "@shopen/components/frontend/form/RegisterForm.vue";
 import IconCheck from "@shopen/components/icons/IconCheck.vue";
+import SocialButtons from "@shopen/components/frontend/auth/SocialButtons.vue";
 
 defineOptions({layout: AuthLayout})
 
@@ -13,8 +14,11 @@ defineProps({
 
 <template>
     <main class="flex flex-col sm:flex-row ">
-        <div class="w-full mb-12 sm:mb-2 sm:w-1/2 bg-body rounded shadow px-8 pt-4 pb-12">
-            <h1 class="page-title">Załóż konto</h1>
+        <div class="w-full mb-12 sm:mb-2 sm:w-1/2 bg-body rounded shadow px-4 sm:px-8 pt-4 pb-12">
+            <h1 class="text-2xl font-semibold my-2 py-2 text-center">Załóż konto</h1>
+
+            <SocialButtons/>
+
             <RegisterForm :user="user"/>
         </div>
 

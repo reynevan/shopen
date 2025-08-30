@@ -7,7 +7,6 @@ import Input from "@shopen/components/admin/form/input/Input.vue";
 import APIPagination from "../../../../frontend/ui/APIPagination.vue";
 import Button from "../../../ui/Button.vue";
 
-// v-model będzie zawierał listę ID wybranych produktów, np. [1, 5, 12]
 const model = defineModel({ type: Array, default: () => [] });
 
 const emits = defineEmits(['update:selectedProducts']);
@@ -23,14 +22,14 @@ const products = ref(null);
 const loading = ref(false);
 const showModal = ref(false);
 
-// Tymczasowa lista ID produktów wybranych w modalu
 const modalSelection = ref([]);
+// CACHE obiektów produktów wybranych w ramach sesji modala (zainicjalizowane z props.selectedProducts)
 const modalSelectedProducts = ref([]);
 
 const openModal = () => {
-    // Kiedy otwieramy modal, inicjujemy tymczasowy wybór aktualnie wybranymi produktami
-    // Używamy spread operator `[...]` aby stworzyć kopię, a nie referencję
     modalSelection.value = [...(model.value || [])];
+    // Kluczowe: seedujemy cache bieżącą listą wybranych produktów
+    modalSelectedProducts.value = [...(props.selectedProducts || [])];
     showModal.value = true;
 };
 
@@ -38,38 +37,56 @@ const closeModal = () => {
     showModal.value = false;
 };
 
-const toggleModalSelectedProduct = (product) => {
+// Deterministyczna aktualizacja cache na podstawie stanu checkboxa
+const toggleModalSelectedProduct = (product, checked) => {
     const index = modalSelectedProducts.value.findIndex(p => p.id === product.id);
-    if (index !== -1) {
-        // Produkt jest w tablicy, usuń go
-        modalSelectedProducts.value.splice(index, 1);
+    if (checked) {
+        if (index === -1) {
+            modalSelectedProducts.value.push(product);
+        }
     } else {
-        // Produktu nie ma w tablicy, dodaj go
-        modalSelectedProducts.value.push(product);
+        if (index !== -1) {
+            modalSelectedProducts.value.splice(index, 1);
+        }
     }
 };
 
-// Funkcja do usuwania produktu z listy wybranych
 const removeProduct = (productId) => {
     model.value = model.value.filter(id => id !== productId);
+    // Usuwamy także z cache modala
     modalSelectedProducts.value = modalSelectedProducts.value.filter(product => product.id !== productId);
-    const products = props.selectedProducts.filter(product => product.id !== productId);
-    emits('update:selectedProducts', [...products]);
-}
+    const productsAfterRemove = props.selectedProducts.filter(product => product.id !== productId);
+    emits('update:selectedProducts', [...productsAfterRemove]);
+};
 
-// Funkcja zatwierdzająca wybór z modala
 const confirmSelection = () => {
-    // Aktualizujemy główny model wartościami z modala
-    model.value = modalSelection.value;
-    emits('update:selectedProducts', [...modalSelectedProducts.value]);
-    closeModal();
-}
+    // Aktualizujemy model ID
+    model.value = [...modalSelection.value];
 
-// --- Logika ładowania, sortowania i wyszukiwania produktów w modalu ---
+    // Budujemy finalną listę obiektów produktów na podstawie cache + aktualnie załadowanej strony
+    const selectedIds = new Set(modalSelection.value);
+    const byId = new Map();
+
+    // 1) Z cache (ma wcześniejsze + nowe zaznaczenia z innych stron paginacji)
+    modalSelectedProducts.value.forEach(p => {
+        if (selectedIds.has(p.id)) byId.set(p.id, p);
+    });
+
+    // 2) Z aktualnej strony (gdyby czegoś brakowało w cache)
+    if (products.value?.data) {
+        products.value.data.forEach(p => {
+            if (selectedIds.has(p.id)) byId.set(p.id, p);
+        });
+    }
+
+    emits('update:selectedProducts', Array.from(byId.values()));
+    closeModal();
+};
+
 const sort = ref(null);
 const dir = ref(null);
 const q = ref(null);
-const search = ref(''); // Osobna referencja dla inputu wyszukiwania
+const search = ref('');
 
 const loadProducts = (page = 1) => {
     loading.value = true;
@@ -97,7 +114,7 @@ const onSort = (field, direction) => {
 
 const onSearch = () => {
     q.value = search.value;
-    loadProducts(1); // Resetuj do pierwszej strony po wyszukaniu
+    loadProducts(1);
 };
 
 const onPaginate = (page) => {
@@ -111,44 +128,50 @@ onMounted(() => {
 
 <template>
     <div>
-        <!-- Lista już wybranych produktów -->
         <div v-if="selectedProducts && selectedProducts.length > 0" class="selected-products-list border rounded p-2 mb-4">
             <h4 class="font-semibold mb-2">Wybrane produkty:</h4>
             <table class="w-full">
                 <thead class="bg-neutral-700 text-neutral-200 py-2">
                 <tr>
-                    <th>ID</th>
-                    <th>Zdjęcie</th>
-                    <th>SKU</th>
-                    <th>Status</th>
-                    <th>Nazwa</th>
-                    <th>Cena</th>
-                    <th>Akcje</th>
+                    <th class="px-2 text-left">ID</th>
+                    <th class="px-2 text-center">Zdjęcie</th>
+                    <th class="px-2 text-left">Nazwa</th>
+                    <th class="px-2 text-left">SKU</th>
+                    <th class="px-2 text-right">Status</th>
+                    <th class="px-2 text-right">Cena</th>
+                    <th class="px-2 text-right">Akcje</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="product in selectedProducts" :key="product.id">
-                    <td class="py-2">{{ product.id }}</td>
-                    <td class="py-2"><img :src="product.image" width="40"  v-if="product.image"></td>
-                    <td class="py-2">{{ product.sku }}</td>
-                    <td class="py-2">
+                    <td class="px-2 py-2 text-left">{{ product.id }}</td>
+                    <td class="px-2 py-2">
+                        <div class="flex justify-center">
+                            <img :src="product.image" width="40"  v-if="product.image">
+                        </div>
+                    </td>
+                    <td class="px-2 py-2 text-left">{{ product.attributes.name }}</td>
+                    <td class="px-2 py-2 text-left">{{ product.sku }}</td>
+                    <td class="px-2 py-2 text-right">
                         <span v-if="product.attributes.is_active">Aktywny</span>
                         <span v-else>Nieaktywny</span>
                     </td>
-                    <td class="py-2">{{ product.attributes.name }}</td>
-                    <td class="py-2">{{ product.price.final_price ?? '-' }}</td>
-                    <td class="py-2"><Button type="danger" @click="removeProduct(product.id)" size="sm">Usuń</Button></td>
+                    <td class="px-2 py-2 text-right">{{ product.price.final_price ?? '-' }}</td>
+                    <td class="px-2 py-2 text-right"><Button type="danger" @click="removeProduct(product.id)" size="sm">Usuń</Button></td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Przycisk otwierający modal -->
-        <Button @click="openModal">Wybierz produkty</Button>
+        <Button @click="openModal">
+            <span v-if="selectedProducts && selectedProducts.length > 0">Edytuj produkty</span>
+            <span v-else>Wybierz produkty</span>
+        </Button>
 
         <BaseModal :show="showModal" @onClose="closeModal" full-width>
             <template #header>
-                Wybierz produkty
+                <span v-if="selectedProducts && selectedProducts.length > 0">Edytuj produkty</span>
+                <span v-else>Wybierz produkty</span>
             </template>
             <template #default>
                 <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
@@ -175,12 +198,12 @@ onMounted(() => {
                     :meta="products.meta"
                 >
                     <TableColumn label="Wybierz" v-slot="data" width="75px">
-                        <!-- Powiązanie checkboxa z tymczasową listą wybranych ID -->
-                        <input type="checkbox"
-                               :value="data.row.id"
-                               v-model="modalSelection"
-                               @change="toggleModalSelectedProduct(data.row)"
-                               class="w-5 h-5">
+                        <input
+                            type="checkbox"
+                            :value="data.row.id"
+                            v-model="modalSelection"
+                            @change="toggleModalSelectedProduct(data.row, $event.target.checked)"
+                            class="w-5 h-5">
                     </TableColumn>
 
                     <TableColumn field="id" label="ID" sortable v-slot="data" width="35px">
@@ -222,7 +245,6 @@ onMounted(() => {
             <template #buttons>
                 <div class="flex justify-end w-full gap-6">
                     <Button type="neutral" @click="closeModal">Anuluj</Button>
-                    <!-- Przycisk zatwierdzający wybór -->
                     <Button type="success" @click="confirmSelection">Wybierz</Button>
                 </div>
             </template>

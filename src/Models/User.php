@@ -102,4 +102,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Order::class);
     }
+
+    public function scopeCustomers($query)
+    {
+        return $query->where('role', self::ROLE_USER);
+    }
 }

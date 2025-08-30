@@ -20,8 +20,6 @@ function resolveComponent(path) {
         return defineAsyncComponent(coreComponents[corePath])
     }
 
-    console.warn(`Component '${path}' not found. Falling back to Default.`)
-
     return defineAsyncComponent(() =>
         import('/vendor/shopen/core/src/resources/js/components/frontend/shipping/methods/DefaultShippingMethod.vue')
     )
@@ -30,12 +28,10 @@ function resolveComponent(path) {
 </script>
 
 <template>
-    <template v-for="method in methods">
-        <component v-if="method.component" :is="resolveComponent(method.component)" :method="method"/>
-        <DefaultShippingMethod v-else :method="method"/>
-    </template>
+    <div class="flex gap-2 flex-col">
+        <template v-for="method in methods">
+            <component v-if="method.component" :is="resolveComponent(method.component)" :method="method"/>
+            <DefaultShippingMethod v-else :method="method"/>
+        </template>
+    </div>
 </template>
-
-<style scoped>
-
-</style>

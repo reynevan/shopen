@@ -1,12 +1,15 @@
 <script setup>
 import FormField from "@shopen/components/admin/form/FormField.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
+import Select from "@shopen/components/admin/form/input/Select.vue";
 import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
 import CategoryInput from "@shopen/components/admin/form/input/Category/CategoryInput.vue";
 
 const props = defineProps({
     form: {type: Object, required: true},
-    categories: { type: Array }
+    categories: { type: Array },
+    brands: { type: Array },
+
 })
 </script>
 
@@ -51,6 +54,27 @@ const props = defineProps({
         label="Kategorie">
 
         <CategoryInput v-model="form.category_ids" :categories="categories"/>
+    </FormField>
+
+    <FormField
+        label="Stan magazynowy" label-for="uses_stock">
+
+        <Toggle v-model="form.uses_stock" id="uses_stock"/>
+
+    </FormField>
+
+    <FormField
+        v-show="form.uses_stock"
+        label-for="stock_qty"
+        label="Ilość w magazynie">
+        <Input v-model="form.stock_qty" :required="true" id="stock_qty"/>
+    </FormField>
+
+    <FormField
+        label-for="brand_id"
+        label="Marka">
+        <Select v-model="form.brand_id" id="brand_id" :options="brands">
+        </Select>
     </FormField>
 
 </template>

@@ -55,7 +55,7 @@ const props = defineProps(['errors', 'address']);
             <input type="text" id="phone" v-model="address.phone">
         </FormField>
 
-        <FormField v-if="!auth.isLoggedIn" field="is_default" label="Adres domyślny" :error="errors.is_default" required>
+        <FormField v-if="auth.isLoggedIn" field="is_default" label="Adres domyślny" :error="errors.is_default" required>
             <input type="checkbox" id="is_default" v-model="address.is_default">
         </FormField>
     </div>

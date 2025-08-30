@@ -10,8 +10,8 @@ const cart = useCartStore();
 const minicart = useMiniCartStore();
 
 const props = defineProps({
-    productId: {
-        type: Number
+    product: {
+        type: Object
     },
     amount: {
         type: Number,
@@ -23,7 +23,7 @@ const props = defineProps({
     }
 })
 const addToCart = async () => {
-    await cart.addToCart(props.productId, props.amount);
+    await cart.addToCart(props.product, props.amount);
     minicart.open();
 }
 </script>
@@ -31,10 +31,10 @@ const addToCart = async () => {
 <template>
     <Button @click="addToCart"
             type="ghost"
-            :disabled="cart.addingToCart[productId] || disabled">
+            :disabled="cart.addingToCart[product.id] || disabled">
         <div class="flex items-center">
-            <IconCartPlus sm v-if="!cart.addingToCart[productId]"></IconCartPlus>
-            <IconLoader sm v-if="cart.addingToCart[productId]"></IconLoader>
+            <IconCartPlus sm v-if="!cart.addingToCart[product.id]"></IconCartPlus>
+            <IconLoader sm v-if="cart.addingToCart[product.id]"></IconLoader>
         </div>
     </Button>
 </template>

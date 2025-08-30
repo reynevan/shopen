@@ -1,6 +1,11 @@
 <?php
 
 
+use Shopen\Http\Controllers\Admin\Attribute\AttributeCreateController;
+use Shopen\Http\Controllers\Admin\Attribute\AttributeEditController;
+use Shopen\Http\Controllers\Admin\Attribute\AttributeIndexController;
+use Shopen\Http\Controllers\Admin\Brand\BrandCreateController;
+use Shopen\Http\Controllers\Admin\Brand\BrandIndexController;
 use Shopen\Http\Controllers\Admin\Dashboard\DashboardIndexController;
 use Shopen\Http\Controllers\Admin\Product\ProductCreateController;
 use Shopen\Http\Controllers\Admin\Product\Review\ProductReviewsEditController;
@@ -21,6 +26,8 @@ use Shopen\Http\Controllers\Admin\Product\ProductsIndexController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeCreateController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeEditController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodesIndexController;
+use Shopen\Http\Controllers\Admin\User\UserEditController;
+use Shopen\Http\Controllers\Admin\User\UserIndexController;
 use Shopen\Http\Controllers\Frontend\Api\BannerTrackController;
 use Shopen\Http\Middleware\AdminMiddleware;
 
@@ -67,6 +74,21 @@ Route::middleware(['auth', AdminMiddleware::class, 'web'])->prefix('/admin')->gr
     Route::get('/bannery/{banner}/edycja', [BannerEditController::class, 'edit'])->name('admin.banners.edit');
     Route::put('/bannery/{banner}', [BannerEditController::class, 'update'])->name('admin.banners.update');
     Route::post('/api/banners/track/{banner}', BannerTrackController::class)->name('banners.track');
+
+    Route::get('/atrybuty', [AttributeIndexController::class, 'index'])->name('admin.attributes.index');
+    Route::get('/atrybuty/nowy', [AttributeCreateController::class, 'create'])->name('admin.attributes.create');
+    Route::post('/atrybuty', [AttributeCreateController::class, 'store'])->name('admin.attributes.store');
+    Route::get('/atrybuty/{attribute}', [AttributeEditController::class, 'edit'])->name('admin.attributes.edit');
+    Route::put('/atrybuty/{attribute}', [AttributeEditController::class, 'update'])->name('admin.attributes.update');
+
+    Route::get('/uzytkownicy', [UserIndexController::class, 'index'])->name('admin.users.index');
+    Route::get('/uzytkownicy/{user}', [UserEditController::class, 'edit'])->name('admin.users.edit');
+
+    Route::get('/marki', [BrandIndexController::class, 'index'])->name('admin.brands.index');
+    Route::post('/marki', [BrandCreateController::class, 'store'])->name('admin.brands.store');
+    Route::get('/marki/nowa', [BrandCreateController::class, 'create'])->name('admin.brands.create');
+    Route::get('/marki/{brand}', [BrandIndexController::class, 'index'])->name('admin.brands.edit');
+    Route::put('/marki/{brand}', [BrandIndexController::class, 'index'])->name('admin.brands.update');
 
     Route::post('/api/upload-image', [UploadController::class, 'uploadImage']);
 

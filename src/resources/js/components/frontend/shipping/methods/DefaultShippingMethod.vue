@@ -20,10 +20,9 @@ const selectMethod = () => {
 </script>
 
 <template>
-<div>
     <div
-         class="flex justify-between items-center px-4 py-2 mb-2 cursor-pointer rounded transition-colors hover:bg-accent/10 border"
-         :class="[isSelected ? 'bg-accent/10 border-strong': 'border-transparent']"
+         class="flex justify-between items-center px-4 py-2 mb-2 cursor-pointer rounded transition-colors hover:bg-accent/10 border w-full"
+         :class="[isSelected ? 'bg-accent/10': 'border-light']"
          @click="selectMethod">
         <div class="flex">
             <div class="pt-1 mr-2 text-neutral-700">
@@ -40,9 +39,4 @@ const selectMethod = () => {
         </div>
         <slot name="default"/>
     </div>
-</div>
 </template>
-
-<style scoped>
-
-</style>

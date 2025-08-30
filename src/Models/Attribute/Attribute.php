@@ -15,6 +15,30 @@ class Attribute extends Model
     const ENTITY_TYPE_PRODUCT = 'product';
     const ENTITY_TYPE_CATEGORY = 'category';
 
+    protected $casts = [
+        'is_filterable' => 'bool',
+        'is_searchable' => 'bool',
+        'is_system' => 'bool',
+        'is_required' => 'bool',
+        'is_visible_in_details' => 'bool',
+        'is_used_in_list' => 'bool',
+    ];
+
+    protected $fillable = [
+        'name',
+        'sort_order',
+        'entity_type',
+        'backend_type',
+        'frontend_type',
+        'code',
+        'units',
+        'is_filterable',
+        'is_searchable',
+        'is_required',
+        'is_visible_in_details',
+        'is_used_in_list',
+    ];
+
     protected static function newFactory()
     {
         return AttributeFactory::new();
@@ -54,6 +78,22 @@ class Attribute extends Model
     public function isMultiselect()
     {
         return $this->frontend_type === 'multiselect';
+    }
+
+    public function setFrontendTypeAttribute($value)
+    {
+        $backendTypes = [
+            'bool' => 'bool',
+            'select' => 'int',
+            'multiselect' => 'int',
+            'number' => 'int',
+            'text' => 'string',
+            'textarea' => 'text',
+            'price' => 'decimal',
+            'date' => 'date',
+        ];
+        $this->attributes['frontend_type'] = strtolower($value);
+        $this->attributes['backend_type'] = strtolower($backendTypes[$value] ?? null);
     }
 
 }

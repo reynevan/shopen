@@ -25,7 +25,8 @@
         "laravel/scout": "^10.16",
         "babenkoivan/elastic-scout-driver-plus": "^5.1",
         "babenkoivan/elastic-scout-driver": "^4.0",
-        "fedeisas/laravel-mail-css-inliner": "^5.4"
+        "fedeisas/laravel-mail-css-inliner": "^5.4",
+        "laravel/socialite": "^5.23"
     },
     "require-dev": {
         "orchestra/canvas": "^10.0"

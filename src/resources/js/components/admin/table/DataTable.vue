@@ -76,7 +76,7 @@ provide('table', {
     <slot/>
 
     <table :class="tableClass">
-        <thead class="bg-accent text-sm text-neutral-600 font-normal tracking-wider py-4 shadow-lg sticky top-0">
+        <thead class="bg-neutral-600 text-sm text-accent font-normal tracking-wider py-4 shadow-lg sticky top-0">
         <tr>
             <th v-for="(column, index) in columns"
                 :key="column.field + ':' + index"
@@ -98,7 +98,7 @@ provide('table', {
         </thead>
         <tbody>
         <tr v-for="row in data" class="even:bg-accent/50 hover:bg-link/10 transition-colors">
-            <td v-for="(column, colIndex) in columns" :key="colIndex" class="px-4 py-1 border-b border-r border-light" :class="{'border-l': colIndex === 0}">
+            <td v-for="(column, colIndex) in columns" :key="colIndex" class="px-4 py-2 border-b border-r border-light" :class="{'border-l': colIndex === 0}">
                 <component
                     :is="column.slots.default"
                     :row="row"

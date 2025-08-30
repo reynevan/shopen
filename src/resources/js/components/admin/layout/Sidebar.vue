@@ -13,7 +13,6 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.products.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-box-seam text-2xl"></i>
                     <div class="uppercase">Produkty</div>
                 </Link>
             </li>
@@ -22,7 +21,6 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.products.reviews.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-box-seam text-2xl"></i>
                     <div class="uppercase">Opinie</div>
                 </Link>
             </li>
@@ -31,7 +29,6 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.categories.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-folder text-2xl"></i>
                     <div class="uppercase">Kategorie</div>
                 </Link>
             </li>
@@ -40,7 +37,6 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.orders.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-bag-check text-2xl"></i>
                     <div class="uppercase">Zamówienia</div>
                 </Link>
             </li>
@@ -49,7 +45,6 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.promo-codes.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-percent text-2xl"></i>
                     <div class="uppercase text-center">Kody promocyjne</div>
                 </Link>
             </li>
@@ -58,8 +53,34 @@ import {Link} from "@inertiajs/vue3";
                 <Link :href="route('admin.banners.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <i class="bi bi-percent text-2xl"></i>
                     <div class="uppercase text-center">Bannery</div>
+                </Link>
+            </li>
+
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.attributes.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase text-center">Atrybuty</div>
+
+                </Link>
+            </li>
+
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.brands.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase text-center">Marki</div>
+
+                </Link>
+            </li>
+
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.users.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase text-center">Klienci</div>
+
                 </Link>
             </li>
 

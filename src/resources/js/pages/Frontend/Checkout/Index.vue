@@ -7,6 +7,7 @@ import CheckoutNotes from "@shopen/pages/Frontend/Checkout/components/CheckoutNo
 import CheckoutSummary from "@shopen/pages/Frontend/Checkout/components/CheckoutSummary.vue";
 import CheckoutShippingMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutShippingMethods.vue";
 import CheckoutPaymentMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutPaymentMethods.vue";
+import GeoWidget from "../../../components/frontend/shipping/GeoWidget.vue";
 
 defineOptions({ layout: CheckoutLayout })
 
@@ -28,6 +29,10 @@ defineProps({
     },
     notesEnabled: {
         type: Boolean
+    },
+    includeGeoWidget: {
+        type: Boolean,
+        default: false
     }
 })
 
@@ -36,7 +41,7 @@ defineProps({
 <template>
     <div class="checkout flex flex-wrap xl:flex-no-wrap justify-center items-start">
 
-        <div class="w-full xl:w-2/3 pr-4">
+        <div class="w-full xl:w-3/5 pr-4">
 
             <div class="bg-white px-4 py-6 mb-4">
                 <div class="mb-4">
@@ -67,10 +72,13 @@ defineProps({
             </div>
         </div>
 
-        <div class="w-full xl:w-1/3 sticky top-6 pl-4">
+        <div class="w-full xl:w-2/5 sticky top-6 pl-4">
             <div class="bg-white px-4 py-6">
                 <CheckoutSummary :summary="summary" :promoCode="promoCode"/>
             </div>
         </div>
     </div>
+    <template v-if="includeGeoWidget">
+        <GeoWidget/>
+    </template>
 </template>

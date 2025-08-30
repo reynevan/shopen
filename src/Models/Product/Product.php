@@ -79,7 +79,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getThumbnailSizes(): array
     {
-        return [150, 250, 350];
+        return [100, 150, 250, 350];
     }
 
     protected function getGalleryPreviewSize(): int
@@ -158,7 +158,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getImagesUrls(): array
     {
-        $media = $this->getMedia();
+        $media = $this->getMedia('default', ['gallery' => true]);
         if ($media->isEmpty() && $this->parent) {
             $media = $this->parent->getMedia();
         }
@@ -183,10 +183,8 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function getThumbnails($max = 2)
     {
         $thumbnails = [];
-        foreach ($this->getMedia() as $i => $mediaItem) {
-            if ($i >= $max) {
-                break;
-            }
+        $mediaItems = $this->getMedia('default', ['thumbnail' => true])->slice(0, $max);
+        foreach ($mediaItems as $mediaItem) {
             $media = [];
             foreach ($this->getThumbnailSizes() as $size) {
                 $media[$size . 'w'] = $mediaItem->getFullUrl('thumbnail-' . $size);
@@ -195,18 +193,19 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             $thumbnails[] = $media;
         }
         if (!count($thumbnails) && $this->parent) {
-            return $this->parent->getThumbnails();
+            return $this->parent->getThumbnails($max);
         }
         return $thumbnails;
     }
 
-    public function getThumbnailUrl(): ?string
+    public function getThumbnail()
     {
-        $mediaUrl = $this->getFirstMediaUrl('default', 'thumbnail-150');
-        if (!$mediaUrl) {
-            return $this->parent ? $this->parent->getThumbnailUrl() : null;
-        }
-        return $mediaUrl;
+        return $this->getThumbnails(1)[0] ?? null;
+    }
+
+    public function getThumbnailUrl($size = 250)
+    {
+        return $this->getFirstMediaUrl('default', 'thumbnail-' . $size);
     }
 
     public function getMailThumbnailUrl(): ?string
@@ -281,6 +280,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             'product_id',
             'related_product_id'
         );
+    }
+
+    public function taxClass(): BelongsTo
+    {
+        return $this->belongsTo(TaxClass::class);
     }
 
     public function shoppingLists(): BelongsToMany
@@ -444,5 +448,15 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         $urlRewrite->entity_id = $this->id;
         $urlRewrite->store_id = 1;
         $urlRewrite->save();
+    }
+
+    public function getTaxRate()
+    {
+        if ($this->taxClass) {
+            return $this->taxClass->rate;
+        }
+
+
+        return config('shopen.product.default_tax_rate');
     }
 }

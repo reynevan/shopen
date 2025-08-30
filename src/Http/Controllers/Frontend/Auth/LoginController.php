@@ -11,13 +11,18 @@ use Inertia\Response;
 use Shopen\Http\Controller;
 use Shopen\Http\Requests\Admin\Auth\LoginRequest;
 use Shopen\Models\Order\Order;
+use Shopen\Services\OAuthProviderService;
 
 class LoginController extends Controller
 {
+    public function __construct(protected readonly OAuthProviderService $providerService)
+    {}
 
     public function create(): Response
     {
-        return Inertia::render('Frontend/Auth/Login', []);
+        return Inertia::render('Frontend/Auth/Login', [
+            'providers' => $this->providerService->getProviders(),
+        ]);
     }
 
     /**

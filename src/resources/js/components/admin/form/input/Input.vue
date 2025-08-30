@@ -1,4 +1,6 @@
 <script setup>
+import { computed } from 'vue'
+
 const model = defineModel()
 const props = defineProps({
     required: {
@@ -14,11 +16,39 @@ const props = defineProps({
     },
     class: {
         type: String
+    },
+    size: {
+        type: String,
+        default: 'md',
+        validator: v => ['sm', 'md', 'lg'].includes(v),
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
     }
-});
+})
+
+const baseClasses = 'block w-full px-4 border border-gray-200 rounded-lg outline-none focus:ring-0 focus:ring-offset-0 focus:border-accent disabled:opacity-50 disabled:pointer-events-none transition-colors'
+
+const sizeClasses = computed(() => {
+    switch (props.size) {
+        case 'sm':
+            return 'py-1.5 text-xs'
+        case 'lg':
+            return 'py-3 sm:py-4 text-base'
+        default: // 'md'
+            return 'py-2.5 sm:py-3 text-sm'
+    }
+})
 </script>
 
 <template>
-    <input :type="type" :id="props.id" v-model="model" :required="!!props.required" :class="props.class"
-           class="block w-full py-2.5 sm:py-3 px-4 block focus:ring-0 focus:ring-offset-0 w-full border border-gray-200 rounded-lg outline-none sm:text-sm focus:border-accent disabled:opacity-50 disabled:pointer-events-none transition-colors">
+    <input
+        :type="type"
+        :id="props.id"
+        v-model="model"
+        :required="!!props.required"
+        :disabled="disabled"
+        :class="[baseClasses, sizeClasses, props.class]"
+    />
 </template>

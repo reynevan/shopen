@@ -97,4 +97,17 @@ class AttributeRepository
     {
         return static::ATTRIBUTE_MODEL::query()->where('is_sortable', true)->get();
     }
+
+    public function getPaginated($sortField, $sortDir, $searchQuery = null)
+    {
+        return Attribute::query()
+            ->when($searchQuery, function (Builder $query) use ($searchQuery) {
+                $query
+                    ->whereLike('name', '%' . $searchQuery . '%')
+                    ->orWhereLike('code', '%' . $searchQuery . '%');
+            })
+            ->orderBy($sortField, $sortDir)
+            ->paginate(25)
+            ->withQueryString();
+    }
 }

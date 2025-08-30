@@ -11,6 +11,9 @@ const props = defineProps({
     },
     labelFor: {
         type: String
+    },
+    error: {
+        type: String
     }
 })
 </script>
@@ -27,8 +30,9 @@ const props = defineProps({
                 <slot name="description"/>
             </div>
         </div>
-        <div class="w-full flex items-center">
+        <div class="w-full">
             <slot></slot>
+            <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
         </div>
     </div>
 </template>

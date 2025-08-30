@@ -1,6 +1,8 @@
 <script setup>
 
 import {ref, onMounted, shallowRef} from "vue";
+import Button from "@shopen/components/admin/ui/Button.vue";
+import editorCssUrl from '@resources/css/app.css?url'
 
 const EditorComponent = shallowRef(null);
 const model = defineModel();
@@ -51,6 +53,8 @@ const init = {
     relative_urls: false,
     remove_script_host: true,
     convert_urls: true,
+    content_css: editorCssUrl,
+    body_class: 'prose prose-sm max-w-none',
     images_upload_handler: image_upload_handler,
     file_picker_callback(cb, value, meta) {
         if (meta.filetype === 'image') {
@@ -89,9 +93,13 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div>
-        <button @click="toggleEdit">Edytuj</button>
-        <div v-if="!editing" v-html="model"></div>
+    <div class="w-full">
+        <div class="mb-2">
+            <Button size="sm" type="primary" @click="toggleEdit">Edytuj</Button>
+        </div>
+        <div v-if="!editing"
+             class="border border-light w-full px-4 py-2 rounded overflow-y-auto prose prose-sm max-w-none"
+             v-html="model"></div>
         <div v-if="EditorComponent && editing">
             <component
                 v-model="model"
@@ -102,7 +110,3 @@ onMounted(async () => {
         </div>
     </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -34,7 +34,9 @@ readonly class CheckoutIndexController
             'selectedShippingAddress' => fn() => $this->cartService->getCart()?->shippingAddress->address_id ?? null,
             'selectedBillingAddress' => fn() => $this->cartService->getCart()?->billingAddress->address_id ?? null,
             'promoCode' => fn() => $this->cartService->getCart()->promoCode?->code,
-            'notesEnabled' => config('shopen.checkout.notes.enabled')
+            'notesEnabled' => config('shopen.checkout.notes.enabled'),
+            'includeGeoWidget' => config('shipping.paczkomaty.active') && config('shipping.paczkomaty.geo_token'),
+            'geoWidgetToken' => config('shipping.paczkomaty.geo_token')
         ]);
     }
 
@@ -114,6 +116,7 @@ readonly class CheckoutIndexController
                 'hasDiscount' => $discount > 0,
                 'discount' => Number::currency($discount),
                 'total' => Number::currency($total),
+                'total_raw' => $total
             ];
     }
 }

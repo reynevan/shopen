@@ -34,7 +34,7 @@ onUnmounted(() => {
 
 <template>
     <div ref="dropdown" class="relative inline-block text-left">
-        <div @click="toggle">
+        <div @click.prevent="toggle">
             <slot name="trigger"></slot>
         </div>
 

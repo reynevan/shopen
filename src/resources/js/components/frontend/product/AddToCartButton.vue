@@ -13,8 +13,8 @@ const cart = useCartStore();
 const minicart = useMiniCartStore();
 
 const props = defineProps({
-    productId: {
-        type: Number
+    product: {
+        type: Object
     }
 })
 
@@ -22,7 +22,7 @@ const props = defineProps({
 const qty = ref(1);
 
 const addToCart = async () => {
-    await cart.addToCart(props.productId, qty.value);
+    await cart.addToCart(props.product.id, qty.value);
     minicart.open();
 }
 
@@ -36,10 +36,10 @@ const updateQty = (newQty) => {
         <AmountInput :value="qty" @onChange="updateQty" :min="1"></AmountInput>
         <Button @click="addToCart"
                 type="success"
-                :disabled="cart.addingToCart[productId]">
+                :disabled="cart.addingToCart[product.id]">
             <div class="flex items-center">
-                <IconCartPlus size="xl" v-if="!cart.addingToCart[productId]"></IconCartPlus>
-                <IconLoader md v-if="cart.addingToCart[productId]"></IconLoader>
+                <IconCartPlus size="xl" v-if="!cart.addingToCart[product.id]"></IconCartPlus>
+                <IconLoader md v-if="cart.addingToCart[product.id]"></IconLoader>
                 <span class="ml-4">Dodaj do koszyka</span>
             </div>
         </Button>

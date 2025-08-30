@@ -5,6 +5,7 @@ import IconChevron from "../../icons/IconChevron.vue";
 import ProductThumbnail from "@shopen/components/frontend/product/thumbnail/ProductThumbnail.vue";
 
 defineProps(['products'])
+
 const flicking = useTemplateRef('flickingRef');
 const targetIndex = ref(0);
 
@@ -15,11 +16,11 @@ const options = {
     preventDefaultOnDrag: true
 };
 
+const index = ref(0);
+
 const onWillChange = (event) => {
     targetIndex.value = event.index;
 }
-
-const index = ref(0);
 
 const onMoveEnd = () => {
     index.value = flicking.value.index;

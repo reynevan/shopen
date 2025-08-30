@@ -14,6 +14,7 @@ class BannerRepository
                 $query->whereLike('title', '%' . $searchQuery . '%');
             })
             ->orderBy($sortField, $sortDir)
-            ->paginate();
+            ->paginate()
+            ->withQueryString();
     }
 }

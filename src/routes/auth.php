@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
 use Shopen\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use Shopen\Http\Controllers\Admin\Auth\EmailVerificationNotificationController;
 use Shopen\Http\Controllers\Admin\Auth\EmailVerificationPromptController;
@@ -10,6 +11,7 @@ use Shopen\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use Shopen\Http\Controllers\Admin\Auth\VerifyEmailController;
 
 use Shopen\Http\Controllers\Frontend\Auth\LoginController;
+use Shopen\Http\Controllers\Frontend\Auth\OAuthController;
 use Shopen\Http\Controllers\Frontend\Auth\RegisterController;
 
 Route::middleware(['guest', 'web'])->group(function () {
@@ -33,6 +35,16 @@ Route::middleware(['guest', 'web'])->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    Route::get('/oauth/redirect/google', function () {
+        return Socialite::driver('google')->redirect();
+    })->name('oauth.google.redirect');
+
+    Route::get('/oauth/redirect/facebook', function () {
+        return Socialite::driver('facebook')->redirect();
+    })->name('oauth.facebook.redirect');
+
+    Route::get('/oauth/callback/{provider}', [OAuthController::class, 'callback']);
 });
 
 Route::middleware(['auth', 'web'])->group(function () {

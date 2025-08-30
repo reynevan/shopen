@@ -17,6 +17,7 @@ class BaseProductResource extends JsonResource
             'url_key' => $this->urlRewrite?->request_path,
             'is_configurable' => $this->resource->isConfigurable(),
             'image' => $this->resource->getThumbnailUrl(),
+            'name' => $this->resource->loadAttribute('name'),
             'attributes' => $this->resource->getCustomAttributes(),
         ];
     }

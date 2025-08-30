@@ -17,10 +17,19 @@ class MediaResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $width = $height = null;
+        try {
+            [$width, $height] = getimagesize($this->getPath());
+        } catch (\Exception $e) {}
         return [
             'id' => $this->id,
             'url' => $this->original_url,
-            'order' => $this->resource->order_column
+            'order' => $this->resource->order_column,
+            'size' => $this->resource->human_readable_size,
+            'width' => $width,
+            'height' => $height,
+            'gallery' => $this->resource->getCustomProperty('gallery') ?? false,
+            'thumbnail' => $this->resource->getCustomProperty('thumbnail') ?? false,
         ];
     }
 

@@ -12,6 +12,7 @@ import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarous
 import ProductStructredData from "@shopen/components/frontend/product/ProductStructredData.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import AddToShoppingListButton from "../../../components/frontend/shoppingList/AddToShoppingListButton.vue";
+import ProductDescription from "./components/ProductDescription.vue";
 
 defineOptions({layout: AppLayout})
 
@@ -67,6 +68,10 @@ const props = defineProps({
                 </div>
             </section>
         </div>
+
+        <section>
+            <ProductDescription :description="product.attributes.description ?? ''"/>
+        </section>
 
         <section v-if="relatedProducts && relatedProducts.length">
             <h2 class="section-title">Zobacz też</h2>

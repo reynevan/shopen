@@ -14,13 +14,18 @@ use Inertia\Response;
 use Shopen\Http\Controller;
 use Shopen\Models\Order\Order;
 use Shopen\Models\User;
+use Shopen\Services\OAuthProviderService;
 
 class RegisterController extends Controller
 {
+    public function __construct(protected readonly OAuthProviderService $providerService)
+    {}
 
     public function create(): Response
     {
-        $data = [];
+        $data = [
+            'providers' => $this->providerService->getProviders(),
+        ];
         if (session('guest_order_id')) {
             $order = Order::find(session('guest_order_id'));
             if ($order && $address = $order->shippingAddress) {

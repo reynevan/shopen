@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia'
 import {ref, computed} from 'vue'
-import axios from 'axios'
 import {router} from "@inertiajs/vue3";
+import { trackAddToCart } from '@shopen/utils/ga4.js'
 
 export const useCartStore = defineStore('cart', () => {
         const items = ref([])
@@ -15,15 +15,18 @@ export const useCartStore = defineStore('cart', () => {
             return items.value.reduce((count, {quantity}) => count + quantity, 0);
         })
 
-        async function addToCart(productId, quantity = 1) {
-            addingToCart.value[productId] = true;
+        async function addToCart(product, quantity = 1) {
+
+            trackAddToCart(product, quantity);
+
+            addingToCart.value[product.id] = true;
             router.post(route('api.cart.items.add'), {
-                id: productId,
+                id: product.id,
                 qty: quantity
             }, {
                 only: ['cart'],
                 preserveScroll: true,
-                onFinish: () => addingToCart.value[productId] = false
+                onFinish: () => addingToCart.value[product.id] = false
             })
         }
 

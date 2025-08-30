@@ -9,6 +9,7 @@ import ProductThumbnailImage from "../product/ProductThumbnailImage.vue";
 import {Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconLoader from "../../icons/IconLoader.vue";
+import ProductImage from "../product/ProductImage.vue";
 
 defineOptions({
     name: 'Minicart'
@@ -67,7 +68,10 @@ const updateItem = debounce((item, val) => {
                 <div class="absolute top-2 right-2 cursor-pointer" @click="removeItem(item)">
                     <icon-x md/>
                 </div>
-                <ProductThumbnailImage :product="item.product"/>
+                <div class="w-[100px]">
+                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="100px"
+                                  :width="100"/>
+                </div>
                 <div class="grow ml-2">
                     <div class="item-title">
                         <a :href="item.product.url" class="hover:text-accent transition-colors">
@@ -109,13 +113,13 @@ const updateItem = debounce((item, val) => {
             </div>
             <Link :href="route('cart.index')" @click="closeMinicart">
                 <Button type="secondary" full-width>
-                        Koszyk
+                    Koszyk
                 </Button>
             </Link>
             <div class="text-center mt-4">
                 lub <a class="hover:underline cursor-pointer" @click.prevent="closeMinicart">
-                    Kontynuuj zakupy →
-                </a>
+                Kontynuuj zakupy →
+            </a>
             </div>
         </div>
     </div>

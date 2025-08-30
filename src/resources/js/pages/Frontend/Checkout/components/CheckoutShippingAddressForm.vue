@@ -15,17 +15,6 @@ const props = defineProps(['maxAddresses', 'addresses']);
 const addressToEdit = ref(null);
 const showAddressModal = ref(false);
 
-const selectAddress = (address) => {
-    if (address.id) {
-        router.put(route('checkout.select-shipping-address'), {
-            'id': address.id,
-        }, {
-            preserveState: true,
-            preserveScroll: true,
-            only: ['addresses']
-        });
-    }
-};
 
 
 const editAddress = (_address) => {
@@ -43,13 +32,21 @@ const openNewAddressModal = () => {
 
 <template>
     <div>
-        <div class="checkout-section-title">Adres dostawy</div>
-        <div class="border min-h-[100px] flex flex-wrap items-stretch gap-2" :class="{'items-center justify-center': !addresses.length}">
+        <div class="checkout-section-title flex justify-between">
+            <span>Adres dostawy</span>
+            <Button type="secondary" @click="openNewAddressModal" size="sm"
+                    v-if="(auth.isLoggedIn && addresses.length && addresses.length < maxAddresses)">
+                <span>Dodaj adres</span>
+                <IconPlus/>
+            </Button>
+        </div>
+        <div class="min-h-[100px] flex flex-wrap items-stretch gap-4" :class="{'items-center justify-center': !addresses.length}">
             <AddressThumbnail v-for="address in addresses"
                               :key="address.id"
                               :address="address"
+                              :selectable="auth.isLoggedIn"
                               @onEdit="editAddress"/>
-            <div v-if="(auth.isLoggedIn && addresses.length < maxAddresses) || (!auth.isLoggedIn && !addresses.length)"
+            <div v-if="!addresses.length"
                  class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
                 <Button type="secondary" @click="openNewAddressModal">
                     <span>Dodaj adres</span>

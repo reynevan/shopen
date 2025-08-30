@@ -21,7 +21,8 @@ const search = ref(q);
 const onSort = (field, dir) => {
     router.get(route('admin.products.index'), {
         sort: field,
-        dir: dir
+        dir: dir,
+        q: search.value
     }, {})
 }
 

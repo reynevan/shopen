@@ -18,7 +18,7 @@ const cart = computed(() => page.props.cart);
 <template>
     <Header/>
     <div class="bg-checkout py-12">
-        <div class="container mx-auto max-w-7xl px-4">
+        <div class="container mx-auto max-w-7xl sm:px-4">
             <slot/>
         </div>
     </div>

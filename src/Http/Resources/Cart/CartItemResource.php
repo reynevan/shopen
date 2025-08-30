@@ -26,7 +26,7 @@ class CartItemResource extends JsonResource
             'product' => [
                 'id' => $product->id,
                 'name' => $product->getCustomAttribute('name'),
-                'image' => $product->getThumbnailUrl(),
+                'image' => $product->getThumbnail(),
                 'attributes' => $product->getVariantAttributes(),
                 'url' => $product->getUrl(),
             ]

@@ -1,5 +1,5 @@
 <script setup>
-import Icon from '~icons/material-symbols-light/check-circle-outline'
+import Icon from '~icons/material-symbols-light/check-circle'
 
 import { computed } from 'vue';
 

@@ -103,6 +103,7 @@ const isPlaceOrderEnabled = computed(() => {
             >
                 <span>Złóż zamówienie</span>
             </Button>
+            <div id="place-order-buttons-container"></div>
         </div>
     </div>
 </template>

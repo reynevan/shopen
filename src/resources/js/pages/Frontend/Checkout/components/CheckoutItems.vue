@@ -2,6 +2,7 @@
 import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
+import ProductImage from "../../../../components/frontend/product/ProductImage.vue";
 
 const page = usePage();
 const cart = computed(() => page.props.cart);
@@ -12,8 +13,9 @@ const cart = computed(() => page.props.cart);
     <div>
         <div v-for="item in cart.items" :key="item.id" class="flex relative mb-2 pb-2 pr-2">
             <div class="mr-2 w-[50px] h-[50px] flex items-center justify-center text-no-image-icon bg-no-image-bg">
-                <img v-if="item.product.image" :src="item.product.image" :alt="item.product.name" class="w-full h-full">
-                <IconNoImage md v-if="!item.product.image"/>
+                <div class="w-[50px]">
+                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="50px" :width="50"/>
+                </div>
             </div>
             <div class="w-full">
                 <div class="font-semibold mb-2">

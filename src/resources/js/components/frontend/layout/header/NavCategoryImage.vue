@@ -2,7 +2,7 @@
 import {computed} from "vue";
 
 const props = defineProps({
-    image: {type: Array, default: null},
+    image: {type: Object, default: null},
     alt: {
         type: String,
         required: true,

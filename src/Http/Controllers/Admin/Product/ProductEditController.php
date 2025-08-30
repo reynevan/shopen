@@ -9,47 +9,55 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Http\Resources\Admin\Brand\BrandResource;
 use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
-use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Jobs\RecalculateProductPrice;
 use Shopen\Models\Product\Product;
+use Shopen\Repositories\Brand\BrandRepository;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Services\CustomAttributesService;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 readonly class ProductEditController
 {
     public function __construct(
-        protected CustomAttributesService $customAttributesService,
+        protected CustomAttributesService    $customAttributesService,
         protected ProductAttributeRepository $productAttributeRepository,
-        protected CategoryRepository $categoryRepository,
+        protected CategoryRepository         $categoryRepository,
+        protected BrandRepository           $brandRepository,
     )
-    {}
+    {
+    }
 
     public function edit(Product $product): Response
     {
         $this->customAttributesService->preloadCategoryAttributes(['name']);
         $this->customAttributesService->loadAllAttributes($product);
         $product->load(['price', 'relatedProducts.price', 'crossSells.price', 'upSells.price']);
+
+        if (!$product->relatedProducts->isEmpty()) {
+            $this->customAttributesService->loadUsedInListAttributesToCollection($product->relatedProducts);
+        }
+
         return Inertia::render('Admin/Product/Edit', [
             'product' => ProductResource::make($product),
-            'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
+            'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getAll()),
+            'categories' => fn() => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
+            'brands' => fn() => $this->brandRepository->getAll()->pluck('name', 'id'),
         ]);
     }
 
     public function update(Product $product): RedirectResponse
     {
         $validated = request()->validate([
-            'cross_sell_ids'   => 'nullable|array',
+            'cross_sell_ids' => 'nullable|array',
             'cross_sell_ids.*' => 'exists:products,id',
-            'up_sell_ids'      => 'nullable|array',
-            'up_sell_ids.*'    => 'exists:products,id',
-            'related_ids'      => 'nullable|array',
-            'related_ids.*'    => 'exists:products,id',
+            'up_sell_ids' => 'nullable|array',
+            'up_sell_ids.*' => 'exists:products,id',
+            'related_ids' => 'nullable|array',
+            'related_ids.*' => 'exists:products,id',
         ]);
 
         DB::beginTransaction();
@@ -96,21 +104,30 @@ readonly class ProductEditController
     {
         $product->media()->whereNotIn('id', Arr::pluck($imagesData, 'id'))->delete();
 
-        $images = [];
         usort($imagesData, function ($a, $b) {
-            return ($a['order'] ?? 0) < ($b['order'] ?? 0) ? 1 : -1;
+            return ($a['order'] ?? 0) < ($b['order'] ?? 0) ? -1 : 1;
         });
+        $order = 1;
         foreach ($imagesData ?? [] as $image) {
-            if (isset($image['id'])) {
-                $images[] = $image['id'];
-                continue;
+            if ($image['new'] ?? false) {
+                if (!isset($image['path'])) {
+                    continue;
+                }
+                $product
+                    ->addMedia(Storage::disk('public')->path($image['path']))
+                    ->setOrder($order++)
+                    ->withCustomProperties(['gallery' => $image['gallery'] ?? false, 'thumbnail' => $image['thumbnail'] ?? false])
+                    ->toMediaCollection();
+            } elseif (isset($image['id'])) {
+                $media = $product->media()->find($image['id']);
+                if (!$media) {
+                    continue;
+                }
+                $media->setCustomProperty('gallery', $image['gallery'] ?? false);
+                $media->setCustomProperty('thumbnail', $image['thumbnail'] ?? false);
+                $media->order_column = $order++;
+                $media->save();
             }
-            $media = $product
-                ->addMedia(Storage::disk('public')->path($image['path']))
-                ->toMediaCollection();
-            $images[] = $media->id;
-
         }
-        Media::setNewOrder($images);
     }
 }

@@ -35,6 +35,11 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return 'TXN_' . uniqid() . '_' . time();
     }
 
+    public function getComponent(): ?string
+    {
+        return null;
+    }
+
     public function getName(): string
     {
         return config("payment.{$this->getKey()}.name");
@@ -45,7 +50,8 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return 'payment.payment-method';
     }
 
-    public function isAvailable(): bool {
+    public function isAvailable(): bool
+    {
         if (!config("payment.{$this->getKey()}.active")) {
             return false;
         }
@@ -71,14 +77,16 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
     public function jsonSerialize(): array
     {
         return [
-          'key' => $this->getKey(),
-          'name' => $this->getName(),
-          'price' => $this->getPrice(),
-          'description' => $this->getDescription()
+            'key' => $this->getKey(),
+            'name' => $this->getName(),
+            'price' => $this->getPrice(),
+            'description' => $this->getDescription(),
+            'component' => $this->getComponent(),
         ];
     }
 
-    protected function getDefaultConfig(): array {
+    protected function getDefaultConfig(): array
+    {
         return [];
     }
 
@@ -102,7 +110,8 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return config("payment.{$this->getKey()}.price") ?? 0;
     }
 
-    public function handleWebhook(array $webhookData): ?Payment {
+    public function handleWebhook(array $webhookData): ?Payment
+    {
         return null;
     }
 }

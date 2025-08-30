@@ -10,6 +10,7 @@ import {useAuthStore} from "@shopen/stores/auth.js";
 import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarousel.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
+import ProductImage from "../../../components/frontend/product/ProductImage.vue";
 
 defineOptions({layout: CheckoutLayout})
 
@@ -61,12 +62,12 @@ const removeItem = (item) => {
                         class="flex flex-col md:flex-row items-center gap-4 p-4 rounded-lg bg-body">
 
                         <!-- Obraz produktu -->
-                        <div
-                            class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center rounded-md overflow-hidden">
+                        <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">
                             <Link :href="item.product.url">
-                                <img v-if="item.product.image" :src="item.product.image" :alt="item.product.name"
-                                     class="w-full h-full object-cover">
-                                <IconNoImage md v-else/>
+                                <div class="w-[100px]">
+                                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="100px"
+                                                  :width="100"/>
+                                </div>
                             </Link>
                         </div>
 
