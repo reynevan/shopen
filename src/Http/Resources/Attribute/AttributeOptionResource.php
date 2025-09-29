@@ -18,7 +18,8 @@ class AttributeOptionResource extends JsonResource
             'id' => $this->id,
             'value' => $this->value,
             'slug' => $this->slug,
-            'count' => $this->count ?? 0
+            'count' => $this->count ?? 0,
+            'color' => $this->color
         ];
     }
 }

@@ -57,6 +57,9 @@ class CustomAttributesService
 
     public function loadAttributesToCollection($entities, $attributeCodes): void
     {
+        if ($entities->isEmpty()) {
+            return;
+        }
         $attributeRepository = $this->getAttributeRepository($entities->first());
         if (!$attributeRepository) {
             return;

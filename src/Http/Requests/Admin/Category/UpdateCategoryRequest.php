@@ -10,7 +10,7 @@ class UpdateCategoryRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return Auth::user()->isAdmin();
+        return Auth::guard('admin')->user()->isAdmin();
     }
 
     public function rules(): array
@@ -19,6 +19,7 @@ class UpdateCategoryRequest extends FormRequest
             'is_active' => 'required|boolean',
             'attributes' => 'required|array',
             'remove_image_menu' => 'nullable|boolean',
+            'parent_id' => 'nullable|integer|exists:categories,id',
         ];
     }
 }

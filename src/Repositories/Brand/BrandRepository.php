@@ -11,8 +11,19 @@ class BrandRepository
     public function getActive()
     {
         return Brand::query()
+            ->with(['media'])
             ->has('media')
             ->active()
+            ->get();
+    }
+
+    public function getVisibleOnHomepage()
+    {
+        return Brand::query()
+            ->with(['media'])
+            ->has('media')
+            ->active()
+            ->visibleOnHomepage()
             ->get();
     }
 

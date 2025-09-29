@@ -2,17 +2,18 @@
 
 import Cover from "@shopen/components/admin/Cover.vue";
 import Sidebar from "@shopen/components/admin/layout/Sidebar.vue";
-
+import FlashMessage from "@shopen/components/admin/ui/FlashMessage.vue";
 
 </script>
 
 <template>
     <Sidebar/>
     <div class="pl-[100px]">
-        <main class="px-4">
+        <main class="px-4 pb-20">
             <slot/>
         </main>
     </div>
+    <FlashMessage/>
     <Teleport to="body">
         <Cover/>
     </Teleport>

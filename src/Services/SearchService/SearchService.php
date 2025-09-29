@@ -15,6 +15,7 @@ class SearchService
     protected Client $client;
 
     protected ?int $categoryId = null;
+    protected ?int $brandId = null;
     protected array $ids = [];
     protected array $filters = [];
     protected ?string $searchQuery = null;
@@ -35,6 +36,12 @@ class SearchService
     public function setCategoryId($categoryId): static
     {
         $this->categoryId = $categoryId;
+        return $this;
+    }
+
+    public function setBrandId($brandId): static
+    {
+        $this->brandId = $brandId;
         return $this;
     }
 
@@ -82,19 +89,27 @@ class SearchService
 
     public function getProducts()
     {
+        $filters = [];
+
         if ($this->categoryId) {
-            $query = ['bool' => ['filter' => ['term' => ['category_id' => $this->categoryId]]]];
-        } elseif (count($this->ids)) {
-            $query = ['terms' => ['id' => $this->ids]];
-        } else {
-            $query = [];
+            $filters[] = ['term' => ['category_id' => $this->categoryId]];
         }
+
+        if ($this->brandId) {
+            $filters[] = ['term' => ['brand_id' => $this->brandId]];
+        }
+
+        if ($this->ids) {
+            $filters[] = ['terms' => ['id' => $this->ids]];
+        }
+
+        $query = count($filters)
+            ? ['bool' => ['filter' => $filters]]
+            : ['match_all' => new \stdClass()];
 
         $params = [
             'index' => 'shopen_products',
-            'body' => [
-                'query' => $query
-            ],
+            'body'  => ['query' => $query],
         ];
 
         if ($this->limit) {
@@ -108,8 +123,6 @@ class SearchService
 
     public function searchProducts(): SearchServiceResult
     {
-        $time = microtime(true);
-
         $params = [
             'index' => 'shopen_products',
             'body' => [
@@ -144,7 +157,27 @@ class SearchService
 
         $result = $this->client->search($params)->asArray();
 
-        config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
+        return new SearchServiceResult($result);
+    }
+
+    public function searchCategories(): SearchServiceResult
+    {
+        $params = [
+            'index' => 'shopen_categories',
+            'body' => [
+                'query' => [
+                    'bool' => [
+                        'must' => $this->getSearchQueryFilter()
+                    ]
+                ]
+            ],
+        ];
+
+        if ($this->limit) {
+            $params['body']['size'] = $this->limit;
+        }
+
+        $result = $this->client->search($params)->asArray();
 
         return new SearchServiceResult($result);
     }
@@ -154,10 +187,18 @@ class SearchService
         $queryFilters = [];
 
         $this->addCategoryFilter($queryFilters);
+        $this->addBrandFilter($queryFilters);
         $this->addAttributeFilters($queryFilters, $filters, $exclude);
         $this->addPriceRangeFilter($queryFilters, $filters);
 
         return $queryFilters;
+    }
+
+    private function addBrandFilter(array &$queryFilters): void
+    {
+        if ($this->brandId) {
+            $queryFilters[] = ['term' => ['brand_id' => $this->brandId]];
+        }
     }
 
     private function addSearchFilter(array &$params): void

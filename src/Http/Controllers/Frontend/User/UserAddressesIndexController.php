@@ -11,9 +11,7 @@ class UserAddressesIndexController
     public function __construct(
         protected AddressRepository $addressRepository
     )
-    {
-
-    }
+    {}
 
     public function index()
     {

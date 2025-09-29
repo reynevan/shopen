@@ -2,6 +2,9 @@
 
 import {onMounted, provide, ref} from "vue";
 import {Link} from "@inertiajs/vue3";
+import APIPagination from "../../frontend/ui/APIPagination.vue";
+import Input from "../form/input/Input.vue";
+import Button from "@shopen/components/admin/ui/Button.vue";
 
 const props = defineProps({
     data: {
@@ -23,12 +26,30 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
+    basicPaginated: {
+        type: Boolean,
+        default: false
+    },
     meta: {
         type: Object
     },
+    top: {
+        type: String,
+        default: 'top-[72px]'
+    },
+    searchable: {
+        type: Boolean,
+        default: false
+    },
+    query: {
+        type: String
+    }
 });
 
-const emits = defineEmits(['onSort'])
+const emits = defineEmits(['onSort', 'onPaginate', 'onSearch'])
+
+
+const search = ref(props.query);
 
 const columns = ref([]);
 
@@ -37,6 +58,19 @@ const sort = ref({});
 const addColumn = (column) => {
     columns.value.push(column);
 
+}
+
+const onPaginate = (page) => {
+    emits('onPaginate', page)
+}
+
+const onSearch = () => {
+    emits('onSearch', search.value)
+}
+
+const clearSearch = () => {
+    search.value = '';
+    onSearch();
 }
 
 const onThClick = (column) => {
@@ -75,8 +109,28 @@ provide('table', {
 
     <slot/>
 
+    <div class="flex justify-between mb-4">
+
+        <form @submit.prevent="onSearch" class="my-4 pr-4 max-w-xl w-full" v-if="searchable">
+            <div class="flex justify-end w-full">
+                <div class="relative flex items-center w-full">
+                    <Input v-model="search" id="search" class="mr-2"/>
+                    <button v-if="search"
+                            type="button"
+                            @click="clearSearch"
+                            class="absolute right-2 text-gray-600 hover:black transition-color duration-300 cursor-pointer px-2 py-1">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+                <Button role="submit" type="secondary">Szukaj</Button>
+            </div>
+        </form>
+
+        <APIPagination v-if="basicPaginated && meta" :meta="meta" @onPaginate="onPaginate"/>
+    </div>
+
     <table :class="tableClass">
-        <thead class="bg-neutral-600 text-sm text-accent font-normal tracking-wider py-4 shadow-lg sticky top-0">
+        <thead class="bg-neutral-600 text-sm text-accent font-normal tracking-wider py-4 shadow-lg sticky" :class="[top]">
         <tr>
             <th v-for="(column, index) in columns"
                 :key="column.field + ':' + index"
@@ -129,7 +183,3 @@ provide('table', {
     </nav>
 
 </template>
-
-<style scoped>
-
-</style>

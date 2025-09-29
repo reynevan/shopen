@@ -56,7 +56,7 @@ const handleNext = async () => {
 </script>
 
 <template>
-    <div class="relative px-[50px]">
+    <div class="relative z-0 px-[50px]">
         <button
             v-if="showPrev"
             @click="handlePrev"

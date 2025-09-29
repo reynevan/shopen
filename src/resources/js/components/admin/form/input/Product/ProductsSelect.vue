@@ -6,6 +6,7 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import APIPagination from "../../../../frontend/ui/APIPagination.vue";
 import Button from "../../../ui/Button.vue";
+import ActionButton from "../../../ui/ActionButton.vue";
 
 const model = defineModel({ type: Array, default: () => [] });
 
@@ -130,34 +131,36 @@ onMounted(() => {
     <div>
         <div v-if="selectedProducts && selectedProducts.length > 0" class="selected-products-list border rounded p-2 mb-4">
             <h4 class="font-semibold mb-2">Wybrane produkty:</h4>
-            <table class="w-full">
+            <table class="w-full table-primary">
                 <thead class="bg-neutral-700 text-neutral-200 py-2">
                 <tr>
-                    <th class="px-2 text-left">ID</th>
-                    <th class="px-2 text-center">Zdjęcie</th>
-                    <th class="px-2 text-left">Nazwa</th>
-                    <th class="px-2 text-left">SKU</th>
-                    <th class="px-2 text-right">Status</th>
-                    <th class="px-2 text-right">Cena</th>
-                    <th class="px-2 text-right">Akcje</th>
+                    <th class="text-left">ID</th>
+                    <th class="text-center">Zdjęcie</th>
+                    <th class="text-left">Nazwa</th>
+                    <th class="text-left">SKU</th>
+                    <th class="text-right">Status</th>
+                    <th class="text-right">Cena</th>
+                    <th class="text-right">Akcje</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr v-for="product in selectedProducts" :key="product.id">
-                    <td class="px-2 py-2 text-left">{{ product.id }}</td>
-                    <td class="px-2 py-2">
+                    <td class="text-left">{{ product.id }}</td>
+                    <td>
                         <div class="flex justify-center">
                             <img :src="product.image" width="40"  v-if="product.image">
                         </div>
                     </td>
-                    <td class="px-2 py-2 text-left">{{ product.attributes.name }}</td>
-                    <td class="px-2 py-2 text-left">{{ product.sku }}</td>
-                    <td class="px-2 py-2 text-right">
+                    <td class="text-left">{{ product.attributes.name }}</td>
+                    <td class="text-left">{{ product.sku }}</td>
+                    <td class="text-right">
                         <span v-if="product.attributes.is_active">Aktywny</span>
                         <span v-else>Nieaktywny</span>
                     </td>
-                    <td class="px-2 py-2 text-right">{{ product.price.final_price ?? '-' }}</td>
-                    <td class="px-2 py-2 text-right"><Button type="danger" @click="removeProduct(product.id)" size="sm">Usuń</Button></td>
+                    <td class="text-right">{{ product.price.final_price ?? '-' }}</td>
+                    <td class="text-right">
+                        <ActionButton type="remove" @click="removeProduct(product.id)"/>
+                    </td>
                 </tr>
                 </tbody>
             </table>
@@ -196,6 +199,7 @@ onMounted(() => {
                     :default-sort="[sort, dir]"
                     :data="products.data"
                     :meta="products.meta"
+                    top="top-0"
                 >
                     <TableColumn label="Wybierz" v-slot="data" width="75px">
                         <input

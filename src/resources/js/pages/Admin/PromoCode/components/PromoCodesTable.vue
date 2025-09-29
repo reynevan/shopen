@@ -1,8 +1,8 @@
 <script setup>
 
-import DataTable from "../table/DataTable.vue";
-import TableColumn from "../table/TableColumn.vue";
-import {onMounted, ref} from "vue";
+import DataTable from "@shopen/components/admin/table/DataTable.vue";
+import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
+import { ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
 
 const props = defineProps({

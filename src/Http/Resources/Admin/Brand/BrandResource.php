@@ -12,8 +12,11 @@ class BrandResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'slug' => $this->slug,
             'is_active' => $this->is_active,
-            'logo' => $this->resource->getFirstMediaUrl('default', 'logo-80'),
+            'show_on_homepage' => $this->show_on_homepage,
+            'logo_url' => $this->resource->getFirstMediaUrl('default', 'logo-80'),
+            'seo' => $this->resource->getSeoForWebsite(1),
         ];
     }
 }

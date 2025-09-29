@@ -3,7 +3,7 @@
 import {Link} from "@inertiajs/vue3";
 import IconProfile from "@shopen/components/icons/IconProfile.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
-import SearchBox from "./SearchBox.vue";
+import SearchBox from "@shopen/components/frontend/layout/header/SearchBox/SearchBox.vue";
 import MinicartButton from "../../cart/MinicartButton.vue";
 import UserMenu from "./UserMenu.vue";
 import {useAuthStore} from "@shopen/stores/auth.js";
@@ -25,7 +25,7 @@ const auth = useAuthStore();
                         <img src="/img/shopen-logo.png" alt="Shopen"/>
                     </Link>
                 </div>
-                <div class="flex items-center w-full order-2 sm:order-1">
+                <div class="flex items-center w-full order-2 sm:order-1 h-auto sm:h-[42px]">
                     <div class="visible sm:hidden mr-4">
                         <MobileMenu/>
                     </div>

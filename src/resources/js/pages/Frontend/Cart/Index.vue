@@ -37,10 +37,8 @@ const removeItem = (item) => {
     <Head>
         <title>Koszyk</title>
     </Head>
-    <!-- Użycie semantycznego tagu <main> dla głównej treści strony -->
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-8 max-w-7xl ">
 
-        <!-- Dodano nagłówek H1 - kluczowy dla SEO i dostępności -->
         <h1 class="text-3xl font-semibold mb-6 sr-only">Koszyk</h1>
 
         <div v-if="!cart.items || cart.items.length === 0" class="text-center py-16">
@@ -53,27 +51,21 @@ const removeItem = (item) => {
 
         <div v-else class="flex flex-col lg:flex-row lg:items-start gap-8">
 
-            <!-- Lista produktów - zamiana tabeli na listę semantyczną -->
             <section class="w-full lg:flex-1" aria-labelledby="cart-items-heading">
                 <h2 id="cart-items-heading" class="text-2xl font-semibold mb-4">Koszyk</h2>
-                <!-- Użycie <ul> dla listy produktów jest bardziej semantyczne niż <table> -->
-                <ul class="space-y-4">
-                    <li v-for="item in cart.items" :key="item.id"
-                        class="flex flex-col md:flex-row items-center gap-4 p-4 rounded-lg bg-body">
+                <ul class="bg-body divide-y divide-border-light px-4 py-4 rounded shadow">
+                    <li v-for="item in cart.items" :key="item.id" class="flex flex-col md:flex-row items-center gap-4 py-4">
 
-                        <!-- Obraz produktu -->
                         <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">
                             <Link :href="item.product.url">
                                 <div class="w-[100px]">
-                                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="100px"
+                                    <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
                                                   :width="100"/>
                                 </div>
                             </Link>
                         </div>
 
-                        <!-- Szczegóły produktu i akcje -->
                         <div class="flex-1 w-full flex flex-col md:flex-row md:justify-between gap-4">
-                            <!-- Nazwa i atrybuty -->
                             <div class="flex-1">
                                 <Link :href="item.product.url" class="text-lg hover:underline">
                                     {{ item.product.name }}
@@ -85,26 +77,22 @@ const removeItem = (item) => {
                                         }}</span>
                                     </div>
                                 </div>
-                                <!-- Ukryte etykiety dla urządzeń mobilnych - poprawa dostępności -->
                                 <div class="md:hidden mt-2 text-sm">
                                     Cena: <span class="font-semibold">{{ item.price }}</span>
                                 </div>
                             </div>
 
-                            <!-- Cena jednostkowa (widoczna na większych ekranach) -->
                             <div class="hidden md:flex items-center justify-end w-28">
                                 <span class="text-right">{{ item.price }}</span>
                             </div>
 
-                            <!-- Ilość -->
-                            <div class="flex items-center justify-between md:justify-center w-full md:w-40">
+                            <div class="flex items-center justify-between md:justify-center w-full md:w-32">
                                 <span class="md:hidden font-medium">Ilość:</span>
                                 <AmountInput :value="item.quantity" :disabled="item.loading"
                                              @onChange="(val) => onQtyChange(item, val)"/>
                             </div>
 
-                            <!-- Kwota -->
-                            <div class="flex items-center justify-between md:justify-end w-full md:w-32">
+                            <div class="flex items-center justify-between md:justify-end w-full md:w-24">
                                 <span class="md:hidden font-medium">Kwota:</span>
                                 <div class="text-lg font-semibold text-right min-w-[80px]">
                                     <IconLoader v-if="item.loading" class="mx-auto"/>
@@ -123,7 +111,7 @@ const removeItem = (item) => {
                 </ul>
             </section>
 
-            <aside class="w-full lg:w-80 bg-primary-bg mt-12 p-6 rounded-lg shadow lg:sticky top-8 bg-body">
+            <aside class="w-full lg:w-80 mt-12 p-6 rounded shadow lg:sticky top-8 bg-body">
                 <h2 class="text-xl font-semibold border-b pb-3 mb-4">Podsumowanie</h2>
                 <dl class="space-y-2 mb-8">
                     <div class="flex justify-between items-center">

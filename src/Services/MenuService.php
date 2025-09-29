@@ -46,7 +46,7 @@ class MenuService
                 $category->is_current = false;//$category->id == $currentCategoryId;
                 $category->has_current = false;
                 $category->image = $category->getMenuMedia();
-                $category->url = $urls[$category->id];
+                $category->url = $urls[$category->id] ?? '';
                 $category->setCustomAttribute('name', $names[$category->id] ?? null);
                 $map[$category->id] = $category;
             }

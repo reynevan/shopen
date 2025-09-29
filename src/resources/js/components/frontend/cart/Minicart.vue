@@ -63,18 +63,18 @@ const updateItem = debounce((item, val) => {
                 Wróć do sklepu
             </Button>
         </div>
-        <div class="overflow-y-auto grow divide-y">
+        <div class="overflow-y-auto grow divide-y divide-border-light">
             <div v-for="item in items" :key="item.id" class="flex mx-4 py-6 relative px-6">
                 <div class="absolute top-2 right-2 cursor-pointer" @click="removeItem(item)">
                     <icon-x md/>
                 </div>
                 <div class="w-[100px]">
-                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="100px"
+                    <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
                                   :width="100"/>
                 </div>
                 <div class="grow ml-2">
                     <div class="item-title">
-                        <a :href="item.product.url" class="hover:text-accent transition-colors">
+                        <a :href="item.product.url" class="hover:text-black transition-colors">
                             {{ item.product.name }}
                         </a>
                     </div>

@@ -23,6 +23,7 @@ trait Searchable
             'description' => $this->getCustomAttribute('description'),
             'sku' => $this->sku,
             'category_id' => $this->categories->pluck('id')->toArray(),
+            'brand_id' => $this->brand_id,
             'in_stock' => $this->isInStock(),
             'price' => $this->getFinalPrice(),
             'rating' => $this->rating,

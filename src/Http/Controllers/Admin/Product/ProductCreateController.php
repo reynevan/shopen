@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Http\Requests\Admin\Product\StoreProductRequest;
 use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
 use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
@@ -40,8 +41,10 @@ readonly class ProductCreateController
         ]);
     }
 
-    public function store(Product $product): RedirectResponse
+    public function store(StoreProductRequest $request, Product $product): RedirectResponse
     {
+        $request->validated();
+
         $validated = request()->validate([
             'cross_sell_ids'   => 'nullable|array',
             'cross_sell_ids.*' => 'exists:products,id',
@@ -62,7 +65,8 @@ readonly class ProductCreateController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean']));
+            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock']));
+
             $product->save();
 
             $product->createUrlRewrite($data['url_key']);
@@ -71,6 +75,9 @@ readonly class ProductCreateController
 
             $product->setPrice($price);
 
+            if ($product->isConfigurable()) {
+                $product->configurableAttributes()->sync(Arr::pluck($data['configurable_attributes'] ?? [], 'id'));
+            }
             $product->relatedProducts()->sync($data['related_products_ids'] ?? []);
             $product->crossSells()->sync($data['cross_sell_ids'] ?? []);
             $product->upSells()->sync($data['up_sell_ids'] ?? []);
@@ -87,8 +94,9 @@ readonly class ProductCreateController
         } catch (\Exception $e) {
             Log::error($e);
             DB::rollBack();
+            return back()->with('error', 'Wystąpił błąd przy zapisywaniu produktu');
         }
-        return back();
+        return back()->with('success', 'Produkt został utworzony');
     }
 
     protected function updateImages(Product $product, $imagesData): void

@@ -14,7 +14,7 @@ class StoreAttributeRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return Auth::user()->isAdmin();
+        return Auth::guard('admin')->user()->isAdmin();
     }
 
     public function rules(): array
@@ -30,7 +30,7 @@ class StoreAttributeRequest extends FormRequest
             'entity_type' => ['required', 'string', 'in:category,product'],
             'frontend_type' => ['required', 'string'],
             'sort_order' => ['integer', 'nullable'],
-
+            'options' => ['array', 'nullable'],
         ];
     }
 

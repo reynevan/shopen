@@ -17,11 +17,12 @@ class StoreBrandRequest extends FormRequest
             'meta_title' => ['nullable','string','max:255'],
             'meta_description' => ['nullable','string','max:1000'],
             'is_active' => ['boolean'],
+            'show_on_homepage' => ['boolean'],
         ];
     }
 
     public function authorize(): bool
     {
-        return Auth::user()->isAdmin();
+        return Auth::guard('admin')->user()->isAdmin();
     }
 }

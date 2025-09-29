@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
+use Shopen\Console\Commands\CreateAdminUser;
+use Shopen\Console\Commands\GenerateSitemap;
 use Shopen\Console\Commands\RecalculateProductPrices;
 use Shopen\Console\Commands\Reindex;
 use Shopen\Console\Commands\SetupAdminUser;
@@ -43,10 +45,14 @@ class ShopenServiceProvider  extends ServiceProvider
 {
     public function boot(): void
     {
-        /*DB::listen(function ($query) {
-            Log::info($query->sql, ['Bindings' => $query->bindings, 'Time' => $query->time]);
-        });*/
+        if (config('app.log_sql_queries')) {
+            DB::listen(function ($query) {
+                Log::info($query->sql, ['Bindings' => $query->bindings, 'Time' => $query->time]);
+            });
+        }
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'shopen');
 
@@ -57,7 +63,9 @@ class ShopenServiceProvider  extends ServiceProvider
                     RecalculateProductPrices::class,
                     ShopenInstall::class,
                     Reindex::class,
-                    Test::class
+                    Test::class,
+                    GenerateSitemap::class,
+                    CreateAdminUser::class
                 ]);
         }
         $months = [

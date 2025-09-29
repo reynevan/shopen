@@ -3,6 +3,8 @@
         options: {type: Array},
         id: {type: String, required: true},
         disabled: {type: Boolean, default: false},
+        valueKey: {type: String, default: 'id'},
+        labelKey: {type: String, default: 'value'},
     })
     const model = defineModel();
 </script>
@@ -12,6 +14,6 @@
             :class="disabled ? 'cursor-not-allowed opacity-50' : ''"
             v-model="model"
             :disabled="disabled">
-        <option v-for="(label, value) in options" :value="value" :key="value">{{ label }}</option>
+        <option v-for="option in options" :value="option[valueKey]" :key="option[valueKey]">{{ option[labelKey] }}</option>
     </select>
 </template>

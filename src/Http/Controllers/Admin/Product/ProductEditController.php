@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Shopen\Http\Resources\Admin\Brand\BrandResource;
 use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
@@ -35,7 +34,7 @@ readonly class ProductEditController
     {
         $this->customAttributesService->preloadCategoryAttributes(['name']);
         $this->customAttributesService->loadAllAttributes($product);
-        $product->load(['price', 'relatedProducts.price', 'crossSells.price', 'upSells.price']);
+        $product->load(['price', 'relatedProducts.price', 'crossSells.price', 'upSells.price', 'configurableAttributes']);
 
         if (!$product->relatedProducts->isEmpty()) {
             $this->customAttributesService->loadUsedInListAttributesToCollection($product->relatedProducts);
@@ -45,7 +44,7 @@ readonly class ProductEditController
             'product' => ProductResource::make($product),
             'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getAll()),
             'categories' => fn() => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
-            'brands' => fn() => $this->brandRepository->getAll()->pluck('name', 'id'),
+            'brands' => fn() => $this->brandRepository->getAll()->select(['id', 'name'])->toArray(),
         ]);
     }
 
@@ -71,7 +70,7 @@ readonly class ProductEditController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean']));
+            $product->fill(Arr::only($data, ['sku', 'ean', 'brand_id']));
             $product->save();
 
             $product->createUrlRewrite($data['url_key']);
@@ -96,8 +95,9 @@ readonly class ProductEditController
         } catch (\Exception $e) {
             Log::error($e);
             DB::rollBack();
+            return back()->with('error', 'Wystąpił błąd przy zapisywaniu produktu');
         }
-        return back();
+        return back()->with('success', 'Produkt został zaktualizowany');
     }
 
     protected function updateImages(Product $product, $imagesData): void
@@ -129,5 +129,21 @@ readonly class ProductEditController
                 $media->save();
             }
         }
+    }
+
+    public function destroy(Product $product): RedirectResponse
+    {
+        DB::beginTransaction();
+        try {
+            foreach ($product->getMedia() as $mediaItem) {
+                Storage::disk('public')->deleteDirectory($mediaItem->id);
+            }
+            $product->delete();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', $e->getMessage());
+        }
+        return back()->with('success', 'Produkt został usunięty');
     }
 }

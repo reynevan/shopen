@@ -11,7 +11,7 @@ class UpdateOrderStatusRequest extends FormRequest
 
     public function authorize(): bool
     {
-        return Auth::user()->isAdmin();
+        return Auth::guard('admin')->user()->isAdmin();
     }
 
     public function rules(): array

@@ -8,7 +8,6 @@ import ProductThumbnailImage from "@shopen/components/admin/product/ProductThumb
 import ReviewDetailsModal from "./ReviewDetailsModal.vue";
 import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
-import Input from "@shopen/components/admin/form/input/Input.vue";
 
 const props = defineProps({
     reviews: Object
@@ -39,7 +38,12 @@ const clearSearch = () => {
     onSearch();
 }
 
-const onSearch = () => {
+const onSearch = (query) => {
+    if (query === search.value || (!query && !search.value)) {
+        return;
+    }
+    search.value = query;
+
     router.get(route('admin.products.reviews.index'), {
         sort: sort,
         dir: dir,
@@ -93,37 +97,36 @@ const closeEditModal = () => {
     showEditModal.value = false;
 }
 
+const onPaginate = (page) => {
+    router.get(route('admin.products.reviews.index'), {
+        page: page,
+        sort: sort,
+        dir: dir,
+        q: search.value
+    },)
+}
+
 </script>
 
 <template>
     <div class="flex flex-col lg:flex-row gap-10 justify-between items-end mb-4">
 
-        <div class="flex items-center gap-2 my-2">
-            <Button @click="filter()">Wszystkie</Button>
-            <Button type="warning" @click="filter('pending')">
+        <div class="flex items-center my-2 divide-x divide-gray-border-light">
+            <div class="text-sm px-4 py-2 cursor-pointer hover:bg-accent/50 transition-all duration-300"
+                 :class="!status ? 'bg-accent': ''" @click="filter()">Wszystkie</div>
+            <div class="text-sm px-4 py-2 cursor-pointer hover:bg-yellow-200 hover:text-yellow-800 transition-all duration-300"
+                 :class="status === 'pending' ? 'bg-yellow-100 text-yellow-800': ''" @click="filter('pending')">
                 <i class="bi bi-hourglass-split mr-2"></i> Oczekujące
-            </Button>
-            <Button type="danger" @click="filter('rejected')">
-                <i class="bi bi-x-lg mr-2"></i> Odrzucone
-            </Button>
-            <Button type="success" @click="filter('approved')">
-                <i class="bi bi-check2 mr-2"></i> Zaakceptowane
-            </Button>
-        </div>
-
-        <form @submit.prevent="onSearch" class="w-full max-w-md">
-            <div class="flex justify-end">
-                <button class="mr-2 cursor-pointer" @click="clearSearch" v-show="search">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-
-                <Input v-model="search" id="search" class="mr-2 max-w-md"/>
-
-                <Button type="neutral" submit>
-                    <i class="bi bi-search mr-2"></i> Szukaj
-                </Button>
             </div>
-        </form>
+            <div class="text-sm px-4 py-2 cursor-pointer hover:bg-red-200 hover:text-red-800 transition-all duration-300"
+                 :class="status === 'rejected' ? 'bg-red-100 text-red-800': ''" @click="filter('rejected')">
+                <i class="bi bi-x-lg mr-2"></i> Odrzucone
+            </div>
+            <div class="text-sm px-4 py-2 cursor-pointer hover:bg-green-200 hover:text-green-800 transition-all duration-300"
+                 :class="status === 'approved' ? 'bg-green-100 text-green-800': ''" @click="filter('approved')">
+                <i class="bi bi-check2 mr-2"></i> Zaakceptowane
+            </div>
+        </div>
     </div>
 
     <DataTable
@@ -134,13 +137,18 @@ const closeEditModal = () => {
         :default-sort="[sort, dir]"
         :data="reviews.data"
         paginated
+        @onPaginate="onPaginate"
+        basic-paginated
+        searchable
+        :query="search"
+        @onSearch="onSearch"
         :meta="reviews.meta"
     >
         <TableColumn field="id" label="ID" sortable v-slot="data" width="75px">
             {{ data.row.id }}
         </TableColumn>
 
-        <TableColumn field="product" label="Produkt" sortable v-slot="data" width="400px">
+        <TableColumn field="product" label="Produkt" v-slot="data" width="400px">
             <div class="flex items-center">
                 <ProductThumbnailImage :product="data.row.product" size="sm"/>
                 <div class="ml-2">
@@ -167,11 +175,11 @@ const closeEditModal = () => {
             {{ data.row.created_at }}
         </TableColumn>
 
-        <TableColumn field="comment" label="Komentarz" sortable v-slot="data">
+        <TableColumn field="comment" label="Komentarz" v-slot="data">
             <div class="mb-1">
                 {{ data.row.comment_to_verify ?? data.row.comment }}
             </div>
-            <button class="text-sm text-link hover:text-link-hover transition-colors"
+            <button class="text-sm text-link hover:text-link-hover transition-colors cursor-pointer"
                     @click="edit(data.row)"
                     v-if="data.row.comment_to_verify">
                 Pokaż oryginał
@@ -179,12 +187,12 @@ const closeEditModal = () => {
         </TableColumn>
 
         <TableColumn field="status" label="Status" v-slot="data" sortable>
-            <div class="text-center">
-                <div class="inline-block px-2 py-1 rounded" :class="{
-                    'bg-green-100 text-green-700': data.row.status === 'approved',
-                    'bg-yellow-100 text-yellow-700': data.row.status === 'pending',
-                    'bg-blue-100 text-blue-700': data.row.status === 'pending_edit',
-                    'bg-red-100 text-red-700': data.row.status === 'rejected',
+            <div class="text-left">
+                <div class="inline-block text-sm px-2 py-1 whitespace-nowrap" :class="{
+                    'bg-green-100 text-green-800': data.row.status === 'approved',
+                    'bg-yellow-100 text-yellow-800': data.row.status === 'pending',
+                    'bg-blue-100 text-blue-800': data.row.status === 'pending_edit',
+                    'bg-red-100 text-red-800': data.row.status === 'rejected',
                 }">
                     <i v-if="data.row.status === 'pending'" class="bi bi-hourglass-split"></i>
                     <i v-if="data.row.status === 'approved'" class="bi bi-check2"></i>
@@ -196,10 +204,10 @@ const closeEditModal = () => {
         </TableColumn>
 
         <TableColumn label="Akcje" v-slot="data">
-            <div class="flex items-center gap-2 justify-end">
+            <div class="flex items-center justify-end divide-x divide-x-border-light">
                 <ActionButton type="view" @click="edit(data.row)" title="Podgląd"/>
-                <ActionButton v-if="data.row.status !== 'approved'" type="accept" @click="accept(data.row)" title="Zaakceptuj"/>
-                <ActionButton v-if="data.row.status !== 'rejected'" type="cancel" @click="cancel(data.row)" title="Odrzuć"/>
+                <ActionButton type="accept" @click="accept(data.row)" :disabled="data.row.status === 'approved'"  title="Zaakceptuj"/>
+                <ActionButton type="cancel" @click="cancel(data.row)" :disabled="data.row.status === 'rejected'" title="Odrzuć"/>
                 <ActionButton type="remove" @click="remove(data.row)" title="Usuń"/>
             </div>
         </TableColumn>

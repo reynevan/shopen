@@ -11,13 +11,24 @@ defineOptions({layout: AdminLayout})
 
 defineProps({
     user: {type: Object},
-    orders: {type: Array}
+    orders: {type: Array},
+    defaultShippingAddress: {type: Object },
+    defaultBillingAddress: {type: Object },
+    shippingAddresses: {type: Array },
+    billingAddresses: {type: Array },
 });
 </script>
 <template>
     <main>
         <PageTitle>{{ user.first_name }} {{ user.last_name}}</PageTitle>
 
-        <UserForm :user="user" :orders="orders" />
+        <UserForm
+            :user="user"
+            :orders="orders"
+            :defaultShippingAddress="defaultShippingAddress"
+            :defaultBillingAddress="defaultBillingAddress"
+            :shippingAddresses="shippingAddresses"
+            :billingAddresses="billingAddresses"
+        />
     </main>
 </template>

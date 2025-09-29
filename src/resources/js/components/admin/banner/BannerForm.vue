@@ -7,7 +7,7 @@ import FormHeader from "../form/FormHeader.vue";
 import Input from "../form/input/Input.vue";
 import DateInput from "../form/input/DateInput.vue";
 import ImageInput from "../form/input/ImageInput.vue";
-import CategoryInput from "../form/input/Category/CategoryInput.vue";
+import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
 
 
 const props = defineProps({
@@ -150,7 +150,7 @@ const previewImage = (event) => {
                 label-for="categories"
                 label="Kategorie">
 
-                <CategoryInput v-model="form.category_ids" :categories="categories" />
+                <CategoryMultiselect v-model="form.category_ids" :categories="categories" />
             </FormField>
 
             <FormField

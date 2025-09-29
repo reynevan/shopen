@@ -56,8 +56,7 @@ const handleNext = async () => {
 </script>
 
 <template>
-    <div class="relative">
-        <!-- Previous Button -->
+    <div class="relative z-0">
         <button
             v-if="flicking && index > 0 && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handlePrev"
@@ -66,7 +65,6 @@ const handleNext = async () => {
             <icon-chevron left/>
         </button>
 
-        <!-- Carousel -->
         <Flicking
             @changed="onMoveEnd"
             @willChange="onWillChange"
@@ -80,7 +78,6 @@ const handleNext = async () => {
             </div>
         </Flicking>
 
-        <!-- Next Button -->
         <button
             v-if="flicking && (index < flicking.panelCount - flicking.visiblePanels.length) && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handleNext"

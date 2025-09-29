@@ -35,7 +35,7 @@ readonly class ProductShowController
     {
         $this->recentlyViewedProductsService->add($product);
 
-        $product->load(['price', 'relatedProducts.price', 'urlRewrite']);
+        $product->load(['price', 'relatedProducts.price', 'urlRewrite', 'brand']);
 
         $this->productRepository->loadAttributes($product);
 

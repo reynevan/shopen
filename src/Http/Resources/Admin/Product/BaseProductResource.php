@@ -4,6 +4,7 @@ namespace Shopen\Http\Resources\Admin\Product;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Shopen\Http\Resources\Admin\Product\Price\ProductPriceResource;
 
 class BaseProductResource extends JsonResource
 {

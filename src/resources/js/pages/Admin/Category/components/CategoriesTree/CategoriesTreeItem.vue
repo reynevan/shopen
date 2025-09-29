@@ -1,7 +1,9 @@
 <script setup>
-import {computed} from 'vue'
+import {computed, ref} from 'vue'
 import {useCategoryStore} from "@shopen/stores/admin/categoryStore.js";
 import {router, usePage} from "@inertiajs/vue3";
+import ActionButton from "../../../../../components/admin/ui/ActionButton.vue";
+import IconLoader from "../../../../../components/icons/IconLoader.vue";
 
 // Props
 const props = defineProps({
@@ -9,242 +11,148 @@ const props = defineProps({
         type: Object,
         required: true
     },
-    index: {
-        type: Number,
-        required: true
+    canMoveUp: {
+        type: Boolean,
+        default: true
     },
-    parentId: {
-        type: [Number, null],
-        default: null
+    canMoveDown: {
+        type: Boolean,
+        default: true
     },
-    expandedIds: {
-        type: Set,
-        required: true
-    },
-    level: {
-        type: Number,
-        default: 0
-    },
-    draggingId: {
-        type: [Number, null],
-        default: null
-    },
-    dragOverInfo: {
-        type: Object,
-        default: null
-    }
+})
+const page = usePage()
+const categoryStore = useCategoryStore()
+const isExpanded = ref(props.category.has_selected)
+const loading = ref(false);
+
+categoryStore.onExpandAll((state) => {
+    isExpanded.value = state;
 })
 
-// Emits
-const emit = defineEmits([
-    'toggle-expand',
-    'drag-start',
-    'drag-end',
-    'drag-over',
-    'drag-enter',
-    'drag-leave',
-    'drop'
-])
-const page = usePage();
-const activeCategoryId = computed(() => page.props.category?.id);
-const categoryStore = useCategoryStore();
+const isActive = computed(() => {
+    return page.props.category?.id === props.category?.id || (!page.props.category?.id && page.props.category?.parent_id === props.category?.id)
+})
 
-// Computed
-const isDragging = computed(() => props.draggingId === props.category.id)
-const isDropTarget = computed(() =>
-    props.dragOverInfo?.parentId === props.category.id && props.dragOverInfo?.type === 'position'
-)
-const isNestTarget = computed(() =>
-    props.dragOverInfo?.parentId === props.category.id && props.dragOverInfo?.type === 'nest'
-)
-
-// Methods
-const toggleExpand = () => {
-    if (props.category.children && props.category.children.length > 0) {
-        emit('toggle-expand', props.category.id)
+const hasActiveChild = computed(() => {
+    if (!props.category?.children) {
+        return false
     }
-}
+    return props.category?.children.some(child => child.id === page.props.category?.id)
+})
+
 const select = () => {
     router.get(route('admin.categories.edit', props.category.id), {}, {
-        preserveScroll: true,
-        only: ['category']
+        only: ['category'],
+        preserveState: true
     })
 }
-const handleDragStart = (event) => {
-    event.dataTransfer.effectAllowed = 'move'
-    event.dataTransfer.setData('text/plain', props.category.id.toString())
-    emit('drag-start', props.category.id)
-}
 
-// Category drag handlers (for nesting)
-const handleDragOverCategory = (event) => {
-    if (props.draggingId && props.draggingId !== props.category.id && props.category.is_active !== false) {
-        event.preventDefault()
-        emit('drag-over', event, props.category.id, 0, 'nest')
+const toggleExpand = () => {
+    if (props.category.children && props.category.children.length > 0) {
+        isExpanded.value = !isExpanded.value
     }
 }
 
-const handleDragEnterCategory = (event) => {
-    if (props.draggingId && props.draggingId !== props.category.id && props.category.is_active !== false) {
-        event.preventDefault()
-        emit('drag-enter', event, props.category.id, 0, 'nest')
+const removeCategory = () => {
+    if (!confirm(`Na pewno chcesz usunąc kategorię ${props.category.name}?`)) {
+        return;
     }
+    loading.value = true;
+    router.delete(route('admin.categories.delete', props.category.id), {
+        only: ['category'],
+        preserveState: true,
+        onFinish: () => {
+            loading.value = false
+        }
+    })
 }
 
-const handleDragLeaveCategory = () => {
-    emit('drag-leave')
+const moveUp = () => {
+    loading.value = true;
+    router.put(route('admin.categories.move', props.category.id),
+        {dir: 'up'},
+        {
+            only: ['categories'],
+            preserveState: true,
+            onFinish: () => {
+                loading.value = false
+            }
+        })
 }
 
-const handleDropOnCategory = (event) => {
-    if (props.draggingId && props.draggingId !== props.category.id && props.category.is_active !== false) {
-        event.preventDefault()
-        emit('drop', event, props.category.id, 0, 'nest')
-    }
+const moveDown = () => {
+    loading.value = true;
+    router.put(route('admin.categories.move', props.category.id),
+        {dir: 'down'},
+        {
+            only: ['categories'],
+            preserveState: true,
+            onFinish: () => {
+                loading.value = false
+            }
+        })
+}
+
+const addSubcategory = () => {
+    isExpanded.value = true
+    router.get(route('admin.categories.create-subcategory', props.category.id), {}, {
+        only: ['category', 'categories'],
+        preserveState: true,
+    })
 }
 </script>
 
 <template>
-    <div>
-        <!-- Drop zone before item -->
-        <div
-            v-if="!isDragging"
-            @dragover.prevent="$emit('drag-over', $event, parentId, index, 'position')"
-            @dragenter.prevent="$emit('drag-enter', $event, parentId, index, 'position')"
-            @dragleave="$emit('drag-leave')"
-            @drop="$emit('drop', $event, parentId, index, 'position')"
-            :class="[
-                'h-2 mx-3 transition-colors',
-                dragOverInfo?.parentId === parentId && dragOverInfo?.index === index && dragOverInfo?.type === 'position'
-                  ? 'bg-accent-200 border-2 border-accent-400'
-                  : 'hover:bg-gray-50'
-            ]"
-        ></div>
+    <div class="">
 
         <!-- Category Item -->
         <div
-            :draggable="true"
-            @dragstart="handleDragStart"
-            @dragend="$emit('drag-end')"
-            @dragover.prevent="handleDragOverCategory"
-            @dragenter.prevent="handleDragEnterCategory"
-            @dragleave="handleDragLeaveCategory"
-            @drop="handleDropOnCategory"
-            class="flex items-center px-3 text-sm transition-colors relative"
-            :class="[
-                categoryStore.selectedCategory.id === category.id ? 'bg-accent-100 text-accent-600' : '',
-                category.is_active ? 'text-gray-900' : 'text-gray-400',
-                isDragging ? 'opacity-50' : 'hover:bg-gray-50',
-                isDropTarget ? 'bg-accent-50' : '',
-                isNestTarget ? 'bg-accent-100' : '',
-                activeCategoryId === category.id ? 'bg-accent-200' : ''
-           ]"
-            :style="{ paddingLeft: (level * 20 + 12) + 'px' }">
-            <!-- Drag Handle -->
-            <div class="mr-2 text-gray-400 hover:text-accent-500">
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                        d="M7 2a1 1 0 00-1 1v1H4a1 1 0 000 2h2v1a1 1 0 002 0V6h2a1 1 0 100-2H8V3a1 1 0 00-1-1zM7 8a1 1 0 00-1 1v1H4a1 1 0 100 2h2v1a1 1 0 002 0v-1h2a1 1 0 100-2H8V9a1 1 0 00-1-1zM7 14a1 1 0 00-1 1v1H4a1 1 0 100 2h2v1a1 1 0 002 0v-1h2a1 1 0 100-2H8v-1a1 1 0 00-1-1z"></path>
-                </svg>
-            </div>
-
-            <!-- Expand/Collapse Button -->
-            <button
-                v-if="category.children && category.children.length > 0"
-                @click="toggleExpand"
-                class="mr-2 p-0.5 rounded transition-colors focus:outline-none hover:bg-accent-100 text-accent-600">
-                <svg
-                    class="h-4 w-4 transform transition-transform"
-                    :class="{ 'rotate-90': expandedIds.has(category.id) }"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-            <div v-else class="w-6 mr-2"></div>
-
-            <!-- Category Icon -->
-            <div class="mr-2">
-                <svg
-                    v-if="category.children && category.children.length > 0"
-                    class="h-4 w-4"
+            class="group flex items-center justify-between text-normal transition-colors relative hover:bg-accent/50 py-1 pl-2"
+            :class="isActive ? 'bg-accent' : ''"
+        >
+            <div class="flex items-center">
+                <!-- Expand/Collapse Button -->
+                <button
                     :class="[
-                        category.is_active ? 'text-accent-500' : 'text-gray-300'
+                        isExpanded && category.children && category.children.length > 0 ? 'rotate-90' : '',
+                        category.children && category.children.length > 0 ? 'cursor-pointer' : ''
                     ]"
-                    fill="currentColor"
-                    viewBox="0 0 20 20">
-                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
-                </svg>
-                <svg
-                    v-else
-                    class="h-4 w-4"
-                    :class="[
-                        category.is_active ? 'text-accent-400' : 'text-gray-300'
-                    ]"
-                    fill="currentColor"
-                    viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                          d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-5L9 2H4z"
-                          clip-rule="evenodd"></path>
-                </svg>
+                    @click="toggleExpand"
+                    class="mr-2 p-0.5 rounded transition-all text-sm focus:outline-none hover:bg-accent-100 text-accent-600">
+                    <i v-if="category.children && category.children.length > 0" class="bi bi-chevron-right"></i>
+                    <i v-else class="bi bi-dash"></i>
+                </button>
+
+                <!-- Category Name -->
+                <div
+                    @click="select"
+                    class="flex-1 select-none cursor-pointer py-1 mr-2"
+                    :class="[category.is_active ? 'text-gray-900 hover:text-accent-700' : 'text-gray-400' ]">
+                    {{ category.name }}
+                </div>
+
+                <IconLoader v-if="loading" size="sm"/>
+            </div>
+            <div class="divide-x divide-x-light hidden group-hover:flex">
+                <ActionButton type="up" @click="moveUp" :disabled="!canMoveUp || loading" title="W górę"/>
+                <ActionButton type="down" @click="moveDown" :disabled="!canMoveDown || loading" title="W dół"/>
+                <ActionButton type="add" @click="addSubcategory" :disabled="loading" title="Dodaj podkategorię"/>
+                <ActionButton type="remove" @click="removeCategory" :disabled="loading" title="Usuń"/>
             </div>
 
-            <!-- Category Name -->
-            <span
-                @click="select"
-                class="flex-1 select-none cursor-pointer font-medium"
-                :class="[category.is_active ? 'text-gray-900 hover:text-accent-700' : 'text-gray-400' ]">
-                {{ category.name }}
-             </span>
-
-            <!-- Nest indicator -->
-            <div v-if="isNestTarget"
-                class="absolute right-2 top-1/2 transform -translate-y-1/2 text-accent-500">
-                <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                          clip-rule="evenodd"></path>
-                </svg>
-            </div>
         </div>
 
         <!-- Children -->
-        <div v-if="expandedIds.has(category.id) && category.children && category.children.length > 0"
-            class="border-l border-gray-200"
-            :style="{ marginLeft: (level * 20 + 16) + 'px' }">
+        <div v-if="isExpanded && category.children && category.children.length > 0"
+             class="border-l ml-4 pl-2">
             <CategoriesTreeItem
-                v-for="(child, childIndex) in category.children"
+                v-for="(child, index) in category.children"
                 :key="child.id"
                 :category="child"
-                :index="childIndex"
-                :parent-id="category.id"
-                :expanded-ids="expandedIds"
-                :level="level + 1"
-                :dragging-id="draggingId"
-                :drag-over-info="dragOverInfo"
-                @toggle-expand="$emit('toggle-expand', $event)"
-                @drag-start="$emit('drag-start', $event)"
-                @drag-end="$emit('drag-end')"
-                @drag-over="(...args) => $emit('drag-over', ...args)"
-                @drag-enter="(...args) => $emit('drag-enter', ...args)"
-                @drag-leave="$emit('drag-leave')"
-                @drop="(...args) => $emit('drop', ...args)"
+                :canMoveDown="index < category.children.length - 1"
+                :canMoveUp="index > 0"
             />
 
-            <!-- Drop zone at the end of children -->
-            <div
-                v-if="draggingId && draggingId !== category.id"
-                @dragover.prevent="$emit('drag-over', $event, category.id, category.children.length, 'position')"
-                @dragenter.prevent="$emit('drag-enter', $event, category.id, category.children.length, 'position')"
-                @dragleave="$emit('drag-leave')"
-                @drop="$emit('drop', $event, category.id, category.children.length, 'position')"
-                :class="[
-                    'h-2 mx-3 transition-colors',
-                    dragOverInfo?.parentId === category.id && dragOverInfo?.index === category.children.length && dragOverInfo?.type === 'position'
-                    ? 'bg-accent-200 border-2 border-accent-400'
-                    : 'hover:bg-gray-50'
-                ]"
-                :style="{ marginLeft: ((level + 1) * 20 + 12) + 'px' }"></div>
         </div>
     </div>
 </template>

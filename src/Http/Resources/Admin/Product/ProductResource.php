@@ -4,7 +4,8 @@ namespace Shopen\Http\Resources\Admin\Product;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Shopen\Http\Resources\Attribute\AttributeResource;
+use Shopen\Http\Resources\Admin\Attribute\AttributeResource;
+use Shopen\Http\Resources\Admin\Product\Price\ProductPriceResource;
 use Shopen\Http\Resources\MediaResource;
 
 class ProductResource extends JsonResource
@@ -14,11 +15,14 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'sku' => $this->sku,
+            'type' => $this->type,
             'ean' => $this->ean,
+            'brand_id' => $this->brand_id,
             'images' => MediaResource::collection($this->resource->getMedia()),
             'price' => ProductPriceResource::make($this->whenLoaded('price')),
             'url_key' => $this->urlRewrite?->request_path,
             'attributes' => $this->resource->getCustomAttributes(),
+            'configurable_attributes' => AttributeResource::collection($this->whenLoaded('configurableAttributes')),
             'variant_attributes' => $this->resource->getVariantAttributes(),
             'category_ids' => $this->categories->pluck('id')->toArray(),
             'is_configurable' => $this->resource->isConfigurable(),

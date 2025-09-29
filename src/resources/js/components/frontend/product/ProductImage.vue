@@ -3,13 +3,12 @@ import { computed } from 'vue';
 import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 
 const props = defineProps({
-    imageObject: {
+    urls: {
         type: Object,
         required: false,
     },
     sizes: {
         type: String,
-        required: true,
     },
     alt: {
         type: String,
@@ -31,11 +30,11 @@ const props = defineProps({
 
 // Tworzymy string dla atrybutu srcset
 const computedSrcset = computed(() => {
-    if (!props.imageObject || Object.keys(props.imageObject).length === 0) {
+    if (!props.urls || Object.keys(props.urls).length === 0) {
         return '';
     }
 
-    return Object.entries(props.imageObject)
+    return Object.entries(props.urls)
         .map(([key, url]) => {
             const width = key;
             return { width, url };
@@ -46,7 +45,7 @@ const computedSrcset = computed(() => {
 });
 
 const fallbackSrc = computed(() => {
-    return props.imageObject?.w300 || Object.values(props.imageObject)[0] || '';
+    return props.urls?.w300 || Object.values(props.urls)[0] || '';
 });
 
 const widthForSizing = props.width;
@@ -56,7 +55,7 @@ const heightForSizing = computed(() => Math.round(widthForSizing / props.aspectR
 
 <template>
     <img
-        v-if="imageObject && computedSrcset"
+        v-if="urls && computedSrcset"
         :src="fallbackSrc"
         :srcset="computedSrcset"
         :sizes="sizes"

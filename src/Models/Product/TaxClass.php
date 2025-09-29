@@ -14,7 +14,7 @@ class TaxClass extends Model
     ];
 
     protected $casts = [
-        'rate' => 'decimal:2'
+        'rate' => 'int'
     ];
 
     // Relacja z produktami

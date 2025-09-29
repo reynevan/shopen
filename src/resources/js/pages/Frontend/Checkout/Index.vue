@@ -39,7 +39,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="checkout flex flex-wrap xl:flex-no-wrap justify-center items-start">
+    <div class="checkout flex flex-wrap xl:flex-no-wrap justify-center items-start max-w-5xl mx-auto">
 
         <div class="w-full xl:w-3/5 pr-4">
 

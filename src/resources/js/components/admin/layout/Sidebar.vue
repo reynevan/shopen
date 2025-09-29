@@ -1,12 +1,19 @@
 <script setup>
 import {Link} from "@inertiajs/vue3";
+
+import {useAuthStore} from "@shopen/stores/auth.js";
+const auth = useAuthStore();
 </script>
 
 <template>
     <aside class="sidebar fixed left-0 top-0 bottom-0 w-[100px] bg-secondary py-6 z-50">
         <ul class="">
-            <li>
-                <Link :href="route('admin.dashboard')">Daszbord</Link>
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.dashboard')"
+                      class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase">Daszbord</div>
+                </Link>
             </li>
 
             <li class="mb-4 py-2 text-accent">
@@ -76,6 +83,15 @@ import {Link} from "@inertiajs/vue3";
             </li>
 
             <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.tax-classes.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase text-center">Stawki VAT</div>
+
+                </Link>
+            </li>
+
+            <li class="mb-4 py-2 text-accent">
                 <Link :href="route('admin.users.index')"
                    class="text-xs flex flex-col items-center"
                 >
@@ -89,7 +105,7 @@ import {Link} from "@inertiajs/vue3";
         <p class="menu-label">Konto</p>
         <ul class="menu-list">
             <li>
-                <a class="text-accent"> Wyloguj </a>
+                <a @click.prevent="auth.logout" class="text-accent"> Wyloguj </a>
             </li>
         </ul>
     </aside>

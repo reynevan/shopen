@@ -32,8 +32,8 @@ const updateQty = (newQty) => {
 </script>
 
 <template>
-    <div class="flex items-stretch gap-4">
-        <AmountInput :value="qty" @onChange="updateQty" :min="1"></AmountInput>
+    <div class="flex items-center gap-4">
+        <AmountInput :value="qty" @onChange="updateQty" :min="1" size="lg"/>
         <Button @click="addToCart"
                 type="success"
                 :disabled="cart.addingToCart[product.id]">
@@ -45,7 +45,3 @@ const updateQty = (newQty) => {
         </Button>
     </div>
 </template>
-
-<style scoped>
-
-</style>

@@ -28,7 +28,7 @@ const props = defineProps({
     }
 })
 
-const baseClasses = 'block w-full px-4 border border-gray-200 rounded-lg outline-none focus:ring-0 focus:ring-offset-0 focus:border-accent disabled:opacity-50 disabled:pointer-events-none transition-colors'
+const baseClasses = 'block w-full px-4 border border-gray-200 rounded-lg outline-none focus:ring-0 focus:ring-offset-0 focus:border-border-strong disabled:opacity-50 disabled:pointer-events-none transition-colors duration-500'
 
 const sizeClasses = computed(() => {
     switch (props.size) {

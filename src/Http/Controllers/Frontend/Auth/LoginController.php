@@ -2,14 +2,13 @@
 
 namespace Shopen\Http\Controllers\Frontend\Auth;
 
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Controller;
-use Shopen\Http\Requests\Admin\Auth\LoginRequest;
+use Shopen\Http\Requests\Frontend\Auth\LoginRequest;
 use Shopen\Models\Order\Order;
 use Shopen\Services\OAuthProviderService;
 
@@ -47,8 +46,7 @@ class LoginController extends Controller
             return redirect()->to($request->input('redirectTo'));
         }
 
-        $redirect = Auth::user()->isAdmin() ? url(route('admin.products.index')) : url('/');
-        return redirect()->intended($redirect);
+        return redirect()->intended(url('/'));
     }
 
     /**

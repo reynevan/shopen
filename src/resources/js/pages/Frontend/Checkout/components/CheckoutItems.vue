@@ -14,11 +14,11 @@ const cart = computed(() => page.props.cart);
         <div v-for="item in cart.items" :key="item.id" class="flex relative mb-2 pb-2 pr-2">
             <div class="mr-2 w-[50px] h-[50px] flex items-center justify-center text-no-image-icon bg-no-image-bg">
                 <div class="w-[50px]">
-                    <ProductImage :alt="item.product.name" :image-object="item.product.image" sizes="50px" :width="50"/>
+                    <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="50px" :width="50"/>
                 </div>
             </div>
             <div class="w-full">
-                <div class="font-semibold mb-2">
+                <div class="mb-2">
                     <a :href="item.product.url">
                         {{ item.product.name }}
                     </a>

@@ -2,6 +2,7 @@
 import {useForm, Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
+import {trackLogin} from "../../../utils/ga4";
 
 const props = defineProps({
     redirectTo: {
@@ -18,7 +19,12 @@ const form = useForm({
 });
 
 const submit = () => {
-    form.post(route('login'), {});
+    form.post(route('login'), {
+        onSuccess: () => {
+            console.log("login success");
+            trackLogin()
+        }
+    });
 };
 </script>
 

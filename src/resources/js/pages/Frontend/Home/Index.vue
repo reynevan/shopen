@@ -15,7 +15,7 @@ defineProps({
 <template>
     <ProductsCarousel :products="bestsellers"/>
 
-    <section class="mt-12">
+    <section class="mt-12" v-if="brands?.length">
         <h2 class="text-xl mb-2">Strefa marek</h2>
         <BrandsCarousel :brands="brands"/>
     </section>

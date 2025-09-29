@@ -34,8 +34,14 @@ const defaultPrice = {
     price: null,
     special_price: null
 };
+const defaultAttributesValues = {};
+props.attributes.forEach((attr) => {
+    defaultAttributesValues[attr.code] = null;
+})
 const form = useForm({
-    attributes: props.product?.attributes ?? [],
+    attributes: props.product.id ? props.product.attributes : defaultAttributesValues,
+    type: props.product?.type ?? 'simple',
+    configurable_attributes: props.product?.configurable_attributes ?? [],
     sku: props.product?.sku,
     ean: props.product?.ean,
     url_key: props.product?.url_key,
@@ -45,17 +51,25 @@ const form = useForm({
     up_sell_ids: props.product?.up_sell_ids ?? [],
     cross_sell_ids: props.product?.cross_sell_ids ?? [],
     images: props.product?.images ?? [],
-    uses_stock: props.product?.uses_stock,
-    stock_qty: props.product?.stock_qty,
+    uses_stock: props.product?.uses_stock ?? 0,
+    stock_qty: props.product?.stock_qty ?? 0,
     brand_id: props.product?.brand_id,
 })
 
+const brandsOptions = props.brands.map(brand => {return {id: brand.id, value: brand.name}})
 
 const save = async () => {
-    form.put(route('admin.products.update', props.product.id), {
-        preserveState: true,
-        preserveScroll: true
-    });
+    if (props.product.id) {
+        form.put(route('admin.products.update', props.product.id), {
+            preserveState: true,
+            preserveScroll: true
+        });
+    } else {
+        form.post(route('admin.products.store'), {
+            preserveState: true,
+            preserveScroll: true
+        });
+    }
 };
 
 const activeSection = ref('general');
@@ -93,16 +107,21 @@ const sections = [
 
 <template>
     <ActionsPanel back-route="admin.products.index">
-        <Button @click="save" class="button-primary">Zapisz</Button>
+        <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <div class="flex items-start gap-6">
-        <div class="sticky top-12">
+        <div class="sticky top-20">
             <FormMenu :sections="sections" @onSelect="onChangeSection"/>
         </div>
         <div class="border-l border-light pl-6 w-full">
             <div v-show="activeSection === 'general'">
                 <SectionTitle>{{ product?.id ? product.attributes.name : 'Nowy produkt' }}</SectionTitle>
-                <GeneralSection :form="form" :categories="categories" :brands="brands"/>
+                <GeneralSection
+                    v-model="form"
+                    :product="product"
+                    :categories="categories"
+                    :attributes="attributes"
+                    :brands="brandsOptions"/>
             </div>
 
             <div v-show="activeSection === 'price'">
@@ -115,7 +134,6 @@ const sections = [
                 <template v-for="attribute in attributes" :key="attribute.id">
                     <FormField
                         v-if="attribute && !attribute.is_system"
-                        :required="!!attribute.is_required"
                         :label="attribute.name"
                         :label-for="'attribute-' + attribute.code"
                     >

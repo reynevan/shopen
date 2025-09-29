@@ -29,6 +29,6 @@ class SeoDetail extends Model
 
     public function getSeoTitleAttribute()
     {
-        return $this->attributes['seo_title'] .  ' - ' . config('app.name');
+        return $this->attributes['seo_title'];
     }
 }

@@ -58,7 +58,7 @@ const typeClasses = {
 <template>
     <button
         :class="[
-          'inline-flex items-center justify-center duration-300 cursor-pointer transition-all',
+          'inline-flex gap-2 items-center justify-center duration-300 cursor-pointer transition-all',
           'disabled:cursor-not-allowed disabled:opacity-50',
           !disabled && shadow ? 'hover:shadow' : '',
           sizeClasses[size],

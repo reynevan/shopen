@@ -9,6 +9,7 @@ use Elastic\Adapter\Indices\Mapping;
 use Elastic\Adapter\Indices\Settings;
 use Illuminate\Console\Command;
 use Shopen\Models\Attribute\Attribute;
+use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
@@ -65,6 +66,16 @@ class Reindex extends Command
             ]
         ]);
 
+        $this->reindexProducts($settings);
+        $this->reindexCategories($settings);
+
+
+        $this->call('scout:import', ['model' => Product::class]);
+        $this->call('scout:import', ['model' => Category::class]);
+    }
+
+    protected function reindexProducts($settings)
+    {
         $indexName = config('scout.prefix') . 'products';
         if ($this->indexManager->exists($indexName)) {
             $this->indexManager->drop($indexName);
@@ -94,6 +105,7 @@ class Reindex extends Command
         $mapping->float('rating');
         $mapping->integer('reviews_count');
         $mapping->keyword('category_id');
+        $mapping->keyword('brand_id');
         $mapping->flattened('thumbnail', ['index' => false]);
         $mapping->text('searchable_attributes', ['analyzer' => 'polish']);
 
@@ -116,8 +128,31 @@ class Reindex extends Command
             }
         }
         $this->indexManager->create(new Index($indexName, $mapping, $settings));
+    }
 
+    private function reindexCategories(Settings $settings)
+    {
+        $indexName = config('scout.prefix') . 'categories';
+        if ($this->indexManager->exists($indexName)) {
+            $this->indexManager->drop($indexName);
+        }
+        $mapping = new Mapping();
+        $mapping->integer('id');
+        $mapping->text('name', [
+            'analyzer' => 'polish',
+            'boost' => 3,
+            'fields' => [
+                'autocomplete' => [
+                    'type' => 'text',
+                    'analyzer' => 'autocomplete_analyzer',
+                    'search_analyzer' => 'standard'
+                ],
+                'keyword' => [
+                    'type' => 'keyword',
+                ]
+            ]
+        ]);
 
-        $this->call('scout:import', ['model' => Product::class]);
+        $this->indexManager->create(new Index($indexName, $mapping, $settings));
     }
 }

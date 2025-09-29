@@ -8,12 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Shopen\Core\Support\DB;
 use Shopen\Database\Factories\ProductFactory;
 use Shopen\Models\Attribute\Attribute;
+use Shopen\Models\Brand\Brand;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Interfaces\HasCustomAttributesInterface;
 use Shopen\Models\Product\Attribute\ProductAttribute;
@@ -45,7 +47,10 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'sku',
         'ean',
         'stock_qty',
-        'in_stock'
+        'in_stock',
+        'uses_stock',
+        'type',
+        'brand_id'
     ];
 
     protected $casts = [
@@ -217,12 +222,12 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $mediaUrl;
     }
 
-    public function price()
+    public function price(): HasOne
     {
         return $this->hasOne(ProductPrice::class);
     }
 
-    public function categories()
+    public function categories(): BelongsToMany
     {
         return $this->belongsToMany(Category::class, 'category_products');
     }
@@ -237,17 +242,22 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $this->hasMany(Product::class, 'parent_id');
     }
 
-    public function configurableAttributes()
+    public function configurableAttributes(): BelongsToMany
     {
         return $this->belongsToMany(Attribute::class, 'configurable_attributes');
     }
 
-    public function reviews()
+    public function brand(): BelongsTo
+    {
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function reviews(): HasMany
     {
         return $this->hasMany(ProductReview::class);
     }
 
-    public function approvedReviews()
+    public function approvedReviews(): HasMany
     {
         return $this->reviews()->approved();
     }
@@ -326,11 +336,17 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getReviewsCountAttribute()
     {
+        if (isset($this->attributes['reviews_count'])) {
+            return $this->attributes['reviews_count'];
+        }
         return $this->approvedReviews()->count();
     }
 
     public function getRatingAttribute()
     {
+        if (isset($this->attributes['rating'])) {
+            return $this->attributes['rating'];
+        }
         return (round((float)$this->approvedReviews()->avg('rating') * 10)) / 10;
     }
 
@@ -428,7 +444,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $variantAttributes;
     }
 
-    public function createUrlRewrite($urlKey)
+    public function createUrlRewrite($urlKey = null)
     {
         $urlRewrite = UrlRewrite::query()
             ->where('entity_id', $this->id)
@@ -437,7 +453,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         if (!$urlRewrite) {
             $urlRewrite = new UrlRewrite();
         }
-        $slug = $urlKey;
+        $slug = $urlKey ?? $this->sku;
+        $slug = strtolower($slug);
+        $slug = preg_replace('~[^a-z0-9\-]+~', '-', $slug);
+        $slug = trim($slug, '-');
+        $slug = preg_replace('~-+~', '-', $slug);
         $i = 1;
         while (UrlRewrite::query()->where('request_path', $slug)->whereNot('entity_id', $this->id)->exists()) {
             $slug = $urlKey . '-' . $i++;

@@ -2,9 +2,30 @@
 import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
 import OrderItems from "../../../../components/frontend/order/OrderItems.vue";
 import OrderAmounts from "../../../../components/frontend/order/OrderAmounts.vue";
+import {Link, router} from "@inertiajs/vue3";
+import {useConfirm} from "../../../../composables/useConfirm";
+
 
 defineOptions({layout: UserPanelLayout})
-defineProps(['order'])
+const props = defineProps(['order'])
+
+const { confirm } = useConfirm();
+
+const cancelOrder = async () => {
+    const isConfirmed = await confirm({
+        title: 'Potwierdź anulowanie',
+        message: 'Czy na pewno chcesz anulować to zamówienie?',
+        confirmButtonText: 'Tak, anuluj',
+        cancelButtonText: 'Nie, wróć',
+        confirmButtonType: 'danger'
+    });
+
+    if (!isConfirmed) {
+        return;
+    }
+
+    router.put(route('user.orders.cancel', props.order.uuid))
+}
 </script>
 
 <template>
@@ -33,6 +54,7 @@ defineProps(['order'])
                         Zamówienie <span class="font-semibold">{{ order.order_number }}</span>
                     </div>
                     <div class="text-sm text-neutral-600">złożone {{ order.placed_time }}</div>
+                    <a v-if="order.can_cancel" @click.prevent="cancelOrder" class="text-sm text-red-400 hover:text-red-600 transition-all cursor-pointer">Anuluj zamówienie</a>
                 </div>
             </div>
         </div>

@@ -3,18 +3,31 @@
 namespace Shopen\Console\Commands;
 
 use Illuminate\Console\Command;
+use Shopen\Models\Attribute\Attribute;
+use Shopen\Models\User;
 
 class ShopenInstall extends Command
 {
     protected $signature = 'shopen:install';
-    protected $description = 'Installs frontend dependencies required by Shopen Core.';
+    protected $description = 'Installs Shopen';
 
     public function handle()
     {
-        $this->info('Adding Shopen Core frontend dependencies to package.json...');
+        $this->installFrontendDependencies();
+        $this->runCommand('migrate', [], $this->output);
+        $this->createAttributes();
+        $admin = User::query()->where('role', User::ROLE_ADMIN)->first();
+        if (!$admin) {
+            $this->runCommand('shopen:create-admin-user', [], $this->output);
+        }
+    }
+
+    protected function installFrontendDependencies()
+    {
+        $this->info('Adding Shopen frontend dependencies to package.json...');
 
         $packageJsonPath = base_path('package.json');
-        $shopenPackageJsonPath = __DIR__.'/../../../package.json'; // Dostosuj ścieżkę
+        $shopenPackageJsonPath = __DIR__ . '/../../../package.json';
 
         if (!file_exists($packageJsonPath)) {
             $this->error('package.json not found in your project root.');
@@ -34,7 +47,6 @@ class ShopenInstall extends Command
             return 0;
         }
 
-        // Dodajemy jako devDependencies, co jest standardem w Laravel
         $devDependencies = &$rootPackage['devDependencies'];
         $updated = false;
 
@@ -52,11 +64,79 @@ class ShopenInstall extends Command
                 json_encode($rootPackage, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
             );
             $this->info('package.json updated successfully!');
-            $this->warn('Please run "npm install" or "yarn install" to install the new dependencies.');
+            $this->info('Running npm install');
+            exec('npm install');
         } else {
             $this->info('All required dependencies are already in your package.json.');
         }
 
         return 0;
     }
+
+    protected function createAttributes()
+    {
+        $types = [Attribute::ENTITY_TYPE_PRODUCT, Attribute::ENTITY_TYPE_CATEGORY];
+        $attributesData = [
+            [
+                'name' => 'Nazwa',
+                'code' => 'name',
+                'backend_type' => 'string',
+                'frontend_type' => 'text',
+                'is_filterable' => true,
+                'is_searchable' => true,
+                'is_system' => true,
+                'is_required' => true,
+                'is_used_in_list' => true,
+                'sort_order' => 5
+            ],
+            [
+                'name' => 'Opis',
+                'code' => 'description',
+                'backend_type' => 'text',
+                'frontend_type' => 'text',
+                'is_filterable' => false,
+                'is_searchable' => true,
+                'is_system' => true,
+                'is_required' => false,
+                'is_used_in_list' => false,
+                'sort_order' => 10
+            ],
+            [
+                'name' => 'Aktywny',
+                'code' => 'is_active',
+                'backend_type' => 'bool',
+                'frontend_type' => 'bool',
+                'is_filterable' => false,
+                'is_searchable' => false,
+                'is_system' => true,
+                'is_required' => false,
+                'is_used_in_list' => false,
+                'sort_order' => 1
+            ],
+            [
+                'name' => 'Pokaż w menu',
+                'code' => 'display_in_menu',
+                'backend_type' => 'bool',
+                'frontend_type' => 'bool',
+                'is_filterable' => true,
+                'is_searchable' => true,
+                'is_system' => true,
+                'is_required' => true,
+                'entity_type' => Attribute::ENTITY_TYPE_CATEGORY,
+                'sort_order' => 10
+            ]
+        ];
+        foreach ($types as $type) {
+            foreach ($attributesData as $attributeData) {
+                $attributeData['entity_type'] = $attributeData['entity_type'] ?? $type;
+                $attribute = Attribute::query()->where('code', $attributeData['code'])->first();
+                if ($attribute) {
+                    $attribute->update($attributeData);
+                } else {
+                    Attribute::forceCreate($attributeData);
+                }
+            }
+        }
+    }
+
 }

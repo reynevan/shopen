@@ -27,12 +27,12 @@ const isSelected = (option) => {
             v-for="option in options"
             :key="option.id"
             @click="onClick(option)"
-            class="group hover:text-accent-300 transition-colors duration-350 cursor-pointer px-4 py-2 rounded border flex items-center"
-            :class="{'border-accent': isSelected(option)}">
+            class="group hover:text-accent-300 transition-colors duration-350 cursor-pointer px-4 py-2 rounded border flex gap-2 items-center"
+            :class="isSelected(option) ? 'border-strong' : 'text-neutral-400 border-light'">
 
             <i class="bi bi-circle" v-if="!isSelected(option)"></i>
-            <i class="bi bi-check-circle-fill text-accent" v-if="isSelected(option)"></i>
-            <div class="ml-2">
+            <i class="bi bi-check-circle-fill" v-if="isSelected(option)"></i>
+            <div>
                 {{ option.value }}
             </div>
 

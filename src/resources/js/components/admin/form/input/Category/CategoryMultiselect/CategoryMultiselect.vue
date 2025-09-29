@@ -1,7 +1,6 @@
 <script setup>
 import {ref, computed, onMounted, onUnmounted, watch} from 'vue'
 import CategoryTreeItem from './CategoryTreeItem.vue'
-import IconX from "../../../../icons/IconX.vue";
 
 // Props
 const props = defineProps({
@@ -107,7 +106,7 @@ onUnmounted(() => {
                 <button
                     @click.stop="removeCategory(category.id)"
                     class="ml-1 inline-flex cursor-pointer items-center p-0.5 rounded-full text-accent-400 hover:bg-accent-200 hover:text-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500">
-                    <IconX/>
+                    <i class="bi bi-x-lg"></i>
                 </button>
             </div>
 

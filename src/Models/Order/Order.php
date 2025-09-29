@@ -175,4 +175,9 @@ class Order extends Model
         $paymentMethod = app(PaymentMethodManager::class)->get($this->payment_method);
         return $paymentMethod ? $paymentMethod->getName() : null;
     }
+
+    public function canBeCancelled()
+    {
+        return $this->status == OrderStatus::NEW;
+    }
 }

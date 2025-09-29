@@ -37,7 +37,7 @@ const nameClass = props.size === 'sm' ? 'text-md' : 'text-lg';
                         <!-- Główny obrazek produktu -->
                         <ProductImage
                             v-if="product.images && product.images.length > 0"
-                            :image-object="product.images[0]"
+                            :urls="product.images[0]"
                             :sizes="productSizes"
                             :alt="product.name"
                             loading="lazy"
@@ -50,7 +50,7 @@ const nameClass = props.size === 'sm' ? 'text-md' : 'text-lg';
                             class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                         >
                             <ProductImage
-                                :image-object="product.images[1]"
+                                :urls="product.images[1]"
                                 :sizes="productSizes"
                                 :alt="product.name"
                                 loading="lazy"
@@ -66,9 +66,9 @@ const nameClass = props.size === 'sm' ? 'text-md' : 'text-lg';
                     <div class="mb-2" :class="nameClass">
                         <Link :href="product.url">{{ product.attributes.name }}</Link>
                     </div>
-                    <div v-if="size === 'md'" class="flex items-center">
+                    <div v-if="size === 'md'" class="flex items-center gap-2">
                         <RatingDisplay :rating="product.rating" size="sm"/>
-                        <div class="ml-2">{{ product.rating }} ({{ product.reviews_count }})</div>
+                        <div>{{ product.rating }} ({{ product.reviews_count }})</div>
                     </div>
                 </div>
             </div>

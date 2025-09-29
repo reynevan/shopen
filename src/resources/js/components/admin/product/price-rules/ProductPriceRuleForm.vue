@@ -4,7 +4,7 @@ import {onMounted, ref} from "vue";
 import FormField from "../../form/FormField.vue";
 import Input from "../../form/input/Input.vue";
 import AttributesSelect from "../../form/input/AttributesSelect.vue";
-import CategoryInput from "../../form/input/Category/CategoryInput.vue";
+import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
 
 const categories = ref([]);
 const attributes = ref([]);
@@ -64,7 +64,7 @@ onMounted(() => {
             </FormField>
         </section>
         <FormField label="Kategorie">
-            <CategoryInput :categories="categories" :model-value="rule.categories"/>
+            <CategoryMultiselect :categories="categories" :model-value="rule.categories"/>
         </FormField>
         <section class="mb-4">
             <AttributesSelect :attributes="attributes" :conditions="rule.attributes"/>

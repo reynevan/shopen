@@ -24,7 +24,7 @@ readonly class ProductsIndexController
         return Inertia::render('Admin/Product/Index', [
             'products' => BaseProductResource::collection($products),
             'sort' => request('sort', 'id'),
-            'dir' => request('dir', 'desc'),
+            'dir' => request('dir', 'asc'),
             'q' => request('q')
         ]);
     }

@@ -6,11 +6,17 @@ import Input from "@shopen/components/admin/form/input/Input.vue";
 import {useForm, Link} from "@inertiajs/vue3";
 import FormMenu from "@shopen/components/admin/form/menu/FormMenu.vue";
 import {ref} from "vue";
+import AddressesSection from "./FormSections/AddressesSection.vue";
+import OrdersSection from "./FormSections/OrdersSection.vue";
 
 
 const props = defineProps({
     user: {type: Object, required: true},
     orders: {type: Array},
+    defaultShippingAddress: {type: Object },
+    defaultBillingAddress: {type: Object },
+    shippingAddresses: {type: Array },
+    billingAddresses: {type: Array },
 })
 
 const form = useForm({
@@ -78,27 +84,15 @@ const save = () => {
                 </FormField>
             </section>
 
+            <section v-show="activeSection === 'addresses'">
+                <AddressesSection :defaultShippingAddress="defaultShippingAddress"
+                                  :defaultBillingAddress="defaultBillingAddress"
+                                  :shippingAddresses="shippingAddresses"
+                                  :billingAddresses="billingAddresses"/>
+            </section>
+
             <section v-show="activeSection === 'orders'">
-                <table class="w-full">
-                    <thead>
-                    <tr>
-                        <th>Numer</th>
-                        <th>Status</th>
-                        <th>Wartość</th>
-                        <th>Akcja</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="order in orders">
-                        <td> {{ order.order_number }}</td>
-                        <td>{{ order.status_label }}</td>
-                        <td>{{ order.total_amount }}</td>
-                        <td>
-                            <Link :href="route('admin.orders.show', order.id)">Szczegóły</Link>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+                <OrdersSection :orders="orders" />
             </section>
 
         </div>

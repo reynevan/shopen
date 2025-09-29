@@ -9,9 +9,12 @@ defineProps({
 
 <template>
 
-    <div class="bg-accent px-4 py-4 mb-8 flex gap-6 items-center justify-between">
-        <Link v-if="backRoute" :href="route(backRoute)"><Button type="ghost">Wstecz</Button></Link>
-        <div class="w-full flex items-center justify-end gap-4">
+    <div class="bg-accent px-4 py-4 mb-8 flex gap-6 items-center justify-between sticky top-0 z-100 h-[72px]">
+        <div class="flex items-center">
+            <Link v-if="backRoute" :href="route(backRoute)"><Button type="ghost">Wstecz</Button></Link>
+            <slot name="title"/>
+        </div>
+        <div class="flex items-center justify-end gap-4">
             <slot name="default"/>
         </div>
     </div>

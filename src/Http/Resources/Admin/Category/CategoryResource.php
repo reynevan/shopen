@@ -22,8 +22,10 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'children' => CategoryResource::collection($this->children),
+            'parent_id' => $this->parent_id,
+            'children' => CategoryResource::collection($this->whenLoaded('children')),
             'is_active' => $this->is_active,
+            'display_in_menu' => $this->display_in_menu,
             'sort_index' => $this->sort_index,
             'attributes' => $this->resource->getCustomAttributes(),
             'menu_image_url' => $this->resource->getMenuImageUrl(),

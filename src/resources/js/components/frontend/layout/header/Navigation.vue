@@ -49,7 +49,7 @@ const closeMenu = () => {
              @mouseover="openMenu"
              @mouseleave="closeMenu">
             <div
-                class="nav-link group-hover/parent:shadow-lg border border-transparent group-hover/parent:border-border-light px-4 py-2"
+                class="nav-link group-hover/parent:shadow-lg group-hover/parent:underline px-4 py-2"
                 :class="category.subcategories.length > 0 ? 'has-subcategories rounded-t-md' : 'rounded-md'">
                 <Link :href="category.url" class="text-lg text-gray-700">
                     {{ category.name }}
@@ -106,7 +106,7 @@ const closeMenu = () => {
         >
             <div
                 v-show="isOpen"
-                class="fixed top-0 left-0 right-0 bottom-0 bg-black/20"
+                class="fixed top-0 left-0 right-0 bottom-0 bg-black/20 z-2"
             ></div>
         </transition>
     </Teleport>

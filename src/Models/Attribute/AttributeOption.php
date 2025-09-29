@@ -9,6 +9,12 @@ class AttributeOption extends Model
 {
     use HasSlug;
 
+    protected $fillable = [
+        'attribute_id',
+        'value',
+        'color'
+    ];
+
     protected function slugAttribute(): string {
         return 'value';
     }

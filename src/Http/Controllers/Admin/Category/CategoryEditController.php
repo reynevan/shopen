@@ -2,7 +2,10 @@
 
 namespace Shopen\Http\Controllers\Admin\Category;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -13,6 +16,7 @@ use Shopen\Models\Category\Category;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Services\CustomAttributesService;
+use Throwable;
 
 readonly class CategoryEditController
 {
@@ -23,43 +27,91 @@ readonly class CategoryEditController
     )
     {}
 
-    public function edit(Category $category): Response
+    public function edit($id)
     {
-        $categories = $this->categoryRepository->getAll(0);
+        $category = Category::find($id);
+        if (!$category) {
+            return redirect(route('admin.categories.index'));
+        }
         $this->customAttributesService->preloadCategoryAttributes();
-        $attributes = $this->categoryAttributeRepository->getAll();
         $category->seo = $category->getSeoForWebsite(1);
 
         return Inertia::render('Admin/Category/Index', [
-            'categories' => CategoryResource::collection($categories),
-            'category' => CategoryResource::make($category),
-            'attributes' => AttributeResource::collection($attributes)
+            'categories' => fn() => $this->categoryRepository->getArray($category->id),
+            'category' => fn() => CategoryResource::make($category),
+            'attributes' => fn() => AttributeResource::collection($this->categoryAttributeRepository->getAll())
         ]);
     }
 
     public function update(UpdateCategoryRequest $request, Category $category): RedirectResponse
     {
-        $validated = $request->validated();
-        foreach ($validated['attributes'] as $key => $value) {
-            if ($value) {
-                $category->setCustomAttribute($key, $value);
+        DB::beginTransaction();
+        try {
+            $validated = $request->validated();
+            foreach ($validated['attributes'] as $key => $value) {
+                if ($value) {
+                    $category->setCustomAttribute($key, $value);
+                }
             }
+
+            if ($request->hasFile('image_menu')) {
+                $category->clearMediaCollection('menu-image');
+                $category
+                    ->addMedia($request->file('image_menu'))
+                    ->toMediaCollection('menu-image');
+
+            } elseif ($validated['remove_image_menu']) {
+                $category->clearMediaCollection('menu-image');
+            }
+            unset($validated['attributes']);
+            $category->setParentId($validated['parent_id'] ?? null);
+            $category->fill($validated);
+            $category->save();
+            $category->urlRewrites()->delete();
+            $category->generateUrlRewrite();
+            DB::commit();
+            return back()->with('success', 'Kategoria została zapisana.');
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
+            return back()->with('error', 'Wystąpił błąd przy zapisie kategorii.');
         }
+    }
 
-        if ($request->hasFile('image_menu')) {
-            $category->clearMediaCollection('menu-image');
-            $category
-                ->addMedia($request->file('image_menu'))
-                ->toMediaCollection('menu-image');
-
-        } elseif ($validated['remove_image_menu']) {
-            $category->clearMediaCollection('menu-image');
+    public function move(Category $category): RedirectResponse
+    {
+        $dir = request('dir');
+        if (!$dir) {
+            return back();
         }
+        $index = $category->sort_index;
+        $nextCategory = Category::query()
+            ->where('level', $category->level)
+            ->when($dir === 'up', function (Builder $query) use ($index) {
+                $query
+                    ->where('sort_index', '<', $index)
+                    ->orderBy('sort_index', 'desc');
+            })
+            ->when($dir !== 'up', function (Builder $query) use ($index) {
+                $query
+                    ->where('sort_index', '>', $index)
+                    ->orderBy('sort_index');
+            })
+            ->first();
+        if ($nextCategory) {
+            $newIndex = $nextCategory->sort_index;
+            $nextCategory->sort_index = $index;
+            $nextCategory->save();
 
-        unset($validated['attributes']);
-        $category->fill($validated);
-        $category->save();
-
+            $category->sort_index = $newIndex;
+            $category->save();
+        }
         return back();
+    }
+
+    public function destroy(Category $category): RedirectResponse
+    {
+        $category->delete();
+        return back()->with('success', 'Kategoria została usunięta.');
     }
 }

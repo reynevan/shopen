@@ -5,7 +5,6 @@ import Button from "@shopen/components/admin/ui/Button.vue";
 import FormField from "@shopen/components/admin/form/FormField.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
-import Select from "@shopen/components/admin/form/input/Select.vue";
 import {ref} from "vue";
 import ImageInput from "@shopen/components/admin/form/input/ImageInput.vue";
 
@@ -20,10 +19,10 @@ const form = useForm({
     description: props.brand?.description,
     slug: props.brand?.slug,
     logo: props.brand?.logo,
-    meta_title: props.brand?.meta_title,
-    meta_description: props.brand?.meta_description,
-    meta_keywords: props.brand?.meta_keywords,
-    is_active: props.brand?.is_active,
+    seo_title: props.brand?.seo?.seo_title,
+    seo_description: props.brand?.seo?.seo_description,
+    is_active: props.brand?.is_active ?? false,
+    show_on_homepage: props.brand?.show_on_homepage ?? false,
 
 })
 const logo = ref(props.brand?.logo_url);
@@ -77,6 +76,10 @@ const previewImage = (event) => {
             <Toggle v-model="form.is_active" id="is_active"/>
         </FormField>
 
+        <FormField label="Pokaż na stronie głównej">
+            <Toggle class="pt-2" v-model="form.show_on_homepage"/>
+        </FormField>
+
         <FormField
             :required="true"
             :error="form.errors.name"
@@ -104,15 +107,15 @@ const previewImage = (event) => {
         </FormField>
 
         <FormField
-            :error="form.errors.meta_title"
-            label="Tytuł SEO" label-for="meta_title">
-            <Input v-model="form.meta_title" id="meta_title"/>
+            :error="form.errors.seo_title"
+            label="Tytuł SEO" label-for="seo_title">
+            <Input v-model="form.seo_title" id="seo_title"/>
         </FormField>
 
         <FormField
-            :error="form.errors.meta_description"
-            label="Opis SEO" label-for="meta_description">
-            <Input v-model="form.meta_description" id="meta_description"/>
+            :error="form.errors.seo_description"
+            label="Opis SEO" label-for="seo_description">
+            <Input v-model="form.seo_description" id="seo_description"/>
         </FormField>
 
     </div>

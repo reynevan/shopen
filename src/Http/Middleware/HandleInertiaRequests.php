@@ -3,6 +3,7 @@
 namespace Shopen\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
 use Inertia\Middleware;
 use Shopen\Core\Context;
@@ -22,7 +23,7 @@ class HandleInertiaRequests extends Middleware
         protected readonly Context $context,
     )
     {
-        $this->rootView = $this->context->isAdmin() ? 'admin' : 'app';
+        $this->rootView = Route::is('admin.*') ? 'admin' : 'app';
     }
 
     /**
@@ -55,23 +56,29 @@ class HandleInertiaRequests extends Middleware
     {
         $data = [
             'errors' => fn() => $this->resolveValidationErrors($request),
-            'auth' => [
+            'auth' => fn() => [
                 'user' => $request->user(),
             ],
-            'ziggy' => [
+            'ziggy' => fn () => [
                 ...(new Ziggy)->toArray(),
                 'location' => $request->url(),
                 'name' => $request->route()->getName()
             ],
-            'csrf_token' => csrf_token(),
+            'csrf_token' => fn() => csrf_token(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
                 'warning' => fn () => $request->session()->get('warning'),
                 'info' => fn () => $request->session()->get('info'),
+                'validation_status' => fn () => $request->session()->get('validation_status'),
+                'validation_message' => fn () => $request->session()->get('validation_message'),
+                'validation_summary' => fn () => $request->session()->get('validation_summary'),
+                'validation_errors' => fn () => $request->session()->get('validation_errors'),
+                'validation_warnings' => fn () => $request->session()->get('validation_warnings'),
+                'is_validated' => fn () => $request->session()->get('is_validated'),
             ],
         ];
-        if ($this->context->isAdmin()) {
+        if (Route::is('admin.*')) {
 
         } else {
             $data['cart'] = function () use ($request) {
@@ -98,6 +105,7 @@ class HandleInertiaRequests extends Middleware
                 ->withCount('products')
                 ->orderBy('name')
                 ->get();
+            $data['gtag_id'] = fn() => config('services.gtm.id', null);
         }
         return $data;
     }

@@ -205,6 +205,7 @@ onUnmounted(() => {
                                 @change="toggleFilter(attribute.slug, option.slug)"
                                 class="w-4 h-4 text-blue-600 border-gray-300 rounded"
                             >
+                            <span v-if="option.color" class="w-6 h-6 inline-block rounded border" :style="{'background-color': option.color}"></span>
                             <span class="flex-1 text-sm text-gray-700">
                                 {{ option.value }}
                                 <data :value="option.count" class="text-gray-500 ml-1">({{ option.count }})</data>

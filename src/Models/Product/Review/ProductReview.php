@@ -58,6 +58,11 @@ class ProductReview extends Model
         return $query->whereIn('status', [ReviewStatus::APPROVED, ReviewStatus::PENDING_EDIT]);
     }
 
+    public function scopePending($query)
+    {
+        return $query->whereIn('status', [ReviewStatus::PENDING, ReviewStatus::PENDING_EDIT]);
+    }
+
     public function getHelpfulnessScoreAttribute()
     {
         return $this->helpful_votes_count - $this->unhelpful_votes_count;

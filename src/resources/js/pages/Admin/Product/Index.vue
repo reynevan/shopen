@@ -13,8 +13,16 @@ const props = defineProps({
 })
 </script>
 <template>
-    <PageTitle>Produkty</PageTitle>
     <ActionsPanel>
+        <template #title>
+            <PageTitle>Produkty</PageTitle>
+        </template>
+        <Link :href="route('admin.products.import')">
+            <Button>Import</Button>
+        </Link>
+        <Link :href="route('admin.products.export')">
+            <Button>Eksport</Button>
+        </Link>
         <Link :href="route('admin.products.create')">
             <Button>Nowy produkt</Button>
         </Link>

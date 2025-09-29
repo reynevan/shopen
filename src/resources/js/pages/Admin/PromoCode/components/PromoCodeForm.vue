@@ -1,13 +1,13 @@
 <script setup>
 
-import AttributesSelect from "../form/input/AttributesSelect.vue";
-import FormField from "../form/FormField.vue";
-import CategoryInput from "../form/input/Category/CategoryInput.vue";
-import Toggle from "../form/input/Toggle.vue";
-import Input from "../form/input/Input.vue";
-import DateInput from "../form/input/DateInput.vue";
-import FormHeader from "../form/FormHeader.vue";
+import AttributeConditionsSelect from "@shopen/pages/Admin/PromoCode/components/AttributeConditionsSelect.vue";
+import FormField from "@shopen/components/admin/form/FormField.vue";
+import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
+import Input from "@shopen/components/admin/form/input/Input.vue";
+import DateInput from "@shopen/components/admin/form/input/DateInput.vue";
+import FormHeader from "@shopen/components/admin/form/FormHeader.vue";
 import {Link, router} from "@inertiajs/vue3";
+import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
 
 const props = defineProps(['promoCode', 'attributes', 'categories']);
 
@@ -108,12 +108,12 @@ const save = () => {
             </FormField>
 
             <FormField label="Kategorie">
-                <CategoryInput :categories="categories" v-model="promoCode.categories"/>
+                <CategoryMultiselect :categories="categories" v-model="promoCode.categories"/>
             </FormField>
 
             <FormField label="Atrybuty">
                 <div>
-                    <AttributesSelect :attributes="attributes" :conditions="promoCode.attributes"/>
+                    <AttributeConditionsSelect :attributes="attributes" :conditions="promoCode.attributes"/>
                 </div>
             </FormField>
         </section>

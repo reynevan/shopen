@@ -40,7 +40,7 @@ class ProductReviewsEditController
         return back();
     }
 
-    public function delete(ProductReview $review): RedirectResponse
+    public function destroy(ProductReview $review): RedirectResponse
     {
         $review->delete();
         $review->product->searchable();

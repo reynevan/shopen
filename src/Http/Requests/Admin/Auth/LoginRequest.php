@@ -41,11 +41,20 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! Auth::guard('admin')->attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+        $user = Auth::guard('admin')->user();
+
+        // Sprawdź czy user ma uprawnienia admina
+        if (!$user->isAdmin()) {
+            Auth::guard('admin')->logout();
+            throw ValidationException::withMessages([
+                'email' => 'Brak uprawnień administratora.',
             ]);
         }
         RateLimiter::clear($this->throttleKey());

@@ -4,7 +4,7 @@ import DataTable from "../table/DataTable.vue";
 import TableColumn from "../table/TableColumn.vue";
 import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
-import Input from "../form/input/Input.vue";
+import ActionButton from "../ui/ActionButton.vue";
 
 const props = defineProps({
     products: Object
@@ -23,27 +23,43 @@ const onSort = (field, dir) => {
         sort: field,
         dir: dir,
         q: search.value
-    }, {})
+    })
 }
 
-const onSearch = () => {
+const onSearch = (query) => {
+    if (query === search.value || (!query && !search.value)) {
+        return;
+    }
+    search.value = query;
+
     router.get(route('admin.products.index'), {
         sort: sort,
         dir: dir,
         q: search.value
-    }, {})
+    },)
+}
+
+const onPaginate = (page) => {
+    router.get(route('admin.products.index'), {
+        page: page,
+        sort: sort,
+        dir: dir,
+        q: search.value
+    },)
+}
+
+const removeProduct = (product) => {
+    if (!confirm(`Na pewno chcesz usunąć produkt ${product.sku}?`)) {
+        return;
+    }
+    router.delete(route('admin.products.delete', product.id), {
+        preserveScroll: true,
+    })
 }
 
 </script>
 
 <template>
-
-    <form @submit.prevent="onSearch" class="my-4 pr-4">
-        <div class="flex justify-end">
-            <Input v-model="search" id="search" class="mr-2 max-w-md"/>
-            <button type="submit">Szukaj</button>
-        </div>
-    </form>
 
     <DataTable
         table-class="w-full"
@@ -52,7 +68,12 @@ const onSearch = () => {
         :default-sort="[sort, dir]"
         :data="products.data"
         paginated
+        basic-paginated
+        @onPaginate="onPaginate"
         :meta="products.meta"
+        searchable
+        @onSearch="onSearch"
+        :query="search"
     >
         <TableColumn field="id" label="ID" sortable v-slot="data" width="75px">
             {{ data.row.id }}
@@ -92,8 +113,13 @@ const onSearch = () => {
             {{ data.row.price ? data.row.price.final_price_formatted : '' }}
         </TableColumn>
 
-        <TableColumn label="-" v-slot="data" width="100px">
-            <Link :href="route('admin.products.edit', data.row.id)" class="text-link cursor-pointer">Edytuj</Link>
+        <TableColumn label="Akcje" v-slot="data" width="100px">
+            <div class="flex">
+                <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer">
+                    <ActionButton type="edit"/>
+                </Link>
+                <ActionButton @click="removeProduct(data.row)" type="remove"/>
+            </div>
         </TableColumn>
 
     </DataTable>

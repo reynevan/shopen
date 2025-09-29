@@ -3,23 +3,47 @@ import FormField from "@shopen/components/admin/form/FormField.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import Select from "@shopen/components/admin/form/input/Select.vue";
 import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
-import CategoryInput from "@shopen/components/admin/form/input/Category/CategoryInput.vue";
+import AttributesSelect from "@shopen/components/admin/form/input/AttributesSelect.vue";
+import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
+
+const form = defineModel();
 
 const props = defineProps({
-    form: {type: Object, required: true},
+    product: {type: Object},
     categories: { type: Array },
+    attributes: { type: Array },
     brands: { type: Array },
 
 })
+
+const types = [
+    {id: 'simple', value: 'Prosty'},
+    {id: 'configurable', value: 'Konfigurowalny'},
+];
 </script>
 
 <template>
     <FormField
-        :required="true"
         label="Aktywny" label-for="is_active">
-
         <Toggle v-model="form.attributes.is_active" id="is_active"/>
+    </FormField>
 
+    <FormField
+        label-for="type"
+        label="Typ">
+        <Select v-model="form.type" id="type" :options="types" :disabled="product.id"/>
+    </FormField>
+
+    <FormField
+        v-if="form.type === 'configurable'"
+        label-for="configurable_attributes"
+        label="Atrybuty konfigurowalne">
+        <AttributesSelect v-model="form.configurable_attributes"
+                          id="configurable_attributes"
+                          :attributes="attributes"
+                          :types="['select', 'bool']"
+                          :disabled="product.id"
+        />
     </FormField>
 
     <FormField
@@ -53,7 +77,7 @@ const props = defineProps({
         label-for="categories"
         label="Kategorie">
 
-        <CategoryInput v-model="form.category_ids" :categories="categories"/>
+        <CategoryMultiselect v-model="form.category_ids" :categories="categories"/>
     </FormField>
 
     <FormField
@@ -73,8 +97,7 @@ const props = defineProps({
     <FormField
         label-for="brand_id"
         label="Marka">
-        <Select v-model="form.brand_id" id="brand_id" :options="brands">
-        </Select>
+        <Select v-model="form.brand_id" id="brand_id" :options="brands"/>
     </FormField>
 
 </template>

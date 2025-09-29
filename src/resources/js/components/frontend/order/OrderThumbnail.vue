@@ -8,7 +8,7 @@ const props = defineProps(['order']);
 </script>
 
 <template>
-    <Link :href="route('user.orders.show', order.id)">
+    <Link :href="route('user.orders.show', order.uuid)">
         <div
             class="order-thumbnail cursor-pointer group flex flex-col sm:flex-row sm:items-stretch justify-between">
             <div class="flex-shrink-0 sm:pr-4 mb-4 sm:mb-0">

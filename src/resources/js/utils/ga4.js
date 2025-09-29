@@ -12,10 +12,10 @@ export const trackPageView = (pageTitle = null, pagePath = null) => {
 };
 
 export const trackSearch = (searchTerm, resultsCount = null) => {
-    gtag && gtag('event', 'search', {
-        search_term: searchTerm,
-        ...(resultsCount !== null && { search_results: resultsCount })
-    });
+    dataLayer && dataLayer.push({
+        event: 'search', search_term: searchTerm,
+        ...(resultsCount !== null && { search_results: resultsCount})
+        });
 };
 
 // ===== EVENTY PRODUKTÓW =====
@@ -251,9 +251,7 @@ export const trackSignUp = (method = 'email') => {
 };
 
 export const trackLogin = (method = 'email') => {
-    gtag && gtag('event', 'login', {
-        method: method
-    });
+    dataLayer && dataLayer.push({event: 'login', method: method});
 };
 
 // ===== EVENTY RECENZJI =====

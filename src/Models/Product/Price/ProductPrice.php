@@ -15,6 +15,8 @@ class ProductPrice extends Model
         'special_price_from',
         'special_price_to',
         'omnibus_price',
+        'product_id',
+        'rule_id'
     ];
 
     protected function casts(): array

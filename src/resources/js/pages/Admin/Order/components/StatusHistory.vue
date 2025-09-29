@@ -13,20 +13,24 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post(route('admin.orders.updateStatus', props.order.id), {
+    form.post(route('admin.orders.update-status', props.order.id), {
         preserveState: true,
         preserveScroll: true
     })
+}
+
+const statusOptions = [];
+for (let id in props.orderStatuses) {
+    statusOptions.push({id, value: props.orderStatuses[id] });
 }
 </script>
 
 <template>
     <div>
         <form @submit.prevent="submit">
-            {{ form.status }}
             <div class="mb-2">
                 <label for="status">Status</label>
-                <Select id="status" v-model="form.status" :options="orderStatuses"/>
+                <Select id="status" v-model="form.status" :options="statusOptions"/>
             </div>
             <div class="mb-2">
                 <label for="comment">Komentarz</label>
@@ -38,7 +42,7 @@ const submit = () => {
                 <label for="notify_user">Powiadom kupującego przez email</label>
             </div>
             <div>
-                <Button submit>Zapisz</Button>
+                <Button role="submit">Zapisz</Button>
             </div>
         </form>
 

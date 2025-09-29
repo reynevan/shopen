@@ -2,10 +2,14 @@
 
 import IconPhone from "../../../icons/IconPhone.vue";
 import IconMail from "../../../icons/IconMail.vue";
+import NewsletterForm from "../../newsletter/NewsletterForm.vue";
 </script>
 
 <template>
     <footer class="footer py-10 px-6 border-t border-light ">
+        <div class="py-10 px-10">
+            <NewsletterForm/>
+        </div>
         <div class="flex flex-col sm:flex-row gap-4 justify-between mx-auto max-w-7xl px-4">
             <div>
                 <div class="font-semibold text-xl">Promocje i inspiracje</div>

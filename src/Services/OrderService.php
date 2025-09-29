@@ -103,7 +103,7 @@ readonly class OrderService
             $this->restoreStock($order);
         }
 
-        $this->sendOrderStatusChangedNotification($order, $oldStatus);
+        $this->sendOrderStatusChangedNotification($order);
 
         return $order;
     }
@@ -305,12 +305,12 @@ readonly class OrderService
         }
     }
 
-    private function sendOrderStatusChangedNotification(Order $order, string $oldStatus): void
+    private function sendOrderStatusChangedNotification(Order $order): void
     {
         try {
             $email = $order->getCustomerEmail();
             if ($email) {
-                Mail::to($email)->queue(new OrderStatusChanged($order, $oldStatus));
+                Mail::to($email)->queue(new OrderStatusChanged($order));
             }
         } catch (\Exception $e) {
             logger()->error('Failed to send order status changed email', [

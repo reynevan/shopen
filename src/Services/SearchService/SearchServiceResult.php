@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Shopen\Http\Resources\Attribute\FilterResource;
+use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
@@ -18,7 +19,6 @@ class SearchServiceResult
 
     protected function parseProducts($sortIds = null): Collection
     {
-        $time = microtime(true);
         $resultIds = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
         if (!$resultIds || !count($resultIds)) {
             return new Collection();
@@ -40,9 +40,22 @@ class SearchServiceResult
             $product->reviews_count = $source['reviews_count'] ?? 0;
             $product->images = $source['thumbnail_url'];
         }
-
-        config('app.debug') && Log::debug('[TIME] searchProducts: ' . (microtime(true) - $time));
         return $products;
+    }
+
+    protected function parseCategories($sortIds = null): Collection
+    {
+        $resultIds = Arr::pluck($this->searchResult['hits']['hits'], '_source.id');
+        if (!$resultIds || !count($resultIds)) {
+            return new Collection();
+        }
+        $ids =  implode(',', $sortIds ?? $resultIds);
+
+        return Category::query()
+            ->with(['urlRewrite'])
+            ->whereIn('id', $resultIds)
+            ->orderByRaw("FIELD(id, $ids)")
+            ->get();
     }
 
     public function getPriceFilters(): array
@@ -72,6 +85,11 @@ class SearchServiceResult
     public function products(): Collection
     {
         return $this->parseProducts();
+    }
+
+    public function categories(): Collection
+    {
+        return $this->parseCategories();
     }
 
     public function sortedProducts($sortIds): Collection

@@ -5,6 +5,7 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Input from "@shopen/components/admin/form/input/Input.vue";
+import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
 
 defineProps(['brands'])
 
@@ -21,8 +22,6 @@ const onSort = (field, dir) => {
         sort: field,
         dir: dir,
         q: search.value
-    }, {
-
     })
 }
 
@@ -31,9 +30,16 @@ const onSearch = () => {
         sort: sort,
         dir: dir,
         q: search.value
-    }, {
-
     })
+}
+const removeBrand = (brand) => {
+    if (!confirm(`Na pewno chcesz usunąć markę ${brand.name}?`)) {
+        return;
+    }
+    router.delete(route('admin.brands.delete', brand.id), {
+        preserveScroll: true,
+    })
+
 }
 </script>
 
@@ -69,14 +75,27 @@ const onSearch = () => {
             </div>
         </TableColumn>
 
+        <TableColumn field="is_active" label="Na stronie głównej" sortable v-slot="data">
+            <div v-if="data.row.show_on_homepage" class="px-2 py-1 text-xs bg-green-100 text-green-700 inline-flex items-center gap-2 rounded">
+                <i class="bi bi-check-lg"></i> TAK
+            </div>
+            <div v-else class="px-2 py-1 text-xs bg-neutral-100 text-neutral-700 inline-flex items-center gap-2 rounded">
+                <i class="bi bi-x-lg"></i> NIE
+            </div>
+        </TableColumn>
+
         <TableColumn field="logo" label="Logo" v-slot="data">
-            <img v-if="data.row.logo" :src="data.row.logo">
+            <img v-if="data.row.logo_url" :src="data.row.logo_url">
         </TableColumn>
 
         <TableColumn field="-" label="Akcje" v-slot="data" width="75px">
-            <Link :href="route('admin.attributes.edit', data.row.id)">Szczegóły</Link>
+            <div class="flex gap-1">
+                <Link :href="route('admin.brands.edit', data.row.id)" class="text-accent cursor-pointer">
+                    <ActionButton type="edit"/>
+                </Link>
+                <ActionButton @click="removeBrand(data.row)" type="remove"/>
+            </div>
         </TableColumn>
-
 
     </DataTable>
 </template>

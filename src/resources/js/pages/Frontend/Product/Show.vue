@@ -13,6 +13,7 @@ import ProductStructredData from "@shopen/components/frontend/product/ProductStr
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import AddToShoppingListButton from "../../../components/frontend/shoppingList/AddToShoppingListButton.vue";
 import ProductDescription from "./components/ProductDescription.vue";
+import ProductBrand from "./components/ProductBrand.vue";
 
 defineOptions({layout: AppLayout})
 
@@ -57,13 +58,17 @@ const props = defineProps({
 
                 <VariantSelect :variants="variants"/>
 
-                <AddToCartButton :productId="product.id" v-if="product.in_stock"></AddToCartButton>
-                <div v-else>
-                    <Button type="disabled" disabled>
-                        Produkt chwilowo niedostępny
-                    </Button>
-                </div>
+                <section class="mb-8">
+                    <AddToCartButton :product="product" v-if="product.in_stock"></AddToCartButton>
+                    <div v-else>
+                        <Button type="disabled" disabled>
+                            Produkt chwilowo niedostępny
+                        </Button>
+                    </div>
+                </section>
                 <div>
+                    <ProductBrand :product="product"/>
+
                     <ProductAttributes :product="product" :attributes="attributes"/>
                 </div>
             </section>

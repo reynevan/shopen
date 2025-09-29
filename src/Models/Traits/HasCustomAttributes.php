@@ -5,6 +5,7 @@ namespace Shopen\Models\Traits;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Attribute\AttributeOption;
 use Shopen\Models\Category\Category;
@@ -187,7 +188,7 @@ trait HasCustomAttributes
             return $query;
         }
         $valueTable = $this->getEntityType() . '_attribute_' . $attribute->backend_type;
-
+        $isLikeSearch = Str::startsWith($value, '%') || Str::endsWith($value, '%');
         $subQuery = self::query()
             ->select($this->getTable() . '.id')
             ->leftJoin($valueTable, function (JoinClause $join) use ($valueTable, $attribute, $value) {
@@ -199,7 +200,12 @@ trait HasCustomAttributes
                     });
 
             })
-            ->where("{$valueTable}.value", $value);
+            ->when($isLikeSearch, function (Builder $query) use ($valueTable, $value) {
+                $query->whereLike("{$valueTable}.value", $value);
+            })
+            ->when(!$isLikeSearch, function (Builder $query) use ($valueTable, $value) {
+                $query->where("{$valueTable}.value", $value);
+            });
 
         if (strtolower($operator) === 'or') {
             return $query->orWhereIn($this->getTable() . '.id', $subQuery);
@@ -255,7 +261,7 @@ trait HasCustomAttributes
             $this->customAttributes[$attribute->code] = $attributeValue;
             return $attributeValue;
         }
-        if ($this->parent_id && $this->parent) {
+        if ($this->getEntityType() === Product::ENTITY_TYPE && $this->parent_id && $this->parent) {
             $attributeValue = $this->parent->loadAttribute($attribute);
             $this->customAttributes[$attribute->code] = $attributeValue ?? null;
             return $attributeValue ?? null;

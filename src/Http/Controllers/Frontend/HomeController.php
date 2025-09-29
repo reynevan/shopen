@@ -15,13 +15,12 @@ class HomeController extends Controller
         protected readonly SearchService $searchService,
         protected readonly BrandRepository $brandRepository,
     )
-    {
-    }
+    {}
 
     public function index()
     {
         $bestsellers = $this->searchService->setCategoryId(1)->setLimit(20)->getProducts()->products();
-        $brands = $this->brandRepository->getActive();
+        $brands = $this->brandRepository->getVisibleOnHomepage();
 
         return Inertia::render('Frontend/Home/Index', [
                 'bestsellers' => ProductResource::collection($bestsellers),

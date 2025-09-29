@@ -7,6 +7,7 @@ use Shopen\Http\Controllers\Frontend\Api\CategoriesController as ApiCategoriesCo
 use Shopen\Http\Controllers\Frontend\Api\CheckoutController as ApiCheckoutController;
 use Shopen\Http\Controllers\Frontend\Api\ProductReviewsController;
 use Shopen\Http\Controllers\Frontend\Api\UsersController as ApiUsersController;
+use Shopen\Http\Controllers\Frontend\Brand\BrandShowController;
 use Shopen\Http\Controllers\Frontend\Cart\CartIndexController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutIndexController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutLoginController;
@@ -14,6 +15,7 @@ use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderConfirmationControlle
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutUpdateController;
 use Shopen\Http\Controllers\Frontend\HomeController;
+use Shopen\Http\Controllers\Frontend\Newsletter\NewsletterController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewUpdateController;
@@ -22,12 +24,14 @@ use Shopen\Http\Controllers\Frontend\SearchController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListIndexController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListItemController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListShowController;
+use Shopen\Http\Controllers\Frontend\User\Order\UserOrderCancelController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrdersIndexController;
 use Shopen\Http\Controllers\Frontend\User\UserAddressesIndexController;
 use Shopen\Http\Controllers\Frontend\User\UserSettingsIndexController;
 use Shopen\Http\Controllers\Frontend\UserProfileController;
 use Shopen\Http\Dispatcher;
+use \Shopen\Http\Controllers\Frontend\Api\SearchController as ApiSearchController;
 
 if (env('APP_ENV') === 'local') {
     Route::get('/mail/{id?}', function ($id = 1) {
@@ -64,6 +68,8 @@ Route::middleware(['web'])->group(function () {
 
     Route::get('/produkt/{product}/opinie', [ProductReviewsController::class, 'index'])->name('api.products.reviews.index');
 
+    Route::get('/marka/{brand}', [BrandShowController::class, 'show'])->name('brands.show');
+
     Route::prefix('listy-zakupowe')->name('shopping-lists.')->group(function () {
         Route::get('/', [ShoppingListIndexController::class, 'index'])->name('index');
         Route::get('/{shoppingList}', [ShoppingListShowController::class, 'show'])->name('show');
@@ -74,6 +80,12 @@ Route::middleware(['web'])->group(function () {
         Route::post('/items', [ShoppingListItemController::class, 'store'])->name('items.store');
         Route::delete('/items/{shoppingList}/{product}', [ShoppingListItemController::class, 'destroy'])->name('items.destroy');
     });
+    Route::get('/zamowienia/{order:uuid}', [UserOrderShowController::class, 'show'])->name('user.orders.show');
+    Route::put('/zamowienia/{order:uuid}/anuluj', [UserOrderCancelController::class, 'cancel'])->name('user.orders.cancel');
+
+    Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+    Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+    Route::get('/newsletter/potwierdzenie-subskrypcji', [NewsletterController::class, 'confirmed'])->name('newsletter.confirmed');
 });
 
 
@@ -88,7 +100,6 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/dane-do-zamowien', [UserAddressesIndexController::class, 'index'])->name('user.addresses.index');
     Route::get('/zamowienia', [UserOrdersIndexController::class, 'index'])->name('user.orders.index');
-    Route::get('/zamowienia/{order}', [UserOrderShowController::class, 'show'])->name('user.orders.show');
     Route::get('/ustawienia', [UserSettingsIndexController::class, 'index'])->name('user.settings.index');
     Route::post('/ustawienia', [UserSettingsIndexController::class, 'update'])->name('user.settings.update');
 

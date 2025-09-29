@@ -62,7 +62,7 @@ const props = defineProps({
                             <IconX md/>
                         </button>
                     </div>
-                    <div class="overflow-y-auto flex-1 min-h-0" :class="size === 'sm' ? 'pb-2 px-4' : 'pb-8 px-8'">
+                    <div class="overflow-y-auto flex-1 min-h-0 max-w-2xl" :class="size === 'sm' ? 'pb-2 px-4' : 'pb-8 px-8'">
                         <slot/>
                     </div>
                     <div class="py-4 px-8 border-t text-lg flex-shrink-0" v-if="$slots.buttons">

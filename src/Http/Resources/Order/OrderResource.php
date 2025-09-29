@@ -15,6 +15,7 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'uuid' => $this->uuid,
             'order_number' => $this->order_number,
             'status' => $this->status,
             'status_label' => $this->status_label,
@@ -34,6 +35,7 @@ class OrderResource extends JsonResource
             'delivery_point_code' => $this->delivery_point_code,
             'shipped_at' => $this->shipped_at,
             'shipping_tracking_code' => $this->shipping_tracking_code,
+            'can_cancel' => $this->canBeCancelled()
         ];
     }
 }
