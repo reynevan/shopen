@@ -21,7 +21,7 @@ class MenuService
 
     public function getCategories()
     {
-        return Cache::remember('menu.categories', self::CACHE_TTL, function () {
+        return Cache::remember('menu.categories', config('app.debug') ? 0 : self::CACHE_TTL, function () {
             $urls = $this->getUrls();
 
             $categories = Category::query()

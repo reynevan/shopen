@@ -77,15 +77,15 @@ class ProductRepository
 
     public function getProductVariants(Product $product)
     {
-        if (!$product->parent_id) {
+        if (!$product->parent_id && !$product->isConfigurable()) {
             return [];
         }
 
-        $parent = $product->parent;
+        $parent = $product->isConfigurable() ? $product : $product->parent;
         $configurableAttributes = $parent->configurableAttributes;
         $variants = Product::query()
             ->with(['urlRewrite'])
-            ->where('parent_id', $product->parent_id)
+            ->where('parent_id', $parent->id)
             ->get();
 
         return $configurableAttributes->map(function ($attribute) use ($variants, $product, $configurableAttributes) {

@@ -58,6 +58,7 @@ readonly class CategoryEditController
                 $category->clearMediaCollection('menu-image');
                 $category
                     ->addMedia($request->file('image_menu'))
+                    ->preservingOriginal()
                     ->toMediaCollection('menu-image');
 
             } elseif ($validated['remove_image_menu']) {
