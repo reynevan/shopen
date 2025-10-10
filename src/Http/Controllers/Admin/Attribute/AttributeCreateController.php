@@ -46,7 +46,7 @@ class AttributeCreateController
             AttributeOption::create([
                 'attribute_id' => $attribute->id,
                 'value' => $optionData['value'],
-                'color' => $optionData['color'] ?? null,
+                'color' => $attribute->is_color ? ($optionData['color'] ?? null ) : null,
             ]);
         }
     }

@@ -2,20 +2,19 @@
 
 namespace Shopen\Http\Controllers\Admin\Product;
 
+use Exception;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\Product\StoreProductRequest;
-use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
-use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Jobs\RecalculateProductPrice;
-use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
@@ -33,47 +32,54 @@ readonly class ProductCreateController
 
     public function create(): Response
     {
-        $product = new Product();
         return Inertia::render('Admin/Product/Create', [
-            'product' => ProductResource::make($product),
+            'product' => ProductResource::make(new Product()),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
+            'categories' => fn () => $this->categoryRepository->getArray(),
         ]);
     }
 
-    public function store(StoreProductRequest $request, Product $product): RedirectResponse
+    public function createConfiguration(Product $product): RedirectResponse|Response
+    {
+        if (!$product->isConfigurable()) {
+            return redirect(route('admin.products.create'));
+        }
+        return Inertia::render('Admin/Product/Create', [
+            'parent' => fn () => ProductResource::make($product),
+            'product' => fn () => ProductResource::make(new Product()),
+            'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
+            'categories' => fn () => $this->categoryRepository->getArray(),
+        ]);
+    }
+
+    public function store(StoreProductRequest $request): RedirectResponse
     {
         $request->validated();
 
-        $validated = request()->validate([
-            'cross_sell_ids'   => 'nullable|array',
-            'cross_sell_ids.*' => 'exists:products,id',
-            'up_sell_ids'      => 'nullable|array',
-            'up_sell_ids.*'    => 'exists:products,id',
-            'related_ids'      => 'nullable|array',
-            'related_ids.*'    => 'exists:products,id',
-        ]);
+        $data = request()->post();
 
         DB::beginTransaction();
         try {
-            $data = request()->post();
-
             $images = request()->post('images');
 
             $price = $data['price'];
 
+            $product = new Product();
+
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock']));
+            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock', 'visibility', 'parent_id']));
 
             $product->save();
 
-            $product->createUrlRewrite($data['url_key']);
+            $product->createUrlRewrite($data['url_key'] ?? null);
 
             $product->categories()->sync($data['category_ids'] ?? []);
 
-            $product->setPrice($price);
+            if (!$product->isConfigurable()) {
+                $product->setPrice($price);
+            }
 
             if ($product->isConfigurable()) {
                 $product->configurableAttributes()->sync(Arr::pluck($data['configurable_attributes'] ?? [], 'id'));
@@ -84,19 +90,24 @@ readonly class ProductCreateController
 
             RecalculateProductPrice::dispatch($product->id);
 
-            $this->updateImages($product, $images);
+            $this->updateImages($product, $images ?? []);
 
             foreach ($product->variants as $variant) {
                 $variant->searchable();
             }
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e);
             DB::rollBack();
-            return back()->with('error', 'Wystąpił błąd przy zapisywaniu produktu');
+            throw ValidationException::withMessages([
+                'product' => 'Wystąpił błąd przy zapisywaniu produktu'
+            ]);
         }
-        return back()->with('success', 'Produkt został utworzony');
+        if ($product->parent) {
+            return back()->with('success', 'Produkt został utworzony');
+        }
+        return redirect(route('admin.products.edit', $product))->with('success', 'Produkt został utworzony');
     }
 
     protected function updateImages(Product $product, $imagesData): void

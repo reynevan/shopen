@@ -6,6 +6,12 @@ use Illuminate\Support\Str;
 
 trait HasSlug
 {
+    public static function getIdFromSlug($slug): int
+    {
+        $parts = explode('-', $slug);
+        return (int)$parts[0];
+    }
+
     protected function slugAttribute(): string {
         return 'name';
     }

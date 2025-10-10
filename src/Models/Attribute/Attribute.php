@@ -22,6 +22,7 @@ class Attribute extends Model
         'is_required' => 'bool',
         'is_visible_in_details' => 'bool',
         'is_used_in_list' => 'bool',
+        'is_color' => 'bool',
     ];
 
     protected $fillable = [
@@ -37,6 +38,7 @@ class Attribute extends Model
         'is_required',
         'is_visible_in_details',
         'is_used_in_list',
+        'is_color'
     ];
 
     protected static function newFactory()
@@ -58,6 +60,11 @@ class Attribute extends Model
     public function options()
     {
         return $this->hasMany(AttributeOption::class, 'attribute_id')->orderBy('sort_order');
+    }
+
+    public function sortedOptions()
+    {
+        return $this->hasMany(AttributeOption::class, 'attribute_id')->orderBy('value');
     }
 
     public function renderInput($value)

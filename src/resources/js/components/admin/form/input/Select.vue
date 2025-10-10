@@ -5,15 +5,18 @@
         disabled: {type: Boolean, default: false},
         valueKey: {type: String, default: 'id'},
         labelKey: {type: String, default: 'value'},
+        placeholder: {type: String},
+        error: {type: Boolean}
     })
     const model = defineModel();
 </script>
 
 <template>
     <select id="id" class="border rounded px-4 py-2"
-            :class="disabled ? 'cursor-not-allowed opacity-50' : ''"
+            :class="[disabled ? 'cursor-not-allowed opacity-50' : '', error ? 'border-red-400' : '']"
             v-model="model"
             :disabled="disabled">
+        <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
         <option v-for="option in options" :value="option[valueKey]" :key="option[valueKey]">{{ option[labelKey] }}</option>
     </select>
 </template>

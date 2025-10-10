@@ -5,6 +5,7 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Input from "@shopen/components/admin/form/input/Input.vue";
+import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
 
 defineProps(['attributes'])
 
@@ -92,7 +93,9 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn field="-" label="Akcje" v-slot="data" width="75px">
-            <Link :href="route('admin.attributes.edit', data.row.id)">Szczegóły</Link>
+            <Link :href="route('admin.attributes.edit', data.row.id)">
+                <ActionButton type="edit"/>
+            </Link>
         </TableColumn>
 
 

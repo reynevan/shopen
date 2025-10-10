@@ -10,6 +10,7 @@ const form = defineModel();
 
 const props = defineProps({
     product: {type: Object},
+    parent: {type: Object},
     categories: { type: Array },
     attributes: { type: Array },
     brands: { type: Array },
@@ -19,7 +20,14 @@ const props = defineProps({
 const types = [
     {id: 'simple', value: 'Prosty'},
     {id: 'configurable', value: 'Konfigurowalny'},
-];
+]
+
+const visibilityOptions = [
+    {id: 0, value: 'Brak'},
+    {id: 1, value: 'Kategorie'},
+    {id: 2, value: 'Wyszukiwanie'},
+    {id: 3, value: 'Kategorie i Wyszukiwanie'},
+]
 </script>
 
 <template>
@@ -29,13 +37,14 @@ const types = [
     </FormField>
 
     <FormField
+        v-if="!(parent && parent.id)"
         label-for="type"
         label="Typ">
         <Select v-model="form.type" id="type" :options="types" :disabled="product.id"/>
     </FormField>
 
     <FormField
-        v-if="form.type === 'configurable'"
+        v-if="form.type === 'configurable' && !(parent && parent.id)"
         label-for="configurable_attributes"
         label="Atrybuty konfigurowalne">
         <AttributesSelect v-model="form.configurable_attributes"
@@ -47,6 +56,12 @@ const types = [
     </FormField>
 
     <FormField
+        label-for="visibility"
+        label="Widoczność">
+        <Select v-model="form.visibility" id="visibility" :options="visibilityOptions"/>
+    </FormField>
+
+    <FormField
         :required="true"
         label-for="name"
         label="Nazwa">
@@ -54,10 +69,9 @@ const types = [
     </FormField>
 
     <FormField
-        :required="true"
         label-for="sku"
         label="Sku">
-        <Input v-model="form.sku" :required="true" id="sku"/>
+        <Input v-model="form.sku" id="sku"/>
     </FormField>
 
     <FormField

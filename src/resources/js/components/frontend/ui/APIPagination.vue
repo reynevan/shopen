@@ -10,7 +10,8 @@ const props = defineProps({
             const requiredKeys = ['current_page', 'last_page', 'total'];
             return requiredKeys.every(key => Object.prototype.hasOwnProperty.call(value, key));
         }
-    }
+    },
+    loading: { type: Boolean, default: false },
 });
 
 const emit = defineEmits(['onPaginate']);
@@ -56,6 +57,7 @@ const goToPage = () => {
 
         <ActionButton type="prev"
                       size="md"
+                      :loading="loading"
                       @click="previousPage"
                       :disabled="isFirstPage"/>
 
@@ -74,6 +76,7 @@ const goToPage = () => {
         <ActionButton type="next"
                       size="md"
                       @click="nextPage"
+                      :loading="loading"
                       :disabled="isLastPage"/>
     </div>
 </template>

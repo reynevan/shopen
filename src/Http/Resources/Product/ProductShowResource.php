@@ -10,7 +10,7 @@ use Shopen\Http\Resources\Product\Review\ProductReviewResource;
 use Shopen\Services\ShippingService;
 use Shopen\Services\ShoppingListService;
 
-class ProductResource extends JsonResource
+class ProductShowResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -34,12 +34,6 @@ class ProductResource extends JsonResource
             'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
             'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id)
         ];
-        foreach ($this->resource->getCustomAttributes() as $key => $value) {
-            if (is_null($value)) {
-                continue;
-            }
-            $data['attributes'][$key] = $value;
-        }
         return $data;
     }
 }

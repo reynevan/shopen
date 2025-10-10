@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Shopen\Models\Product\Product;
 
 return new class extends Migration
 {
@@ -15,7 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string('sku');
             $table->string('ean')->nullable();
-            $table->string('type')->default(Shopen\Models\Product\Product::TYPE_SIMPLE);
+            $table->string('type')->default(Product::TYPE_SIMPLE);
+            $table->integer('visibility')->default(Product::VISIBILITY_NONE);
             $table->foreignId('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('products')->onDelete('cascade');
             $table->boolean('uses_stock');

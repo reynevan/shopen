@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import {ref, onMounted} from "vue";
 import BaseModal from "@shopen/components/admin/ui/BaseModal.vue";
 import DataTable from "@shopen/components/admin/table/DataTable.vue";
 import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
@@ -7,8 +7,9 @@ import Input from "@shopen/components/admin/form/input/Input.vue";
 import APIPagination from "../../../../frontend/ui/APIPagination.vue";
 import Button from "../../../ui/Button.vue";
 import ActionButton from "../../../ui/ActionButton.vue";
+import Loader from "../../../ui/Loader.vue";
 
-const model = defineModel({ type: Array, default: () => [] });
+const model = defineModel({type: Array, default: () => []});
 
 const emits = defineEmits(['update:selectedProducts']);
 
@@ -24,21 +25,24 @@ const loading = ref(false);
 const showModal = ref(false);
 
 const modalSelection = ref([]);
-// CACHE obiektów produktów wybranych w ramach sesji modala (zainicjalizowane z props.selectedProducts)
+
 const modalSelectedProducts = ref([]);
 
-const openModal = () => {
+const openModal = async () => {
+    loadProducts()
+
     modalSelection.value = [...(model.value || [])];
-    // Kluczowe: seedujemy cache bieżącą listą wybranych produktów
+
     modalSelectedProducts.value = [...(props.selectedProducts || [])];
     showModal.value = true;
 };
 
 const closeModal = () => {
+    console.trace();
     showModal.value = false;
 };
 
-// Deterministyczna aktualizacja cache na podstawie stanu checkboxa
+
 const toggleModalSelectedProduct = (product, checked) => {
     const index = modalSelectedProducts.value.findIndex(p => p.id === product.id);
     if (checked) {
@@ -54,26 +58,21 @@ const toggleModalSelectedProduct = (product, checked) => {
 
 const removeProduct = (productId) => {
     model.value = model.value.filter(id => id !== productId);
-    // Usuwamy także z cache modala
     modalSelectedProducts.value = modalSelectedProducts.value.filter(product => product.id !== productId);
     const productsAfterRemove = props.selectedProducts.filter(product => product.id !== productId);
     emits('update:selectedProducts', [...productsAfterRemove]);
 };
 
 const confirmSelection = () => {
-    // Aktualizujemy model ID
     model.value = [...modalSelection.value];
 
-    // Budujemy finalną listę obiektów produktów na podstawie cache + aktualnie załadowanej strony
     const selectedIds = new Set(modalSelection.value);
     const byId = new Map();
 
-    // 1) Z cache (ma wcześniejsze + nowe zaznaczenia z innych stron paginacji)
     modalSelectedProducts.value.forEach(p => {
         if (selectedIds.has(p.id)) byId.set(p.id, p);
     });
 
-    // 2) Z aktualnej strony (gdyby czegoś brakowało w cache)
     if (products.value?.data) {
         products.value.data.forEach(p => {
             if (selectedIds.has(p.id)) byId.set(p.id, p);
@@ -89,7 +88,7 @@ const dir = ref(null);
 const q = ref(null);
 const search = ref('');
 
-const loadProducts = (page = 1) => {
+const loadProducts = async (page = 1) => {
     loading.value = true;
     axios.get(route('admin.api.products.index'), {
         params: {
@@ -98,13 +97,11 @@ const loadProducts = (page = 1) => {
             q: q.value,
             page: page
         }
-    })
-        .then(response => {
-            products.value = response.data;
-        })
-        .finally(() => {
-            loading.value = false;
-        });
+    }).then(response => {
+        products.value = response.data;
+    }).finally(() => {
+        loading.value = false;
+    });
 };
 
 const onSort = (field, direction) => {
@@ -122,14 +119,12 @@ const onPaginate = (page) => {
     loadProducts(page);
 };
 
-onMounted(() => {
-    loadProducts();
-});
 </script>
 
 <template>
     <div>
-        <div v-if="selectedProducts && selectedProducts.length > 0" class="selected-products-list border rounded p-2 mb-4">
+        <div v-if="selectedProducts && selectedProducts.length > 0"
+             class="selected-products-list border rounded p-2 mb-4">
             <h4 class="font-semibold mb-2">Wybrane produkty:</h4>
             <table class="w-full table-primary">
                 <thead class="bg-neutral-700 text-neutral-200 py-2">
@@ -148,7 +143,7 @@ onMounted(() => {
                     <td class="text-left">{{ product.id }}</td>
                     <td>
                         <div class="flex justify-center">
-                            <img :src="product.image" width="40"  v-if="product.image">
+                            <img :src="product.image" width="40" v-if="product.image">
                         </div>
                     </td>
                     <td class="text-left">{{ product.attributes.name }}</td>
@@ -177,73 +172,79 @@ onMounted(() => {
                 <span v-else>Wybierz produkty</span>
             </template>
             <template #default>
-                <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
-                    <div class="w-full max-w-md">
-                        <form @submit.prevent="onSearch" class="flex items-center">
-                            <Input v-model="search" id="search" placeholder="Szukaj po nazwie, SKU..." class="mr-2"/>
-                            <Button type="submit">Szukaj</Button>
-                        </form>
+                <div v-if="loading && !products?.data?.length" class="flex justify-center items-center py-10">
+                    <Loader :loading="true"/>
+                </div>
+                <div v-else>
+                    <div class="flex flex-col sm:flex-row justify-between mb-4 gap-4">
+                        <div class="w-full max-w-md">
+                            <form @submit.prevent="onSearch" class="flex items-center">
+                                <Input v-model="search" id="search" placeholder="Szukaj po nazwie, SKU..."
+                                       class="mr-2"/>
+                                <Button type="submit">Szukaj</Button>
+                            </form>
+                        </div>
+                        <div class="w-full sm:w-auto flex justify-end">
+                            <APIPagination v-if="products?.meta" :meta="products.meta" @onPaginate="onPaginate" :loading="loading" />
+                        </div>
                     </div>
-                    <div class="w-full sm:w-auto flex justify-end">
+
+                    <DataTable
+                        v-if="products"
+                        :loading="loading"
+                        table-class="w-full"
+                        head-class="bg-neutral-700 text-neutral-200 py-2"
+                        td-class="py-2"
+                        @onSort="onSort"
+                        :default-sort="[sort, dir]"
+                        :data="products.data"
+                        :meta="products.meta"
+                        top="top-0"
+                    >
+                        <TableColumn label="Wybierz" v-slot="data" width="75px">
+                            <input
+                                type="checkbox"
+                                :value="data.row.id"
+                                v-model="modalSelection"
+                                @change="toggleModalSelectedProduct(data.row, $event.target.checked)"
+                                class="w-5 h-5">
+                        </TableColumn>
+
+                        <TableColumn field="id" label="ID" sortable v-slot="data" width="35px">
+                            {{ data.row.id }}
+                        </TableColumn>
+
+                        <TableColumn label="Zdjęcie" v-slot="data" width="70px">
+                            <img :src="data.row.image"
+                                 width="50px"
+                                 class="border"
+                                 v-if="data.row.image">
+                        </TableColumn>
+
+                        <TableColumn field="sku" label="SKU" v-slot="data">
+                            {{ data.row.sku }}
+                        </TableColumn>
+
+                        <TableColumn field="is_active" label="Status" sortable v-slot="data">
+                            <span v-if="data.row.attributes.is_active" class="text-green-600">Aktywny</span>
+                            <span v-else class="text-red-600">Nieaktywny</span>
+                        </TableColumn>
+
+                        <TableColumn field="name" label="Nazwa" sortable v-slot="data">
+                            {{ data.row.attributes.name }}
+                        </TableColumn>
+
+                        <TableColumn field="price" label="Bazowa Cena" sortable v-slot="data" width="135px">
+                            {{ data.row.price ? data.row.price.price : '' }}
+                        </TableColumn>
+
+                        <TableColumn field="final_price" label="Cena" sortable v-slot="data" width="135px">
+                            {{ data.row.price ? data.row.price.final_price : '' }}
+                        </TableColumn>
+                    </DataTable>
+                    <div class="flex justify-end mt-4">
                         <APIPagination v-if="products?.meta" :meta="products.meta" @onPaginate="onPaginate"/>
                     </div>
-                </div>
-
-                <DataTable
-                    v-if="products"
-                    :loading="loading"
-                    table-class="w-full"
-                    head-class="bg-neutral-700 text-neutral-200 py-2"
-                    td-class="py-2"
-                    @onSort="onSort"
-                    :default-sort="[sort, dir]"
-                    :data="products.data"
-                    :meta="products.meta"
-                    top="top-0"
-                >
-                    <TableColumn label="Wybierz" v-slot="data" width="75px">
-                        <input
-                            type="checkbox"
-                            :value="data.row.id"
-                            v-model="modalSelection"
-                            @change="toggleModalSelectedProduct(data.row, $event.target.checked)"
-                            class="w-5 h-5">
-                    </TableColumn>
-
-                    <TableColumn field="id" label="ID" sortable v-slot="data" width="35px">
-                        {{ data.row.id }}
-                    </TableColumn>
-
-                    <TableColumn label="Zdjęcie" v-slot="data" width="70px">
-                        <img :src="data.row.image"
-                             width="50px"
-                             class="border"
-                             v-if="data.row.image">
-                    </TableColumn>
-
-                    <TableColumn field="sku" label="SKU" v-slot="data">
-                        {{ data.row.sku }}
-                    </TableColumn>
-
-                    <TableColumn field="is_active" label="Status" sortable v-slot="data">
-                        <span v-if="data.row.attributes.is_active" class="text-green-600">Aktywny</span>
-                        <span v-else class="text-red-600">Nieaktywny</span>
-                    </TableColumn>
-
-                    <TableColumn field="name" label="Nazwa" sortable v-slot="data">
-                        {{ data.row.attributes.name }}
-                    </TableColumn>
-
-                    <TableColumn field="price" label="Bazowa Cena" sortable v-slot="data" width="135px">
-                        {{ data.row.price ? data.row.price.price : '' }}
-                    </TableColumn>
-
-                    <TableColumn field="final_price" label="Cena" sortable v-slot="data" width="135px">
-                        {{ data.row.price ? data.row.price.final_price : '' }}
-                    </TableColumn>
-                </DataTable>
-                <div class="flex justify-end mt-4">
-                    <APIPagination v-if="products?.meta" :meta="products.meta" @onPaginate="onPaginate"/>
                 </div>
             </template>
             <template #buttons>

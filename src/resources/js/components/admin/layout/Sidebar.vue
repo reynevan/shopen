@@ -101,11 +101,11 @@ const auth = useAuthStore();
             </li>
 
         </ul>
-
-        <p class="menu-label">Konto</p>
-        <ul class="menu-list">
-            <li>
-                <a @click.prevent="auth.logout" class="text-accent"> Wyloguj </a>
+        <ul class="menu-list border-t border-gray-600 pt-4 mt-4">
+            <li class="mb-4 py-2 text-accent">
+                <a @click.prevent="auth.logout" class="text-xs flex flex-col items-center cursor-pointer">
+                    <div class="uppercase text-center">Wyloguj</div>
+                </a>
             </li>
         </ul>
     </aside>

@@ -27,6 +27,7 @@ return new class extends Migration
             $table->boolean('is_required')->default(false);
             $table->boolean('is_visible_in_details')->default(false);
             $table->boolean('is_used_in_list')->default(false);
+            $table->boolean('is_color')->default(false);
             $table->timestamps();
         });
     }

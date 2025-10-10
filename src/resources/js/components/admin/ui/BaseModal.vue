@@ -9,9 +9,6 @@ const close = (e) => {
     if (!props.closable) {
         return;
     }
-    if (modalContent.value && (modalContent.value.contains(e.target) || modalContent.value === e.target)) {
-        return;
-    }
     emits('onClose');
 };
 
@@ -38,9 +35,10 @@ const props = defineProps({
 <template>
     <Teleport to="body">
         <div v-if="show"
-             @click="close"
              class="fixed inset-0 flex items-center justify-center z-100">
-            <div class="modal-backdrop absolute inset-0 bg-black/60"></div>
+            <div
+                @click="close"
+                class="modal-backdrop absolute inset-0 bg-black/60"></div>
             <div ref="modal-content"
                  :class="[
                      props.class,

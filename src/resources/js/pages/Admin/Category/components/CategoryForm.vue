@@ -116,7 +116,7 @@ onBeforeUnmount(() => {
                     />
                 </div>
 
-                <div class="pl-6 ml-6 border-l">
+                <div class="pl-6 ml-6 border-l w-full">
 
                     <FormField
                         :required="true"

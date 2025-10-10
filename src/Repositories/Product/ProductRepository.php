@@ -77,15 +77,15 @@ class ProductRepository
 
     public function getProductVariants(Product $product)
     {
-        if (!$product->parent_id && !$product->isConfigurable()) {
+        if (!$product->parent_id) {
             return [];
         }
 
-        $parent = $product->isConfigurable() ? $product : $product->parent;
+        $parent = $product->parent;
         $configurableAttributes = $parent->configurableAttributes;
         $variants = Product::query()
             ->with(['urlRewrite'])
-            ->where('parent_id', $parent->id)
+            ->where('parent_id', $product->parent_id)
             ->get();
 
         return $configurableAttributes->map(function ($attribute) use ($variants, $product, $configurableAttributes) {
@@ -94,22 +94,29 @@ class ProductRepository
                     if ($attr->id === $attribute->id) {
                         continue;
                     }
-                    if ($variant->getAttribute($attr->code) !== $product->getAttribute($attr->code)) {
+                    if ($variant->getCustomAttributeValue($attr->code) !== $product->getCustomAttributeValue($attr->code)) {
                         return false;
                     }
                 }
                 return true;
             })->map(function ($variant) use ($attribute, $product) {
-                return [
+                $data = [
                     'id' => $variant->id,
                     'url' => $variant->getUrl(),
                     'is_selected' => $variant->id === $product->id,
-                    'attribute_value' => $variant->getAttributeTextValue($attribute->code),
+                    'attribute_value' => $variant->getCustomAttributeValue($attribute->code, true),
                 ];
+                if ($attribute->is_color) {
+                    $data['color'] = $variant->getCustomAttributeColor($attribute->code);
+                }
+                return $data;
             })->values();
 
             return [
-                'attribute' => $attribute,
+                'attribute' => [
+                    'name' => $attribute->name,
+                    'is_color' => $attribute->is_color,
+                ],
                 'products' => $filteredVariants,
             ];
         })->toArray();

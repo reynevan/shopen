@@ -6,7 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Shopen\Models\Product\Product;
 
-class StoreProductRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,11 +15,11 @@ class StoreProductRequest extends FormRequest
 
     public function rules(): array
     {
+
         $rules = [
-            'type' => 'nullable',
             'visibility' => 'nullable',
-            'sku' => 'required|unique:products,sku',
-            'url_key' => 'nullable|unique:url_rewrites,request_path',
+            'sku' => 'required|unique:products,sku,' . $this->route('product')->id,
+            'url_key' => 'nullable|unique:url_rewrites,request_path,' . $this->getRewriteId(),
             'attributes.name' => 'required',
             'stock_qty' => 'nullable|numeric|min:0',
             'cross_sell_ids' => 'nullable|array',
@@ -28,7 +28,6 @@ class StoreProductRequest extends FormRequest
             'up_sell_ids.*' => 'exists:products,id',
             'related_ids' => 'nullable|array',
             'related_ids.*' => 'exists:products,id',
-            'parent_id' => 'nullable|:exists:products,id',
         ];
         if ($this->request->get('type') === Product::TYPE_SIMPLE || !$this->request->get('type') ) {
             $rules['price.price'] = 'required|numeric';
@@ -63,5 +62,10 @@ class StoreProductRequest extends FormRequest
             return $parent;
         }
         return null;
+    }
+
+    protected function getRewriteId()
+    {
+        return $this->route('product')->urlRewrite?->id;
     }
 }

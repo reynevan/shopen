@@ -25,6 +25,7 @@ class StoreAttributeRequest extends FormRequest
             'is_filterable' => ['boolean'],
             'is_searchable' => ['boolean'],
             'is_required' => ['boolean'],
+            'is_color' => ['boolean'],
             'is_visible_in_details' => ['boolean'],
             'is_used_in_list' => ['boolean'],
             'entity_type' => ['required', 'string', 'in:category,product'],

@@ -86,7 +86,7 @@ trait HasCustomAttributes
         if (!$attribute) {
             return null;
         }
-        $value = $this->loadAttribute($attribute);
+        $value = $this->loadAttribute($attribute, false);
         if (!$attribute->isSelectable()) {
             return $value;
         }
@@ -187,6 +187,7 @@ trait HasCustomAttributes
         if (!$attribute) {
             return $query;
         }
+
         $valueTable = $this->getEntityType() . '_attribute_' . $attribute->backend_type;
         $isLikeSearch = Str::startsWith($value, '%') || Str::endsWith($value, '%');
         $subQuery = self::query()
@@ -241,7 +242,7 @@ trait HasCustomAttributes
         return $this;
     }
 
-    public function loadAttribute(Attribute|string $attribute)
+    public function getCustomAttributeValue(Attribute|string $attribute, $textValue = false)
     {
         $attribute = $this->fetchAttribute($attribute);
         $valueModel = $attribute->getValueModel();
@@ -250,23 +251,66 @@ trait HasCustomAttributes
                 ->where('entity_id', $this->id)
                 ->where('attribute_id', $attribute->id)
                 ->pluck('value');
+            if ($textValue) {
+                $attributeValue = AttributeOption::query()
+                    ->whereIn('id', $attributeValue)
+                    ->pluck('value');
+            }
         } else {
             $attributeValue = $valueModel::query()
                 ->where('entity_id', $this->id)
                 ->where('attribute_id', $attribute->id)
                 ->first();
+            if ($textValue && $attributeValue && $attribute->isSelectable()) {
+                $attributeValue = AttributeOption::query()
+                    ->where('id', $attributeValue->value)
+                    ->first();
+            }
             $attributeValue = $attributeValue->value ?? null;
         }
         if ($attributeValue) {
-            $this->customAttributes[$attribute->code] = $attributeValue;
             return $attributeValue;
         }
         if ($this->getEntityType() === Product::ENTITY_TYPE && $this->parent_id && $this->parent) {
-            $attributeValue = $this->parent->loadAttribute($attribute);
-            $this->customAttributes[$attribute->code] = $attributeValue ?? null;
-            return $attributeValue ?? null;
+            return $this->parent->loadAttribute($attribute, $textValue);
         }
         return null;
+    }
+
+    public function getCustomAttributeColor(Attribute|string $attribute)
+    {
+        $attribute = $this->fetchAttribute($attribute);
+        if (!$attribute->isSelectable()) {
+            return null;
+        }
+        $valueModel = $attribute->getValueModel();
+        $attributeValue = $valueModel::query()
+            ->where('entity_id', $this->id)
+            ->where('attribute_id', $attribute->id)
+            ->pluck('value');
+        $attributeValue = AttributeOption::query()
+            ->whereIn('id', $attributeValue)
+            ->pluck('color');
+        if ($attribute->frontend_type === 'select') {
+            $attributeValue = count($attributeValue) > 0 ? $attributeValue[0] : null;
+        }
+        if ($attributeValue) {
+            return $attributeValue;
+        }
+        if ($this->getEntityType() === Product::ENTITY_TYPE && $this->parent_id && $this->parent) {
+            return $this->parent->getCustomAttributeColor($attribute);
+        }
+        return null;
+    }
+
+    public function loadAttribute(Attribute|string $attribute, $textValue = true)
+    {
+        $attribute = $this->fetchAttribute($attribute);
+        $attributeValue = $this->getCustomAttributeValue($attribute, $textValue);
+        if ($attributeValue) {
+            $this->customAttributes[$attribute->code] = $attributeValue;
+        }
+        return $attributeValue;
     }
 
     protected function fetchAttribute(string|Attribute $attribute): ?Attribute

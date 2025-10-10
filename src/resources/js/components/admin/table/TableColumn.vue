@@ -24,11 +24,3 @@ onMounted(() => {
     table.addColumn(getCurrentInstance())
 })
 </script>
-
-<template>
-
-</template>
-
-<style scoped>
-
-</style>

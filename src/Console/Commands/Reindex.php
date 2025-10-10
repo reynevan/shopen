@@ -81,7 +81,7 @@ class Reindex extends Command
             $this->indexManager->drop($indexName);
         }
         $mapping = new Mapping();
-        $mapping->integer('id');
+        $mapping->keyword('id');
         $mapping->text('name', [
             'analyzer' => 'polish',
             'boost' => 3,
@@ -106,6 +106,7 @@ class Reindex extends Command
         $mapping->integer('reviews_count');
         $mapping->keyword('category_id');
         $mapping->keyword('brand_id');
+        $mapping->keyword('visibility');
         $mapping->flattened('thumbnail', ['index' => false]);
         $mapping->text('searchable_attributes', ['analyzer' => 'polish']);
 

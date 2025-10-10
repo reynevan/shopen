@@ -4,7 +4,7 @@ import Button from "@shopen/components/admin/ui/Button.vue";
 import Gallery from "@shopen/pages/Admin/Product/components/ProductForm/Gallery/Gallery.vue";
 import AttributeInput from "@shopen/components/admin/form/input/AttributeInput.vue";
 import {ref} from "vue";
-import {useForm} from "@inertiajs/vue3";
+import {useForm, usePage} from "@inertiajs/vue3";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import GeneralSection from "@shopen/pages/Admin/Product/components/ProductForm/FormSections/GeneralSection.vue";
 import RelatedProductsSection from "@shopen/pages/Admin/Product/components/ProductForm/FormSections/RelatedProductsSection.vue";
@@ -12,9 +12,19 @@ import PriceSection from "@shopen/pages/Admin/Product/components/ProductForm/For
 import TextEditor from "@shopen/components/admin/form/input/TextEditor.vue";
 import SectionTitle from "./SectionTitle.vue";
 import FormMenu from "@shopen/components/admin/form/menu/FormMenu.vue";
+import ConfigurationsSection from "./FormSections/ConfigurationsSection.vue";
 
+const page = usePage();
 const props = defineProps({
     product: {
+        type: Object,
+        required: false
+    },
+    parent: {
+        type: Object,
+        required: false
+    },
+    variants: {
         type: Object,
         required: false
     },
@@ -41,6 +51,8 @@ props.attributes.forEach((attr) => {
 const form = useForm({
     attributes: props.product.id ? props.product.attributes : defaultAttributesValues,
     type: props.product?.type ?? 'simple',
+    visibility: props.product?.visibility ?? 3,
+    parent_id: props.parent?.id,
     configurable_attributes: props.product?.configurable_attributes ?? [],
     sku: props.product?.sku,
     ean: props.product?.ean,
@@ -103,12 +115,25 @@ const sections = [
     }
 ]
 
+if (props.product.is_configurable && props.product.id) {
+    sections.push({
+        section: 'configurations',
+        title: 'Konfiguracje'
+    })
+}
+
 </script>
 
 <template>
     <ActionsPanel back-route="admin.products.index">
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
+    <div v-if="Object.keys(page.props.errors).length > 0"
+         class="bg-red-100 text-red-800 px-6 py-4 mb-6">
+        <div v-for="error in page.props.errors">
+            {{ error}}
+        </div>
+    </div>
     <div class="flex items-start gap-6">
         <div class="sticky top-20">
             <FormMenu :sections="sections" @onSelect="onChangeSection"/>
@@ -119,6 +144,7 @@ const sections = [
                 <GeneralSection
                     v-model="form"
                     :product="product"
+                    :parent="parent"
                     :categories="categories"
                     :attributes="attributes"
                     :brands="brandsOptions"/>
@@ -127,6 +153,11 @@ const sections = [
             <div v-show="activeSection === 'price'">
                 <SectionTitle>Cena</SectionTitle>
                 <PriceSection :form="form" :product="product"/>
+            </div>
+
+            <div v-if="product && product.id && product.is_configurable" v-show="activeSection === 'configurations'">
+                <SectionTitle>Konfiguracje</SectionTitle>
+                <ConfigurationsSection :product="product" :variants="variants" :attributes="attributes"/>
             </div>
 
             <div v-show="activeSection === 'attributes'">

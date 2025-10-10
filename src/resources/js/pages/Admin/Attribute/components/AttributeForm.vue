@@ -28,7 +28,8 @@ const form = useForm({
     is_required: props.attribute?.is_required,
     is_visible_in_details: props.attribute?.is_visible_in_details,
     is_used_in_list: props.attribute?.is_used_in_list,
-    options: props.attribute?.options,
+    is_color: props.attribute?.is_color,
+    options: props.attribute?.options ?? [],
 })
 
 const entityTypes = [
@@ -66,7 +67,7 @@ const removeOption = (index) => {
 }
 
 const addOption = () => {
-    form.options.push({value: ''})
+    form.options.push({value: '', color: '#000000'})
 }
 </script>
 
@@ -133,6 +134,12 @@ const addOption = () => {
                 label="Widoczny na liście produktów" label-for="is_used_in_list">
                 <Toggle v-model="form.is_used_in_list" id="is_used_in_list"/>
             </FormField>
+
+            <FormField
+                v-if="form.frontend_type === 'select' || form.frontend_type === 'multiselect'"
+                label="Kolor" label-for="is_color">
+                <Toggle v-model="form.is_color" id="is_color"/>
+            </FormField>
         </section>
 
         <FormField label="Opcje" v-if="form.frontend_type == 'select' || form.frontend_type == 'multiselect'">
@@ -141,13 +148,13 @@ const addOption = () => {
                     <div class="w-full sm:w-1/2">
                         <Input v-model="option.value"/>
                     </div>
-                    <ColorPicker v-model="option.color"/>
+                    <ColorPicker v-if="form.is_color" v-model="option.color"/>
                     <Button type="ghost" @click="removeOption(index)">
                         <span class="text-red-400 hover:text-red-600 transition-all"><i class="bi bi-x-lg"></i></span>
                     </Button>
                 </div>
             </div>
-            <Button type="primary" @click="addOption">Dodaj opcję</Button>
+            <Button type="primary" @click="addOption"><i class="bi bi-plus"></i> Dodaj opcję</Button>
         </FormField>
 
     </div>

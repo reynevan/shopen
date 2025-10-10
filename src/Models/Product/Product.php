@@ -43,6 +43,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     const ENTITY_TYPE = 'product';
 
+    const VISIBILITY_NONE = 0;
+    const VISIBILITY_CATEGORY = 1;
+    const VISIBILITY_SEARCH = 2;
+    const VISIBILITY_ALL = 3;
+
     protected $fillable = [
         'sku',
         'ean',
@@ -50,7 +55,9 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'in_stock',
         'uses_stock',
         'type',
-        'brand_id'
+        'brand_id',
+        'visibility',
+        'parent_id'
     ];
 
     protected $casts = [
@@ -63,23 +70,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     protected function getAttributeClass(): string
     {
         return ProductAttribute::class;
-    }
-
-
-    protected function getOriginalAttributes(): array
-    {
-        return [
-            'id',
-            'sku',
-            'ean',
-            'stock_qty',
-            'uses_stock',
-            'in_stock',
-            'parent_id',
-            'type',
-            'created_at',
-            'updated_at',
-        ];
     }
 
     protected function getThumbnailSizes(): array
@@ -305,7 +295,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function scopeSort(Builder $query, $sortField, $sortDir): Builder
     {
         return
-            $query->when(in_array($sortField, ['id', 'sku']), function ($query) use ($sortField, $sortDir) {
+            $query->when(in_array($sortField, ['id', 'sku', 'type']), function ($query) use ($sortField, $sortDir) {
                 $query->orderBy($sortField, $sortDir);
             })->when($sortField && !in_array($sortField, ['id', 'sku', 'price', 'final_price']), function ($query) use ($sortField, $sortDir) {
                 $query->orderByAttribute($sortField, $sortDir);
@@ -326,6 +316,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     {
         return $query->leftJoin('product_prices', 'product_prices.product_id', '=', 'products.id')
             ->orderBy('product_prices.final_price', $sortDir);
+    }
+
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->filterByAttribute('is_active', true);
     }
 
     public function setStockQtyAttribute($value)

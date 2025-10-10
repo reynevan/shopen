@@ -59,8 +59,10 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/api/produkty', [ApiProductsController::class, 'index'])->name('api.products.index');
     Route::get('/produkty/nowy', [ProductCreateController::class, 'create'])->name('products.create');
     Route::post('/produkty', [ProductCreateController::class, 'store'])->name('products.store');
+    Route::post('/api/produkty', [ApiProductsController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('/produkty/{product}', [ProductEditController::class, 'edit'])->name('products.edit');
     Route::put('/produkty/{product}', [ProductEditController::class, 'update'])->name('products.update');
+    Route::put('/api/produkty/{product}', [ApiProductsController::class, 'updateVariant'])->name('products.update-variant');
     Route::delete('/produkty/{product}', [ProductEditController::class, 'destroy'])->name('products.delete');
 
 

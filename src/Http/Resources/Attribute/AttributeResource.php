@@ -28,7 +28,7 @@ class AttributeResource extends JsonResource
             'is_required' => $this->is_required,
             'is_visible_in_details' => $this->is_visible_in_details,
             'is_used_in_list' => $this->is_used_in_list,
-            'options' => AttributeOptionResource::collection($this->options)
+            'options' => AttributeOptionResource::collection($this->sortedOptions)
         ];
         return $data;
     }

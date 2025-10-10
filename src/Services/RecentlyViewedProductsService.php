@@ -39,7 +39,7 @@ class RecentlyViewedProductsService
         } else {
             $productIds = session(self::SESSION_KEY, []);
             array_unshift($productIds, $product->id);
-            $productIds = array_slice(array_unique($productIds), 0, self::MAX_ITEMS);
+            $productIds = array_slice(array_unique(array_filter($productIds)), 0, self::MAX_ITEMS);
             session([self::SESSION_KEY => $productIds]);
         }
     }

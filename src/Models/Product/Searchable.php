@@ -12,7 +12,7 @@ trait Searchable
 
     public function shouldBeSearchable(): bool
     {
-        return $this->is_active && $this->type === 'simple';
+        return $this->is_active;
     }
 
     public function toSearchableArray()
@@ -21,11 +21,12 @@ trait Searchable
             'id' => $this->id,
             'name' => $this->getCustomAttribute('name'),
             'description' => $this->getCustomAttribute('description'),
+            'visibility' => $this->visibility ?? 0,
             'sku' => $this->sku,
             'category_id' => $this->categories->pluck('id')->toArray(),
             'brand_id' => $this->brand_id,
             'in_stock' => $this->isInStock(),
-            'price' => $this->getFinalPrice(),
+            'price' => $this->getSearchPrice(),
             'rating' => $this->rating,
             'reviews_count' => $this->reviews_count,
             'popularity' => $this->getPopularity(),
@@ -52,7 +53,25 @@ trait Searchable
             $values[$attribute->code] = $this->getAttributeTextValue($attribute->code);
         }
         return $values;
+    }
 
+    protected function getSearchPrice()
+    {
+        if ($this->isConfigurable()) {
+            $lowestPrice = null;
+            foreach ($this->variants as $variant) {
+                if (!$variant->getCustomAttribute('is_active')) {
+                    continue;
+                }
+                $price = $variant->getFinalPrice();
+                if (is_null($lowestPrice) || $price < $lowestPrice) {
+                    $lowestPrice = $price;
+                }
+            }
+            return $lowestPrice;
+        } else {
+            return $this->getFinalPrice();
+        }
     }
 
     protected function getIndexableAttributesValues()
@@ -60,7 +79,20 @@ trait Searchable
         $values = [];
         $attributes = app(ProductAttributeRepository::class)->getIndexable();
         foreach ($attributes as $attribute) {
-            $values[$attribute->code] = $this->getCustomAttribute($attribute->code);
+            if ($this->isConfigurable()) {
+                $attrValues = [];
+                foreach ($this->variants as $variant) {
+                    $value = $variant->getCustomAttributeValue($attribute->code);
+                    if (is_array($value)) {
+                        $attrValues = array_merge($attrValues, $value);
+                    } else {
+                        $attrValues[] = $value;
+                    }
+                }
+                $values[$attribute->code] = array_values(array_unique($attrValues));
+            } else {
+                $values[$attribute->code] = $this->getCustomAttributeValue($attribute->code);
+            }
         }
         $values['is_active'] = $this->getCustomAttribute('is_active');
         return $values;

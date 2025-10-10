@@ -7,6 +7,7 @@ use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use stdClass;
 
@@ -25,9 +26,10 @@ class SearchService
     protected ?int $limit = null;
 
     public function __construct(
-        protected ProductSortRegistry $productSortRegistry,
+        protected ProductSortRegistry        $productSortRegistry,
         protected ProductAttributeRepository $productAttributeRepository,
-    ) {
+    )
+    {
         $this->client = ClientBuilder::create()
             ->setHosts(['localhost:9200'])
             ->build();
@@ -92,7 +94,8 @@ class SearchService
         $filters = [];
 
         if ($this->categoryId) {
-            $filters[] = ['term' => ['category_id' => $this->categoryId]];
+            $filters[] = ['term' => [ 'category_id' => $this->categoryId ]];
+            $filters[] = ['terms' => [ 'visibility' => [Product::VISIBILITY_ALL, Product::VISIBILITY_CATEGORY] ]];
         }
 
         if ($this->brandId) {
@@ -109,13 +112,12 @@ class SearchService
 
         $params = [
             'index' => 'shopen_products',
-            'body'  => ['query' => $query],
+            'body' => ['query' => $query],
         ];
 
         if ($this->limit) {
             $params['body']['size'] = $this->limit;
         }
-
         $result = $this->client->search($params)->asArray();
 
         return new SearchServiceResult($result);
@@ -190,6 +192,7 @@ class SearchService
         $this->addBrandFilter($queryFilters);
         $this->addAttributeFilters($queryFilters, $filters, $exclude);
         $this->addPriceRangeFilter($queryFilters, $filters);
+        $this->addVisibilityFilter($queryFilters);
 
         return $queryFilters;
     }
@@ -227,6 +230,14 @@ class SearchService
             }
             $queryFilters[] = ['terms' => [$attribute => $values]];
         }
+    }
+
+    private function addVisibilityFilter(array &$queryFilters): void
+    {
+        $queryFilters[] = ['terms' => ['visibility' => [
+            Product::VISIBILITY_ALL,
+            Product::VISIBILITY_SEARCH
+        ]]];
     }
 
     private function addPriceRangeFilter(array &$queryFilters, array $allFilters): void

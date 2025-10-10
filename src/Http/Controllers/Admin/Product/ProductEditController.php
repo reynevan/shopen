@@ -43,21 +43,14 @@ readonly class ProductEditController
         return Inertia::render('Admin/Product/Edit', [
             'product' => ProductResource::make($product),
             'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn() => BaseCategoryResource::collection($this->categoryRepository->getAll(0)),
+            'categories' => fn() => $this->categoryRepository->getArray(),
             'brands' => fn() => $this->brandRepository->getAll()->select(['id', 'name'])->toArray(),
+            'variants' => fn() => $this->getVariants($product),
         ]);
     }
 
     public function update(Product $product): RedirectResponse
     {
-        $validated = request()->validate([
-            'cross_sell_ids' => 'nullable|array',
-            'cross_sell_ids.*' => 'exists:products,id',
-            'up_sell_ids' => 'nullable|array',
-            'up_sell_ids.*' => 'exists:products,id',
-            'related_ids' => 'nullable|array',
-            'related_ids.*' => 'exists:products,id',
-        ]);
 
         DB::beginTransaction();
         try {
@@ -73,7 +66,7 @@ readonly class ProductEditController
             $product->fill(Arr::only($data, ['sku', 'ean', 'brand_id']));
             $product->save();
 
-            $product->createUrlRewrite($data['url_key']);
+            $product->createUrlRewrite($data['url_key'] ?? null);
 
             $product->categories()->sync($data['category_ids'] ?? []);
 
@@ -85,7 +78,7 @@ readonly class ProductEditController
 
             RecalculateProductPrice::dispatch($product->id);
 
-            $this->updateImages($product, $images);
+            $this->updateImages($product, $images ?? []);
 
             foreach ($product->variants as $variant) {
                 $variant->searchable();
@@ -98,6 +91,16 @@ readonly class ProductEditController
             return back()->with('error', 'Wystąpił błąd przy zapisywaniu produktu');
         }
         return back()->with('success', 'Produkt został zaktualizowany');
+    }
+
+    protected function getVariants(Product $product)
+    {
+        if (!$product->isConfigurable()) {
+            return null;
+        }
+        $variants = $product->variants->load(['price']);
+        $this->customAttributesService->loadAttributesToCollection($variants, ['name', ...$product->configurableAttributes()->pluck('code')->toArray()]);
+        return ProductResource::collection($variants);
     }
 
     protected function updateImages(Product $product, $imagesData): void

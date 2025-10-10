@@ -25,6 +25,12 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false,
+    },
+    error: {
+        type: String,
+    },
+    min: {
+        type: Number
     }
 })
 
@@ -49,6 +55,7 @@ const sizeClasses = computed(() => {
         v-model="model"
         :required="!!props.required"
         :disabled="disabled"
-        :class="[baseClasses, sizeClasses, props.class]"
+        :min="min"
+        :class="[baseClasses, sizeClasses, props.class, error ? 'border-red-400' : '']"
     />
 </template>

@@ -101,6 +101,11 @@ const removeProduct = (product) => {
             <span v-else>Nieaktywny</span>
         </TableColumn>
 
+        <TableColumn field="type" label="Typ" sortable v-slot="data">
+            <span v-if="data.row.is_configurable">Konfigurowalny</span>
+            <span v-else>Prosty</span>
+        </TableColumn>
+
         <TableColumn field="stock_qty" label="Ilość" sortable v-slot="data">
             {{ data.row.stock_qty }}
         </TableColumn>
@@ -114,7 +119,7 @@ const removeProduct = (product) => {
         </TableColumn>
 
         <TableColumn label="Akcje" v-slot="data" width="100px">
-            <div class="flex">
+            <div class="flex divide-x divide-border-light">
                 <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer">
                     <ActionButton type="edit"/>
                 </Link>

@@ -143,7 +143,7 @@ const addSubcategory = () => {
         </div>
 
         <!-- Children -->
-        <div v-if="isExpanded && category.children && category.children.length > 0"
+        <div v-show="isExpanded && category.children && category.children.length > 0"
              class="border-l ml-4 pl-2">
             <CategoriesTreeItem
                 v-for="(child, index) in category.children"
