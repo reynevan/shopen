@@ -34,14 +34,39 @@ class ShoppingListItemController
             $listName = $validated['new_list_name'] ?? 'Ulubione';
             $list = $this->listService->findOrCreateListByName($listName);
             $list->products()->syncWithoutDetaching($validated['product_id']);
+        }
+        return back()->with('success', 'Produkt dodano do listy!');
+    }
 
+    public function update(Request $request)
+    {
+        $validated = $request->validate([
+            'product_id' => 'required|exists:products,id',
+            'list_ids' => 'nullable|array',
+            'list_ids.*' => 'exists:shopping_lists,id'
+        ]);
+        $productListIds = $this->listService->getProductListIds($request->product_id);
+        foreach ($productListIds as $listId) {
+            $list = $this->listService->getCurrentUserListsQuery()->where('id', $listId)->first();
+            if (!$list) {
+                continue;
+            }
+            if (!in_array($listId, $validated['list_ids'])) {
+                $list->products()->detach($validated['product_id']);
+            }
+        }
+        foreach ($validated['list_ids'] as $listId) {
+            $list = $this->listService->getCurrentUserListsQuery()->where('id', $listId)->first();
+            if (!$list) {
+                continue;
+            }
+            $list->products()->syncWithoutDetaching($validated['product_id']);
         }
         return back()->with('success', 'Produkt dodano do listy!');
     }
 
     public function destroy(ShoppingList $shoppingList, Product $product)
     {
-
         $shoppingList->products()->detach($product->id);
         return back()->with('success', 'Produkt został usunięty z listy.');
     }

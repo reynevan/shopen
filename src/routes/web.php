@@ -78,6 +78,7 @@ Route::middleware(['web'])->group(function () {
         Route::delete('/{shopping_list}', [ShoppingListIndexController::class, 'destroy'])->name('destroy');
 
         Route::post('/items', [ShoppingListItemController::class, 'store'])->name('items.store');
+        Route::put('/', [ShoppingListItemController::class, 'update'])->name('items.update');
         Route::delete('/items/{shoppingList}/{product}', [ShoppingListItemController::class, 'destroy'])->name('items.destroy');
     });
     Route::get('/zamowienia/{order:uuid}', [UserOrderShowController::class, 'show'])->name('user.orders.show');

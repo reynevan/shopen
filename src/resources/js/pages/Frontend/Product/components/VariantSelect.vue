@@ -14,12 +14,15 @@ const props = defineProps(['variants'])
             <div class="flex divide-x gap-2" v-if="variant.attribute.is_color">
                 <template v-for="product in variant.products" :id="product.id">
                     <div v-if="product.is_selected"
-                         class="border border-light hover:border-border-strong hover:opacity-60 transition-all w-10 h-10"
+                         class="border border-strong w-10 h-10"
                          :style="{background: product.color}"
                          :title="product.attribute_value"></div>
-                    <Link v-if="!product.is_selected" :href="product.url">
-                        <div class="border border-strong w-10 h-10" :style="{background: product.color}" :title="product.attribute_value"></div>
-                    </Link>
+                    <div v-else
+                         class="cursor-pointer border border-light hover:border-border-strong hover:opacity-60 transition-all w-10 h-10"
+                         :style="{background: product.color}"
+                         :title="product.attribute_value">
+                        <Link :href="product.url" class="block w-full h-full"/>
+                    </div>
                 </template>
             </div>
 

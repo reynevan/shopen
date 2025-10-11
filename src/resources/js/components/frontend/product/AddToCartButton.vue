@@ -22,7 +22,7 @@ const props = defineProps({
 const qty = ref(1);
 
 const addToCart = async () => {
-    await cart.addToCart(props.product.id, qty.value);
+    await cart.addToCart(props.product, qty.value);
     minicart.open();
 }
 

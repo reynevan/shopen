@@ -4,6 +4,7 @@ namespace Shopen\Http\Controllers\Admin\Product\Review;
 
 use Illuminate\Http\RedirectResponse;
 use Shopen\Enums\Product\Review\ReviewStatus;
+use Shopen\Models\Product\Product;
 use Shopen\Models\Product\Review\ProductReview;
 
 class ProductReviewsEditController
@@ -20,7 +21,7 @@ class ProductReviewsEditController
         }
         $review->status = ReviewStatus::APPROVED;
         $review->save();
-        $review->product->searchable();
+        $this->reindexProduct($review->product);
 
         return back();
     }
@@ -36,14 +37,30 @@ class ProductReviewsEditController
         $review->comment_to_verify = null;
         $review->rating_to_verify = null;
         $review->save();
-        $review->product->searchable();
+        $this->reindexProduct($review->product);
         return back();
     }
 
     public function destroy(ProductReview $review): RedirectResponse
     {
         $review->delete();
-        $review->product->searchable();
+        $this->reindexProduct($review->product);
         return back();
+    }
+
+    protected function reindexProduct(Product $product)
+    {
+        $product->searchable();
+        if ($product->isConfigurable()) {
+            foreach ($product->variants as $variant) {
+                $variant->searchable();
+            }
+        }
+        if ($product->parent) {
+            $product->parent->searchable();
+            foreach ($product->parent->variants as $variant) {
+                $variant->searchable();
+            }
+        }
     }
 }

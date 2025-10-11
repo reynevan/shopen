@@ -17,7 +17,6 @@ const props = defineProps({
 const page = usePage();
 const shoppingListStore = useShoppingListStore();
 
-// --- Stan komponentu ---
 const shoppingLists = computed(() => page.props.shoppingLists || []);
 const addToDefaultListForm = useForm({
     product_id: props.product.id,

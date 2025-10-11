@@ -16,9 +16,17 @@ class ProductReviewRepository
 
     public function getForProduct(Product $product, $sortOption = null)
     {
-        return $product
-            ->approvedReviews()
-            ->with('user')
+        if ($product->parent_id) {
+            $productIds = $product->parent->variants()->active()->pluck('id')->toArray();
+            $productIds[] = $product->parent_id;
+        } elseif ($product->isConfigurable()) {
+            $productIds = $product->variants()->active()->pluck('id')->toArray();
+        }
+        $productIds[] = $product->id;
+        return ProductReview::query()
+            ->approved()
+            ->whereIn('product_id', $productIds)
+            ->with(['user'])
             ->when($sortOption, function (Builder $query) use ($sortOption) {
                 if ($sortOption === 'najnowsze') {
                     $query->latest();

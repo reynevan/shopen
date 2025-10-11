@@ -66,6 +66,7 @@ const props = defineProps({
                         </Button>
                     </div>
                 </section>
+
                 <div>
                     <ProductBrand :product="product"/>
 

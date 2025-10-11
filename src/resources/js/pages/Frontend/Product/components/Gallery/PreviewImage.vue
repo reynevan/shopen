@@ -26,6 +26,6 @@ const fallbackSrc = computed(() => {
 </script>
 
 <template>
-    <img :srcset="computedSrcset" :src="fallbackSrc" class="max-w-full max-h-full rounded"
+    <img :srcset="computedSrcset" :src="fallbackSrc" class="max-w-full max-h-full"
          :alt="alt">
 </template>

@@ -18,28 +18,22 @@ class ShoppingListService
     public function getCurrentUserListsQuery()
     {
         if (Auth::check()) {
-            return ShoppingList::where('user_id', Auth::id());
+            return ShoppingList::query()->where('user_id', Auth::id());
         }
 
-        $sessionId = $this->getGuestSessionId();
-        return ShoppingList::where('session_id', $sessionId);
+        return ShoppingList::query()->where('session_id', $this->getGuestSessionId());
     }
 
     public function loadUserShoppingLists(): Collection
     {
-        // Jeśli listy zostały już załadowane w tym żądaniu, zwróć je.
         if (!is_null($this->userLists)) {
             return $this->userLists;
         }
 
-        // Pobierz wszystkie listy użytkownika z ich produktami.
-        // Używamy eager loading z `with()`, aby uniknąć problemu N+1.
-        // Wybieramy tylko kolumnę 'id' z tabeli produktów, bo tylko ona jest nam potrzebna do mapowania.
         $this->userLists = $this->getCurrentUserListsQuery()
             ->with('products:id')
             ->get();
 
-        // Po pobraniu list, zbuduj mapę do szybkich zapytań.
         $this->buildProductToListsMap();
 
         return $this->userLists;
@@ -92,7 +86,6 @@ class ShoppingListService
 
     public function findOrCreateListByName(string $name): ShoppingList
     {
-        // ... (bez zmian)
         $query = $this->getCurrentUserListsQuery();
         $list = $query->firstWhere('name', $name);
 
@@ -107,8 +100,6 @@ class ShoppingListService
             $attributes['session_id'] = $this->getGuestSessionId();
         }
 
-        // Po utworzeniu nowej listy, musimy zresetować załadowane dane,
-        // aby przy następnym zapytaniu zostały pobrane na nowo.
         $this->userLists = null;
         $this->productToListsMap = null;
 
@@ -117,7 +108,6 @@ class ShoppingListService
 
     public function getGuestSessionId(): string
     {
-        // ... (bez zmian)
         if (!Session::has('shopping_list_session_id')) {
             Session::put('shopping_list_session_id', Str::uuid()->toString());
         }
@@ -126,7 +116,6 @@ class ShoppingListService
 
     public function mergeGuestListsToUser(int $userId, string $guestSessionId): void
     {
-        // ... (bez zmian)
         if ($guestSessionId) {
             ShoppingList::where('session_id', $guestSessionId)
                 ->update([
@@ -134,5 +123,10 @@ class ShoppingListService
                     'session_id' => null,
                 ]);
         }
+    }
+
+    public function removeProductFromList($productId, $listId)
+    {
+
     }
 }

@@ -22,6 +22,7 @@
                 :title="section.title"
                 :section="section.section"
                 :selected="selectedSection === section.section"
+                :disabled="section.disabled"
                 @onClick="setActive(section.section)"/>
         </ul>
     </div>

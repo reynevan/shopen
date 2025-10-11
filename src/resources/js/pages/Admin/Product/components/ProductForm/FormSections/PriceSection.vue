@@ -20,7 +20,7 @@ const props = defineProps({
     <FormField
         label="Cena specjalna"
         label-for="special_price">
-        <Input v-model="form.price.special_price" :required="true" id="special_price"/>
+        <Input v-model="form.price.special_price" id="special_price"/>
     </FormField>
 
     <FormField

@@ -12,6 +12,14 @@ const modalFlicking = useTemplateRef('modalFlicking');
 
 const previewIndex = ref(0);
 const isModalOpen = ref(false);
+const maxPreviewImages = ref(5)
+
+if (window && window.innerWidth < 600) {
+    maxPreviewImages.value = 4;
+}
+if (window && window.innerWidth < 480) {
+    maxPreviewImages.value = 3;
+}
 
 const selectImage = (index) => {
     flicking.value.moveTo(index);
@@ -102,6 +110,7 @@ const handleKeydown = (e) => {
             break;
     }
 };
+
 onMounted(() => {
     window.addEventListener('keydown', handleKeydown);
 });
@@ -141,13 +150,24 @@ onUnmounted(() => {
             </div>
         </div>
         <div class="flex">
-            <div v-for="(image, i) in images"
-                 @click="selectImage(i)"
-                 :class="{'border-strong': i === previewIndex}"
-                 class="mr-4 w-[100px] h-[100px] rounded hover:shadow transition-all duration-300 border bg-gray-100
-                        flex items-center justify-center cursor-pointer box-content">
-                <PreviewImage :image="image.gallery_preview"/>
-            </div>
+            <template v-for="(image, i) in images">
+                <div v-if="i < (maxPreviewImages - 1 ) || i === (maxPreviewImages - 1) && images.length === maxPreviewImages"
+                     @click="selectImage(i)"
+                     :class="{'border-strong': i === previewIndex}"
+                     class="mr-[5px] w-[95px] h-[95px] hover:shadow transition-all duration-300 border bg-gray-100
+                            flex items-center justify-center cursor-pointer box-content">
+                    <PreviewImage :image="image.gallery_preview"/>
+                </div>
+                <div v-if="i === (maxPreviewImages - 1) && images.length > maxPreviewImages"
+                    @click="openModal(i)"
+                    class="mr-[5px] w-[95px] h-[95px] hover:shadow transition-all duration-300 border bg-gray-100
+                    flex items-center justify-center cursor-pointer box-content relative">
+                    <div class="absolute top-0 left-0 right-0 bottom-0 bg-white/80 flex items-center justify-center text-xl z-1">
+                        + {{ images.length - (maxPreviewImages - 1 ) }}
+                    </div>
+                    <PreviewImage :image="image.gallery_preview"/>
+                </div>
+            </template>
         </div>
 
         <transition name="fade">

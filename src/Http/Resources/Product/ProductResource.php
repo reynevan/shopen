@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'sku' => $this->sku,
             'brand' => BrandResource::make($this->whenLoaded('brand')),
-            'price' => ProductPriceResource::make($this->whenLoaded('price')),
+            'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
             'rating' => $this->rating,
@@ -32,7 +32,8 @@ class ProductResource extends JsonResource
             'image' => $this->image,
             'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource),
             'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
-            'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id)
+            'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id),
+            'is_configurable' => $this->isConfigurable()
         ];
         foreach ($this->resource->getCustomAttributes() as $key => $value) {
             if (is_null($value)) {

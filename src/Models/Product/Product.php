@@ -79,7 +79,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getGalleryPreviewSize(): int
     {
-        return 100;
+        return 95;
     }
 
     protected function getGalleryImageSize(): int
@@ -334,7 +334,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         if (isset($this->attributes['reviews_count'])) {
             return $this->attributes['reviews_count'];
         }
-        return $this->approvedReviews()->count();
+        return $this->getApprovedReviews()->count();
     }
 
     public function getRatingAttribute()
@@ -342,7 +342,23 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         if (isset($this->attributes['rating'])) {
             return $this->attributes['rating'];
         }
-        return (round((float)$this->approvedReviews()->avg('rating') * 10)) / 10;
+        return (round((float)$this->getApprovedReviews()->avg('rating') * 10)) / 10;
+    }
+
+    public function getApprovedReviews()
+    {
+        if ($this->parent_id) {
+            $productIds = $this->parent->variants()->active()->pluck('id')->toArray();
+            $productIds[] = $this->parent_id;
+        }
+        if ($this->isConfigurable()) {
+            $productIds = $this->variants()->active()->pluck('id')->toArray();
+        }
+        $productIds[] = $this->id;
+        return ProductReview::query()
+            ->approved()
+            ->whereIn('product_id', $productIds)
+            ->get();
     }
 
     public function shouldApplyPriceRule(ProductPriceRule $rule): bool
@@ -370,6 +386,12 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         }
 
         return Carbon::now()->isBetween($from ?? '-infinity', $to ?? '+infinity');
+    }
+
+    public function getPriceFrom()
+    {
+        $variantIds = $this->variants()->active()->pluck('id')->toArray();
+        return ProductPrice::query()->whereIn('product_id', $variantIds)->orderBy('final_price')->first();
     }
 
     public function setPrice($data): static

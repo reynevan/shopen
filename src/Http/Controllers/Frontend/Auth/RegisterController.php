@@ -65,7 +65,7 @@ class RegisterController extends Controller
 
         if (session('guest_order_id')) {
             $order = Order::find(session('guest_order_id'));
-            $order->update(['user_id' => $user->id]);
+            $order && $order->update(['user_id' => $user->id]);
 
             session()->forget('guest_order_id');
 

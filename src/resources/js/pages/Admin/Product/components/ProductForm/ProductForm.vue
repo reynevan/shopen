@@ -99,7 +99,8 @@ const sections = [
     },
     {
         section: 'price',
-        title: 'Cena'
+        title: 'Cena',
+        disabled: () => form.type === 'configurable'
     },
     {
         section: 'related_products',

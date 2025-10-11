@@ -39,10 +39,12 @@ trait Searchable
 
     protected function getPopularity()
     {
-        return OrderItem::query()
+        $orderItemsCount =  OrderItem::query()
             ->where('product_id', $this->id)
             ->where('created_at', '>', Carbon::now()->subDays(config('shopen.product.popularity_days')))
             ->count();
+
+        return $orderItemsCount + $this->reviews_count;
     }
 
     protected function getListAttributes()
@@ -58,17 +60,7 @@ trait Searchable
     protected function getSearchPrice()
     {
         if ($this->isConfigurable()) {
-            $lowestPrice = null;
-            foreach ($this->variants as $variant) {
-                if (!$variant->getCustomAttribute('is_active')) {
-                    continue;
-                }
-                $price = $variant->getFinalPrice();
-                if (is_null($lowestPrice) || $price < $lowestPrice) {
-                    $lowestPrice = $price;
-                }
-            }
-            return $lowestPrice;
+            return $this->getPriceFrom()?->final_price;
         } else {
             return $this->getFinalPrice();
         }

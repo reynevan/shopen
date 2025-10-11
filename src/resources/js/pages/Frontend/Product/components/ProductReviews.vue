@@ -5,12 +5,14 @@ import ReviewItem from "./ReviewItem.vue";
 import axios from "axios";
 import Button from "@shopen/components/frontend/ui/Button.vue"
 import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
-import {router, usePage} from "@inertiajs/vue3";
+import {router, usePage, Link} from "@inertiajs/vue3";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
+import {useAuthStore} from "../../../../stores/auth";
 
 const props = defineProps(['product', 'reviews', 'reviewSubmitted', 'sort'])
 const page = usePage();
 
+const auth = useAuthStore()
 const reviewsData = ref(props.reviews);
 const reviewToEdit = ref(null);
 const showReviewModal = ref(false);
@@ -101,7 +103,10 @@ const loadMoreReviews = async () => {
                 <div class="my-4 color-neutral-600">
                     Bądź pierwszą osobą, która podzieli się swoją opinią – Twoje zdanie się liczy!
                 </div>
-                <Button type="secondary" @click="openAddReviewModal">Dodaj pierwszą opinię</Button>
+                <Button v-if="auth.isLoggedIn" type="secondary" @click="openAddReviewModal">Dodaj pierwszą opinię</Button>
+                <Link v-else :href="route('login')">
+                    <span class="underline">Zaloguj sę, żeby dodać opinię</span>
+                </Link>
             </div>
         </div>
 
@@ -116,7 +121,10 @@ const loadMoreReviews = async () => {
                         <div class="mt-2 mb-4 color-neutral-600">
                             Podziel się swoją opinią i pomóż innym dokonać wyboru!
                         </div>
-                        <Button type="secondary" @click="openAddReviewModal">Dodaj opinię</Button>
+                        <Button v-if="auth.isLoggedIn" type="secondary" @click="openAddReviewModal">Dodaj opinię</Button>
+                        <Link v-else :href="route('login')">
+                            <span class="underline">Zaloguj się, żeby dodać opinię</span>
+                        </Link>
                     </div>
                     <div v-else>
                         <div class="font-semibold text-lg">

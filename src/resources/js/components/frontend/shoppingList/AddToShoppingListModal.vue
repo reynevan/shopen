@@ -22,13 +22,8 @@ const newListForm = useForm({
     name: '',
 });
 
-// --- Logika ---
-
-// Resetowanie i ustawianie stanu komponentu przy otwarciu modala
 watch(() => shoppingListStore.product, (newVal) => {
-    console.log(newVal)
     if (newVal) {
-        // Resetowanie formularzy
         form.reset();
         newListForm.reset();
         showNewListInput.value = false;
@@ -43,14 +38,13 @@ watch(() => shoppingListStore.product, (newVal) => {
     }
 });
 
-// Funkcja do zamykania modala
 const closeModal = () => {
     shoppingListStore.closeModal();
 };
 
-// Uproszczona funkcja do zapisu - tylko jeden scenariusz
 const submit = () => {
-    form.post(route('shopping-lists.items.store'), {
+    form.put(route('shopping-lists.items.update'), {
+        preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
             form.reset();
@@ -59,11 +53,11 @@ const submit = () => {
     });
 };
 
-// Funkcja do ręcznego zapisywania nowej listy (bez zmian)
 const saveNewList = () => {
     newListForm.product_id = shoppingListStore.product.id;
     newListForm.post(route('shopping-lists.store'), {
         preserveScroll: true,
+        preserveState: true,
         onSuccess: () => {
             showNewListInput.value = false;
             newListForm.reset();
@@ -71,9 +65,8 @@ const saveNewList = () => {
     });
 };
 
-// Uproszczona właściwość obliczeniowa - nie potrzebuje już `isCreatingDefaultList`
 const isSubmitDisabled = computed(() => {
-    return form.processing || form.list_ids.length === 0;
+    return form.processing;
 });
 </script>
 
@@ -131,7 +124,7 @@ const isSubmitDisabled = computed(() => {
                         :class="{ 'opacity-25': isSubmitDisabled }"
                         :disabled="isSubmitDisabled"
                     >
-                        Dodaj produkt
+                        Zapisz
                     </Button>
                 </div>
             </form>
