@@ -114,7 +114,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
             'oauth_client_secret' => config('payment.payu.oauth_client_secret'),
             'api_url' => config('payment.payu.api_url'),
             'continue_url' => config('payment.payu.continue_url'),
-            'notify_url' => config('payment.payu.notify_url'),
+            'notify_url' => route('payu.notify'),
         ];
     }
 
