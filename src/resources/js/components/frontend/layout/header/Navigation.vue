@@ -68,6 +68,7 @@ const closeMenu = () => {
                             @mouseleave="closeLevel3"
                             @mouseenter="setActiveLevel3(subcategory)">
                             <Link :href="subcategory.url"
+                                  :class="activeLevel3 === subcategory.id ? 'bg-accent' : ''"
                                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-accent flex items-center justify-between">
                                 <span>{{ subcategory.name }}</span>
                                 <span v-if="subcategory.subcategories?.length"><IconChevron right/></span>

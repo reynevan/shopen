@@ -57,11 +57,13 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'type',
         'brand_id',
         'visibility',
-        'parent_id'
+        'parent_id',
+        'is_virtual'
     ];
 
     protected $casts = [
         'is_active' => 'bool',
+        'is_virtual' => 'bool',
         'uses_stock' => 'bool',
         'in_stock' => 'bool',
         'stock_qty' => 'int',

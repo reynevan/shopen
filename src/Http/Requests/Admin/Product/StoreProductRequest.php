@@ -18,6 +18,7 @@ class StoreProductRequest extends FormRequest
         $rules = [
             'type' => 'nullable',
             'visibility' => 'nullable',
+            'is_virtual' => 'nullable|boolean',
             'sku' => 'required|unique:products,sku',
             'url_key' => 'nullable|unique:url_rewrites,request_path',
             'attributes.name' => 'required',

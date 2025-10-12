@@ -63,7 +63,7 @@ readonly class ProductEditController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean', 'brand_id']));
+            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock', 'visibility', 'parent_id', 'is_virtual', 'brand_id']));
             $product->save();
 
             $product->createUrlRewrite($data['url_key'] ?? null);

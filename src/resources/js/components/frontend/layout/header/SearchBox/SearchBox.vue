@@ -5,11 +5,14 @@ import IconSearch from "@shopen/components/icons/IconSearch.vue";
 import ProductSearchResultItem from "./ProductSearchResultItem.vue";
 import IconLoader from "../../../../icons/IconLoader.vue";
 import {trackSearch} from "../../../../../utils/ga4";
+import IconChevron from "../../../../icons/IconChevron.vue";
+import IconX from "../../../../icons/IconX.vue";
 
 const searchQuery = ref('')
 const searchResults = ref({products: [], categories: []})
 const showResults = ref(false)
 const isLoading = ref(false)
+const mobileViewOpen = ref(false)
 let debounceTimer = null
 
 const props = defineProps({
@@ -22,6 +25,7 @@ const emit = defineEmits(['search', 'productSelected', 'categorySelected'])
 const searchProducts = async (query) => {
     if (query.length < props.minSearchLength) {
         searchResults.value = {products: [], categories: []}
+        showResults.value = false
         return
     }
     isLoading.value = true
@@ -35,6 +39,7 @@ const searchProducts = async (query) => {
             products: data.products || [],
             categories: data.categories || []
         }
+        showResults.value = true
         trackSearch(query, (data.products || []).length + (data.categories || []).length)
     } catch (error) {
         console.error('Błąd wyszukiwania:', error)
@@ -84,13 +89,37 @@ const performSearch = () => {
 const hasResults = computed(() => {
     return searchResults.value.products.length > 0 || searchResults.value.categories.length > 0
 })
+
+const showMobileView = () => {
+    mobileViewOpen.value = true
+}
+
+const hideMobileView = () => {
+    mobileViewOpen.value = false
+    resetSearch()
+}
+
+const resetSearch = () => {
+    searchQuery.value = ''
+    searchResults.value = {products: [], categories: []}
+    showResults.value = false
+}
 </script>
 
 <template>
     <div class="relative w-full h-full">
-        <div class="absolute top-0 right-0 left-0 border rounded z-50 bg-header">
+        <div class="border rounded z-50 bg-header"
+        :class="mobileViewOpen ? 'fixed top-0 left-0 bottom-0 right-0 z-100' : ''"
+        >
             <!-- input -->
             <div class="relative flex items-center">
+                <button
+                    @click="hideMobileView"
+                    class="absolute left-2 sm:hidden"
+                    v-show="mobileViewOpen"
+                >
+                    <IconChevron left size="4xl"/>
+                </button>
                 <input
                     v-model="searchQuery"
                     @input="handleInput"
@@ -98,20 +127,37 @@ const hasResults = computed(() => {
                     @blur="handleBlur"
                     type="text"
                     placeholder="Szukaj produktów i kategorii..."
-                    class="w-full border-none shadow-none px-4 py-2 pr-10 transition-colors"
+                    class="w-full border-none shadow-none px-4 py-2 pr-10 transition-colors hidden sm:block"
+                />
+                <input
+                    @click="showMobileView"
+                    v-model="searchQuery"
+                    @input="handleInput"
+                    type="text"
+                    placeholder="Szukaj produktów i kategorii..."
+                    class="w-full border-none shadow-none pr-10 transition-colors sm:hidden"
+                    :class="mobileViewOpen ? 'text-lg pl-16 py-6' : 'pl-4 py-2'"
                 />
                 <button
+                    v-show="!mobileViewOpen"
                     @click="performSearch"
                     class="absolute right-2 text-gray-500 hover:text-blue-500"
                 >
                     <IconSearch size="2xl"/>
                 </button>
+                <button
+                    v-show="mobileViewOpen"
+                    @click="resetSearch"
+                    class="absolute right-2"
+                >
+                    <IconX size="3xl"/>
+                </button>
             </div>
 
             <!-- wyniki -->
-            <div v-if="showResults && hasResults"
-                class="w-full bg-header max-h-96 overflow-y-auto px-6">
-                <div class=" border-t border-light pt-6 my-6 flex">
+            <div v-if="(showResults && hasResults) || mobileViewOpen"
+                class="border-t border-light sm:border-none w-full bg-header max-h-96 overflow-y-auto px-6">
+                <div v-if="showResults" class="sm:border-t sm:border-light pt-6 my-6 flex">
                     <!-- Kategorie -->
                     <div class="pr-4 w-[300px]">
                         <div class="px-3 py-2">
@@ -172,7 +218,7 @@ const hasResults = computed(() => {
                 leave-to-class="opacity-0"
             >
                 <div
-                    v-show="showResults && hasResults"
+                    v-show="showResults && hasResults && !mobileViewOpen"
                     class="fixed top-0 left-0 right-0 bottom-0 bg-black/20 z-2"
                 ></div>
             </transition>

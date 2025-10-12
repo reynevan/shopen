@@ -24,7 +24,7 @@ trait Searchable
             'visibility' => $this->visibility ?? 0,
             'sku' => $this->sku,
             'category_id' => $this->categories->pluck('id')->toArray(),
-            'brand_id' => $this->brand_id,
+            'brand_id' => $this->brand_id ?? ($this->parent ? $this->parent->brand_id : null),
             'in_stock' => $this->isInStock(),
             'price' => $this->getSearchPrice(),
             'rating' => $this->rating,

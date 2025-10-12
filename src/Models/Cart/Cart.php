@@ -120,8 +120,20 @@ class Cart extends Model
         return $total;
     }
 
+    public function hasOnlyVirtualItems(): bool
+    {
+        return $this
+            ->items()
+            ->whereHas('product', function ($query) {
+                $query->where('is_virtual', '<>', true);
+            })->count() === 0;
+    }
+
     public function getShippingPrice()
     {
+        if ($this->hasOnlyVirtualItems()) {
+            return 0;
+        }
         $shippingMethods = app(ShippingMethodManager::class)->getShippingMethods();
         $shipping = null;
         foreach ($shippingMethods as $shippingMethod) {

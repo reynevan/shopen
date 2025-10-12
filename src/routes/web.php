@@ -16,6 +16,7 @@ use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutUpdateController;
 use Shopen\Http\Controllers\Frontend\HomeController;
 use Shopen\Http\Controllers\Frontend\Newsletter\NewsletterController;
+use Shopen\Http\Controllers\Frontend\Payment\Payu\PayuNotifyController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewUpdateController;
@@ -87,6 +88,8 @@ Route::middleware(['web'])->group(function () {
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
     Route::get('/newsletter/potwierdzenie-subskrypcji', [NewsletterController::class, 'confirmed'])->name('newsletter.confirmed');
+
+    Route::post('/payu/notify', [PayuNotifyController::class, 'index'])->name('payu.notify');
 });
 
 

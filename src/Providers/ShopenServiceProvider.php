@@ -112,7 +112,7 @@ class ShopenServiceProvider  extends ServiceProvider
         });
 
         $this->app->singleton(ShippingMethodManager::class, function ($app) {
-            return new ShippingMethodManager();
+            return new ShippingMethodManager($this->app->make(CartService::class));
         });
 
         $this->app->singleton(PaymentMethodManager::class, function ($app) {

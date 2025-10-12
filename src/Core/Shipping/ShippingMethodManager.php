@@ -4,9 +4,15 @@ namespace Shopen\Core\Shipping;
 
 use Illuminate\Support\Facades\File;
 use Shopen\Core\Shipping\Methods\ShippingMethodInterface;
+use Shopen\Services\CartService;
 
 class ShippingMethodManager
 {
+    public function __construct(
+        protected CartService $cartService,
+    )
+    {}
+
     protected array $methods = [];
 
     protected function registerShippingMethodsFromNamespace($path, $namespace): void
@@ -51,7 +57,17 @@ class ShippingMethodManager
     public function getShippingMethods(): array
     {
         $this->registerMethods();
-        return array_values($this->methods);
+        if ($this->cartService->getCart()->hasOnlyVirtualItems()) {
+            $methods = [];
+            foreach ($this->methods as $method) {
+                if ($method->isVirtual()) {
+                    $methods[] = $method;
+                }
+            }
+            return $methods;;
+        } else {
+            return array_values($this->methods);
+        }
     }
 
     public function get(string $key): ?ShippingMethodInterface

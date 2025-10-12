@@ -18,6 +18,7 @@ class UpdateProductRequest extends FormRequest
 
         $rules = [
             'visibility' => 'nullable',
+            'is_virtual' => 'nullable|boolean',
             'sku' => 'required|unique:products,sku,' . $this->route('product')->id,
             'url_key' => 'nullable|unique:url_rewrites,request_path,' . $this->getRewriteId(),
             'attributes.name' => 'required',

@@ -66,6 +66,7 @@ const form = useForm({
     uses_stock: props.product?.uses_stock ?? 0,
     stock_qty: props.product?.stock_qty ?? 0,
     brand_id: props.product?.brand_id,
+    is_virtual: props.product?.is_virtual,
 })
 
 const brandsOptions = props.brands.map(brand => {return {id: brand.id, value: brand.name}})

@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('uses_stock');
             $table->integer('stock_qty')->unsigned()->default(0);
             $table->boolean('in_stock')->default(false);
+            $table->boolean('is_virtual')->default(false);
             $table->integer('base_product_id')->unsigned()->nullable()->comment('Baselinker product ID');
             $table->timestamps();
         });

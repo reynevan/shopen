@@ -37,6 +37,11 @@ const visibilityOptions = [
     </FormField>
 
     <FormField
+        label="Produkt wirtualny" label-for="is_virtual">
+        <Toggle v-model="form.is_virtual" id="is_virtual"/>
+    </FormField>
+
+    <FormField
         v-if="!(parent && parent.id)"
         label-for="type"
         label="Typ">

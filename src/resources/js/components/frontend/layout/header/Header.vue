@@ -26,37 +26,40 @@ const auth = useAuthStore();
                     </Link>
                 </div>
                 <div class="flex items-center w-full order-2 sm:order-1 h-auto sm:h-[42px]">
-                    <div class="visible sm:hidden mr-4">
-                        <MobileMenu/>
-                    </div>
                     <SearchBox/>
                 </div>
-                <div class="flex justify-between items-center sm:gap-2 mx-6 order-1 sm:order-2">
+                <div class="flex justify-between items-center w-full sm:w-auto sm:gap-2 order-1 sm:order-2">
+                    <div class="sm:hidden">
+                        <MobileMenu/>
+                    </div>
+
                     <div class="sm:hidden">
                         <Link href="/">
                             <img src="/img/shopen-logo-mobile.png" alt="Shopen"/>
                         </Link>
                     </div>
 
-                    <div class="user-menu-btn group relative">
-                        <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-border-light">
-                            <Link :href="route('user.orders.index')" class="flex items-center gap-2">
-                                <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
-                                <IconProfile size="2xl"/>
-                            </Link>
+                    <div class="flex items-center sm:gap-2">
+                        <div class="user-menu-btn group relative">
+                            <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-border-light">
+                                <Link :href="route('user.orders.index')" class="flex items-center gap-2">
+                                    <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
+                                    <IconProfile size="2xl"/>
+                                </Link>
+                            </div>
+                            <UserMenu/>
                         </div>
-                        <UserMenu/>
+
+                        <Button type="ghost" :shadow="false">
+                            <MinicartButton/>
+                        </Button>
+
+                        <Button type="ghost" :shadow="false">
+                            <Link :href="route('shopping-lists.index')" title="Listy zakupowe">
+                                <IconHeart size="2xl"/>
+                            </Link>
+                        </Button>
                     </div>
-
-                    <Button type="ghost" :shadow="false">
-                        <MinicartButton/>
-                    </Button>
-
-                    <Button type="ghost" :shadow="false">
-                        <Link :href="route('shopping-lists.index')" title="Listy zakupowe">
-                            <IconHeart size="2xl"/>
-                        </Link>
-                    </Button>
 
                 </div>
             </div>
