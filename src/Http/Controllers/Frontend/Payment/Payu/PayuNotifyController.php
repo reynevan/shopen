@@ -17,7 +17,6 @@ class PayuNotifyController
             $body = $request->getContent();
             $headers = $request->headers->all();
 
-            // Weryfikacja sygnatury PayU
             if (!$this->verifySignature($body, $headers)) {
                 Log::warning('PayU: Invalid signature', ['body' => $body, 'headers' => $headers]);
                 return response('Invalid signature', 400);
@@ -30,31 +29,20 @@ class PayuNotifyController
                 return response('Missing orderId', 400);
             }
 
-            // Pobierz szczegóły zamówienia z PayU
-            $response = OpenPayU_Order::retrieve($data['order']['orderId']);
+            $orderId = $data['order']['orderId'];
+            $status = $data['order']['status'];
 
-            if ($response->getStatus() !== 'SUCCESS') {
-                Log::error('PayU: Failed to retrieve order', ['orderId' => $data['order']['orderId']]);
-                return response('Failed to retrieve order', 500);
-            }
-
-            $order = $response->getResponse()->orders[0];
-            $extOrderId = $order->extOrderId; // Twoje ID zamówienia
-            $status = $order->status;
-
-            // Znajdź zamówienie w bazie
-            $payment = Payment::query()->where('gateway_transaction_id', $extOrderId)->first();
+            $payment = Payment::query()->where('gateway_transaction_id', $orderId)->first();
 
             if (!$payment) {
-                Log::error('PayU: Payment not found', ['extOrderId' => $extOrderId]);
+                Log::error('PayU: Payment not found', ['gateway_transaction_id' => $orderId]);
                 return response('Payment not found', 404);
             }
 
-            // Aktualizuj status płatności
-            $this->updatePaymentStatus($payment, $status, $order);
+            $this->updatePaymentStatus($payment, $status);
 
             Log::info('PayU: Notification processed', [
-                'extOrderId' => $extOrderId,
+                'gateway_transaction_id' => $orderId,
                 'status' => $status
             ]);
 
@@ -90,7 +78,7 @@ class PayuNotifyController
         return $parts['signature'] ?? null;
     }
 
-    private function updatePaymentStatus($payment, string $status, $order): void
+    private function updatePaymentStatus($payment, string $status): void
     {
         switch ($status) {
             case 'COMPLETED':
@@ -114,8 +102,6 @@ class PayuNotifyController
                 $payment->status = Payment::STATUS_FAILED;
                 break;
         }
-
-        $payment->payu_order_id = $order->orderId;
         $payment->save();
     }
 }
