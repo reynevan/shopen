@@ -19,7 +19,7 @@ class PayuNotifyController
 
             // Weryfikacja sygnatury PayU
             if (!$this->verifySignature($body, $headers)) {
-                Log::warning('PayU: Invalid signature', ['body' => $body]);
+                Log::warning('PayU: Invalid signature', ['body' => $body, 'headers' => $headers]);
                 return response('Invalid signature', 400);
             }
 
@@ -71,23 +71,23 @@ class PayuNotifyController
 
     private function verifySignature(string $body, array $headers): bool
     {
-        $signature = $headers['openpayu-signature'][0] ?? null;
-
-        if (!$signature) {
-            return false;
-        }
-
-        parse_str($signature, $signatureData);
-        $incomingSignature = $signatureData['signature'] ?? null;
+        $incomingSignature = $this->extractSignature($headers['x-openpayu-signature'][0] ?? null);
 
         if (!$incomingSignature) {
             return false;
         }
 
         $secondKey = config('payment.payu.signature_key');
-        $calculatedSignature = hash('sha256', $body . $secondKey);
+        $calculatedSignature = md5($body . $secondKey);
 
         return hash_equals($calculatedSignature, $incomingSignature);
+    }
+
+    private function extractSignature(string $header): ?string
+    {
+        parse_str(str_replace(';', '&', $header), $parts);
+
+        return $parts['signature'] ?? null;
     }
 
     private function updatePaymentStatus($payment, string $status, $order): void
