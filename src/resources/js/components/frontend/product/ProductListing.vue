@@ -78,32 +78,29 @@ const resultsCount = computed(() => {
 const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).length);
 
 const stickyElement = ref(null)
-const isStuck = ref(false)
-const observer = ref(null)
+const targetElement = ref(null)
+const isOverTarget = ref(false)
+
+const checkOverlap = () => {
+    if (!stickyElement.value || !targetElement.value) return
+
+    const stickyRect = stickyElement.value.getBoundingClientRect()
+    const targetRect = targetElement.value.getBoundingClientRect()
+
+    // Sprawdź czy sticky element nakłada się na target element
+    isOverTarget.value = (
+        stickyRect.bottom > targetRect.top &&
+        stickyRect.top < targetRect.bottom
+    )
+}
 
 onMounted(() => {
-    // Metoda 1: Intersection Observer (zalecana)
-    const sentinel = document.createElement('div')
-    sentinel.style.position = 'absolute'
-    sentinel.style.top = '0'
-    sentinel.style.height = '1px'
-
-    stickyElement.value.parentElement.insertBefore(sentinel, stickyElement.value)
-
-    observer.value = new IntersectionObserver(
-        ([entry]) => {
-            isStuck.value = !entry.isIntersecting
-        },
-        { threshold: [1] }
-    )
-
-    observer.value.observe(sentinel)
+    window.addEventListener('scroll', checkOverlap)
+    checkOverlap()
 })
 
 onUnmounted(() => {
-    if (observer.value) {
-        observer.value.disconnect()
-    }
+    window.removeEventListener('scroll', checkOverlap)
 })
 
 </script>
@@ -122,7 +119,7 @@ onUnmounted(() => {
             <div class="hidden sm:block">
                 <slot name="sidebar-prepend"></slot>
             </div>
-            <div class="hidden sm:block sticky top-0 z-1" ref="stickyElement" :class="isStuck ? 'shadow-lg' : ''">
+            <div class="hidden sm:block sticky top-0 z-1" ref="stickyElement" :class="isOverTarget ? 'shadow-lg' : ''">
                 <FiltersPanel
                     @filterChange="onFilterChange"
                     @onRemoveFilter="removeFilter"
@@ -162,7 +159,9 @@ onUnmounted(() => {
 
                 <!-- Products Grid -->
                 <Transition name="fade" mode="out-in">
-                    <div v-if="products.data.length > 0" :key="products.data.length"
+                    <div v-if="products.data.length > 0"
+                         :key="products.data.length"
+                         ref="targetElement"
                          class="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
                         <ProductThumbnail v-for="product in products.data"
                                           :key="product.id"

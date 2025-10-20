@@ -79,7 +79,6 @@ trait ProductsImporter
             ->table('catalog_product_entity')
             ->select(['entity_id', 'type_id', 'sku', 'created_at', 'updated_at'])
             ->orderBy('entity_id')
-            ->limit(1000)
             ->get()
             ->map(fn($r) => (array)$r)
             ->toArray();
