@@ -8,11 +8,6 @@ use Shopen\Services\CartService;
 
 class ShippingMethodManager
 {
-    public function __construct(
-        protected CartService $cartService,
-    )
-    {}
-
     protected array $methods = [];
 
     protected function registerShippingMethodsFromNamespace($path, $namespace): void
@@ -57,17 +52,7 @@ class ShippingMethodManager
     public function getShippingMethods(): array
     {
         $this->registerMethods();
-        if ($this->cartService->getCart()->hasOnlyVirtualItems()) {
-            $methods = [];
-            foreach ($this->methods as $method) {
-                if ($method->isVirtual()) {
-                    $methods[] = $method;
-                }
-            }
-            return $methods;;
-        } else {
-            return array_values($this->methods);
-        }
+        return $this->methods;
     }
 
     public function get(string $key): ?ShippingMethodInterface

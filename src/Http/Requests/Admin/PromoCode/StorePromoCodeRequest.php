@@ -18,7 +18,7 @@ class StorePromoCodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => ['required', 'string'],
+            'codes' => ['array'],
             'name' => ['required', 'string'],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],

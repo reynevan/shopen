@@ -13,6 +13,7 @@ import TextEditor from "@shopen/components/admin/form/input/TextEditor.vue";
 import SectionTitle from "./SectionTitle.vue";
 import FormMenu from "@shopen/components/admin/form/menu/FormMenu.vue";
 import ConfigurationsSection from "./FormSections/ConfigurationsSection.vue";
+import PageTitle from "../../../../../components/admin/ui/PageTitle.vue";
 
 const page = usePage();
 const props = defineProps({
@@ -31,11 +32,18 @@ const props = defineProps({
     categories: {
         type: Array
     },
+    ceneoCategories: {
+        type: Array
+    },
     attributes: {
         type: Array,
         default: []
     },
     brands: {
+        type: Array,
+        default: []
+    },
+    taxClasses: {
         type: Array,
         default: []
     }
@@ -51,8 +59,10 @@ props.attributes.forEach((attr) => {
 const form = useForm({
     attributes: props.product.id ? props.product.attributes : defaultAttributesValues,
     type: props.product?.type ?? 'simple',
-    visibility: props.product?.visibility ?? 3,
+    visible_individually: props.product?.visible_individually ?? true,
     parent_id: props.parent?.id,
+    ceneo_category_id: props.ceneo_category_id,
+    tax_class_id: props.product?.tax_class_id,
     configurable_attributes: props.product?.configurable_attributes ?? [],
     sku: props.product?.sku,
     ean: props.product?.ean,
@@ -67,9 +77,13 @@ const form = useForm({
     stock_qty: props.product?.stock_qty ?? 0,
     brand_id: props.product?.brand_id,
     is_virtual: props.product?.is_virtual,
+    is_voucher: props.product?.is_voucher,
+    is_new: props.product?.is_new,
+    is_new_to: props.product?.is_new_to,
 })
 
 const brandsOptions = props.brands.map(brand => {return {id: brand.id, value: brand.name}})
+const taxClassesOptions = props.taxClasses.map(taxClass => {return {id: taxClass.id, value: taxClass.name}})
 
 const save = async () => {
     if (props.product.id) {
@@ -128,6 +142,8 @@ if (props.product.is_configurable && props.product.id) {
 
 <template>
     <ActionsPanel back-route="admin.products.index">
+        <template #title>
+            <PageTitle>{{ product.id ? product.attributes.name : 'Nowy produkt' }}</PageTitle></template>
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <div v-if="Object.keys(page.props.errors).length > 0"
@@ -148,7 +164,9 @@ if (props.product.is_configurable && props.product.id) {
                     :product="product"
                     :parent="parent"
                     :categories="categories"
+                    :ceneo-categories="ceneoCategories"
                     :attributes="attributes"
+                    :taxClasses="taxClassesOptions"
                     :brands="brandsOptions"/>
             </div>
 
@@ -179,10 +197,17 @@ if (props.product.is_configurable && props.product.id) {
 
             <div v-show="activeSection === 'description'">
                 <SectionTitle>Opis</SectionTitle>
+
+                <FormField
+                    label-for="short_description"
+                    label="Krótki opis">
+                    <TextEditor v-model="form.attributes.short_description" id="short_description"/>
+                </FormField>
+
                 <FormField
                     label-for="description"
                     label="Opis">
-                    <TextEditor v-model="form.attributes.description"/>
+                    <TextEditor v-model="form.attributes.description" id="description"/>
                 </FormField>
             </div>
 

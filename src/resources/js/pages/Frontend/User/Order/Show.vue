@@ -4,6 +4,7 @@ import OrderItems from "../../../../components/frontend/order/OrderItems.vue";
 import OrderAmounts from "../../../../components/frontend/order/OrderAmounts.vue";
 import {Link, router} from "@inertiajs/vue3";
 import {useConfirm} from "../../../../composables/useConfirm";
+import Button from "../../../../components/frontend/ui/Button.vue";
 
 
 defineOptions({layout: UserPanelLayout})
@@ -25,6 +26,10 @@ const cancelOrder = async () => {
     }
 
     router.put(route('user.orders.cancel', props.order.uuid))
+}
+
+const pay = () => {
+    router.post(route('order.pay', props.order.uuid))
 }
 </script>
 
@@ -99,6 +104,7 @@ const cancelOrder = async () => {
                 <div class="mt-4 pt-3 border-t border-gray-200">
                     <div class="text-sm text-neutral-500">Metoda płatności</div>
                     <div class="font-medium">{{ order.payment_method_label }}</div>
+                    <Button v-if="order.can_pay" @click="pay">Zapłać</Button>
                 </div>
             </div>
         </div>

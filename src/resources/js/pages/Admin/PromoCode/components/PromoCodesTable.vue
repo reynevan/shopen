@@ -2,8 +2,9 @@
 
 import DataTable from "@shopen/components/admin/table/DataTable.vue";
 import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
-import { ref} from "vue";
+import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
+import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
 
 const props = defineProps({
     promoCodes: Object
@@ -21,9 +22,7 @@ const onSort = (field, dir) => {
     router.get(route('admin.promo-codes.index'), {
         sort: field,
         dir: dir
-    }, {
-
-    })
+    }, {})
 }
 
 const onSearch = () => {
@@ -31,8 +30,15 @@ const onSearch = () => {
         sort: sort,
         dir: dir,
         q: search.value
-    }, {
+    }, {})
+}
 
+const removeCode = (code) => {
+    if (!confirm(`Na pewno chcesz usunąć kod ${code.name}?`)) {
+        return;
+    }
+    router.delete(route('admin.promo-codes.delete', code.id), {
+        preserveScroll: true
     })
 }
 </script>
@@ -58,7 +64,7 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn field="code" label="Kod" v-slot="data" sortable>
-            {{ data.row.code }}
+            kody
         </TableColumn>
 
         <TableColumn field="name" label="Nazwa" v-slot="data" sortable>
@@ -78,12 +84,13 @@ const onSearch = () => {
 
 
         <TableColumn label="-" v-slot="data" width="100px">
-            <Link :href="route('admin.promo-codes.edit', data.row.id)" class="text-accent cursor-pointer">Edytuj</Link>
+            <div class="flex divide-x divide-x-border-light">
+                <Link :href="route('admin.promo-codes.edit', data.row.id)" class="text-accent cursor-pointer">
+                    <ActionButton type="edit"/>
+                </Link>
+                <ActionButton type="remove" @click="removeCode(data.row)"/>
+            </div>
         </TableColumn>
 
     </DataTable>
 </template>
-
-<style scoped>
-
-</style>

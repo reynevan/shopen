@@ -36,7 +36,7 @@ class Reindex extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Create indexes and import data';
 
     /**
      * Execute the console command.
@@ -106,7 +106,7 @@ class Reindex extends Command
         $mapping->integer('reviews_count');
         $mapping->keyword('category_id');
         $mapping->keyword('brand_id');
-        $mapping->keyword('visibility');
+        $mapping->boolean('visible_individually');
         $mapping->flattened('thumbnail', ['index' => false]);
         $mapping->text('searchable_attributes', ['analyzer' => 'polish']);
 
@@ -139,6 +139,9 @@ class Reindex extends Command
         }
         $mapping = new Mapping();
         $mapping->integer('id');
+        $mapping->integer('parent_id');
+        $mapping->integer('products_count');
+        $mapping->keyword('url_key');
         $mapping->text('name', [
             'analyzer' => 'polish',
             'boost' => 3,

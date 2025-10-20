@@ -1,5 +1,5 @@
 <script setup>
-import {Link, useForm, usePage} from "@inertiajs/vue3";
+import {Head, useForm, usePage} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
@@ -43,8 +43,11 @@ const importProducts = () => {
 </script>
 
 <template>
-    <PageTitle>Produkty - Import</PageTitle>
+    <Head title="Import produktów"/>
     <ActionsPanel back-route="admin.products.index">
+        <template #title>
+            <PageTitle>Produkty - Import</PageTitle>
+        </template>
         <Button
             v-if="!isValidated || !isValid"
             @click="validate"

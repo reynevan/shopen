@@ -11,6 +11,7 @@ import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarous
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import ProductImage from "../../../components/frontend/product/ProductImage.vue";
+import {trackRemoveFromCart, trackViewCart} from "../../../utils/ga4";
 
 defineOptions({layout: CheckoutLayout})
 
@@ -24,11 +25,14 @@ const cart = computed(() => page.props.cart);
 const auth = useAuthStore()
 const cartStore = useCartStore();
 
+trackViewCart(page.props.cart?.items ?? [])
+
 const onQtyChange = (item, qty) => {
     item.loading = true;
     cartStore.updateItem(item.id, qty)
 }
 const removeItem = (item) => {
+    trackRemoveFromCart(item.product, item.quantity);
     cartStore.removeItem(item);
 }
 </script>

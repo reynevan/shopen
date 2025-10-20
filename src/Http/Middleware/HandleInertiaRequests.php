@@ -5,6 +5,7 @@ namespace Shopen\Http\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
+use Inertia\Inertia;
 use Inertia\Middleware;
 use Shopen\Core\Context;
 use Shopen\Facades\Breadcrumbs;
@@ -59,11 +60,6 @@ class HandleInertiaRequests extends Middleware
             'auth' => fn() => [
                 'user' => $request->user(),
             ],
-            'ziggy' => fn () => [
-                ...(new Ziggy)->toArray(),
-                'location' => $request->url(),
-                'name' => $request->route()->getName()
-            ],
             'csrf_token' => fn() => csrf_token(),
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
@@ -77,6 +73,7 @@ class HandleInertiaRequests extends Middleware
                 'validation_warnings' => fn () => $request->session()->get('validation_warnings'),
                 'is_validated' => fn () => $request->session()->get('is_validated'),
             ],
+            'route' => $request->route()->getName()
         ];
         if (Route::is('admin.*')) {
 
@@ -96,16 +93,16 @@ class HandleInertiaRequests extends Middleware
                 ];
 
             };
-            $data['menu'] = [
-                'categories' => fn() => app(MenuService::class)->getCategories(),
-            ];
+            $data['menu'] = $request->inertia()
+                ? Inertia::lazy(fn () => app(MenuService::class)->getMenu())
+                : app(MenuService::class)->getMenu();
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
             $data['shoppingLists'] = fn () => app(ShoppingListService::class)
                 ->getCurrentUserListsQuery()
                 ->withCount('products')
                 ->orderBy('name')
                 ->get();
-            $data['gtag_id'] = fn() => config('services.gtm.id', null);
+            $data['gtag_id'] = fn() => config('services.gtm.id');
         }
         return $data;
     }

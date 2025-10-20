@@ -2,6 +2,7 @@
 
 namespace Shopen\Services\SearchService;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -26,7 +27,7 @@ class SearchServiceResult
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
-            ->with(['price', 'urlRewrite'])
+            ->with(['price', 'urlRewrite', 'brand'])
             ->whereIn('id', $resultIds)
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
@@ -49,13 +50,22 @@ class SearchServiceResult
         if (!$resultIds || !count($resultIds)) {
             return new Collection();
         }
-        $ids =  implode(',', $sortIds ?? $resultIds);
+        $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
 
-        return Category::query()
-            ->with(['urlRewrite'])
+        $categories = Category::query()
             ->whereIn('id', $resultIds)
-            ->orderByRaw("FIELD(id, $ids)")
+            ->when($sortIds, function (Builder $query) use ($sortIds) {
+                $query->orderByRaw("FIELD(id, $sortIds)");
+            })
             ->get();
+
+        foreach ($categories as $category) {
+            $source = $sources[$category->id] ?? [];
+            $category->url = config('app.url') . '/' .  $source['url_key'];
+            $category->setCustomAttribute('name', $source['name']);
+        }
+
+        return $categories;
     }
 
     public function getPriceFilters(): array
@@ -73,11 +83,12 @@ class SearchServiceResult
         return new LengthAwarePaginator(
             $this->parseProducts(),
             $this->searchResult['hits']['total']['value'],
-            32,
+            config('shopen.product.per_page'),
             request()->strona,
             [
                 'path' => request()->url(),
-                'pageName' => 'strona'
+                'pageName' => 'strona',
+                'query' => request()->query(),
             ]
         );
     }
@@ -114,7 +125,8 @@ class SearchServiceResult
 
             $attribute->options = $attribute
                 ->options
-                ->sortBy('value');
+                ->sortBy('value')
+                ->filter(fn($option) => $option->count > 0);
         }
         $attributes = FilterResource::collection($attributes->filter(fn($attr) => $attr->options->sum('count') > 0));
         return $attributes;

@@ -24,7 +24,8 @@ return new class extends Migration
             $table->decimal('payment_amount', 10, 2)->default(0);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2);
-            $table->foreignId('promo_code_id')->nullable()->constrained()->onDelete('set null');
+            $table->decimal('tax_amount', 10, 2)->default(0);
+            $table->foreignId('promo_code_coupon_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('promo_code_discount_amount', 10, 2)->default(0);
             $table->text('notes')->nullable();
             $table->timestamp('shipped_at')->nullable();

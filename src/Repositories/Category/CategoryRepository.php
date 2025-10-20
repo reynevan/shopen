@@ -25,12 +25,17 @@ class CategoryRepository
         $data = [];
         $categories = Category::query()->orderBy('level')->orderBy('sort_index')->get();
 
+        $categoryAttributeRepository = app(CategoryAttributeRepository::class);
+        $names = $categoryAttributeRepository->getValues('name');
+        $isActive = $categoryAttributeRepository->getValues('is_active');
+
+
         $categoryMap = [];
         foreach ($categories as $category) {
             $categoryMap[$category->id] = [
                 'id' => $category->id,
-                'is_active' => $category->is_active,
-                'name' => $category->name,
+                'is_active' => $isActive[$category->id] ?? false,
+                'name' => $names[$category->id] ?? '',
                 'is_selected' => $category->id === (int)$selectedCategoryId,
                 'has_selected' => false,
                 'children' => []

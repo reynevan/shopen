@@ -16,7 +16,7 @@ const props = defineProps({
 const page = usePage();
 
 const isActive = computed(() => {
-    return page.props.ziggy.name === props.routeName;
+    return page.props.route === props.routeName;
 });
 
 </script>

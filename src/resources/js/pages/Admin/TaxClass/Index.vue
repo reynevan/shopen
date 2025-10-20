@@ -13,6 +13,7 @@ const props = defineProps({
 </script>
 <template>
     <ActionsPanel>
+        <template #title>Stawki VAT</template>
         <Link :href="route('admin.tax-classes.create')">
             <Button>Nowa stawka VAT</Button>
         </Link>

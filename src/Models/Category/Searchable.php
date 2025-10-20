@@ -3,6 +3,8 @@
 namespace Shopen\Models\Category;
 
 
+use Shopen\Models\Product\Product;
+
 trait Searchable
 {
     use \Elastic\ScoutDriverPlus\Searchable;
@@ -16,7 +18,14 @@ trait Searchable
     {
         return [
             'id' => $this->id,
-            'name' => $this->getCustomAttribute('name')
+            'name' => $this->getCustomAttribute('name'),
+            'parent_id' => $this->parent_id,
+            'url_key' => $this->getUrl(false),
+            'products_count' => $this
+                ->products()
+                ->where('visible_individually', true)
+                ->filterByAttribute('is_active', true)
+                ->count(),
         ];
     }
 }

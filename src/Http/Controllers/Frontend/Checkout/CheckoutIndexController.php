@@ -2,6 +2,8 @@
 
 namespace Shopen\Http\Controllers\Frontend\Checkout;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Redirector;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Inertia\Inertia;
@@ -11,36 +13,43 @@ use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Http\Resources\User\AddressResource;
 use Shopen\Models\Address;
 use Shopen\Services\CartService;
+use Shopen\Services\ShippingService;
 
 readonly class CheckoutIndexController
 {
     public function __construct(
         private ShippingMethodManager $shippingMethodManager,
+        private ShippingService $shippingService,
         private CartService           $cartService,
         private PaymentMethodManager  $paymentMethodManager,
     )
     {}
 
-    public function index(): Response
+    public function index(): Response|Redirector|RedirectResponse
     {
+        $cart = $this->cartService->getCart();
+        if ($cart->isEmpty()) {
+            return redirect('/');
+        }
+
         return Inertia::render('Frontend/Checkout/Index', [
-            'selectedShippingMethod' => fn () => $this->cartService->getCart()->shipping_method,
-            'selectedPaymentMethod' => fn () => $this->cartService->getCart()->payment_method,
-            'deliveryPoint' => fn () => $this->cartService->getCart()->delivery_point,
-            'shippingMethods' => fn () => $this->shippingMethodManager->getShippingMethods(),
+            'selectedShippingMethod' => fn () => $cart->shipping_method,
+            'selectedPaymentMethod' => fn () => $cart->payment_method,
+            'deliveryPoint' => fn () => $cart->delivery_point,
+            'shippingMethods' => fn () => $this->shippingService->getAvailableShippingMethods(),
             'paymentMethods' => fn () => $this->paymentMethodManager->getPaymentMethods(),
             'summary' => fn() => $this->summary(),
             'addresses' => fn() => $this->getAddresses(),
-            'selectedShippingAddress' => fn() => $this->cartService->getCart()?->shippingAddress->address_id ?? null,
-            'selectedBillingAddress' => fn() => $this->cartService->getCart()?->billingAddress->address_id ?? null,
-            'promoCode' => fn() => $this->cartService->getCart()->promoCode?->code,
+            'selectedShippingAddress' => fn() => $cart->shippingAddress->address_id ?? null,
+            'selectedBillingAddress' => fn() => $cart->billingAddress->address_id ?? null,
+            'promoCode' => fn() => $cart->promoCodeCoupon?->code,
             'notesEnabled' => config('shopen.checkout.notes.enabled'),
             'includeGeoWidget' => config('shipping.paczkomaty.active') && config('shipping.paczkomaty.geo_token'),
             'geoWidgetToken' => config('shipping.paczkomaty.geo_token')
         ]);
     }
 
-    protected function getAddresses()
+    protected function getAddresses(): array
     {
         return [
             'shipping' => $this->getShippingAddresses(),
@@ -98,11 +107,14 @@ readonly class CheckoutIndexController
             }
         }
         $discount = 0;
-        if ($code = $this->cartService->getCart()->promoCode) {
-            if ($code->isValid()) {
-                $discount = $code->getCartDiscount($cart);
-            } else {
-                $this->cartService->setPromoCode(null);
+        $coupon = $this->cartService->getCart()->promoCodeCoupon;
+        if ($coupon && $coupon->hasUsageLeft()) {
+            if ($code = $coupon->promoCode) {
+                if ($code->isValid()) {
+                    $discount = $code->getCartDiscount($cart);
+                } else {
+                    $this->cartService->setPromoCodeCoupon(null);
+                }
             }
         }
         $total = $productsTotal + $shippingAmount + $paymentAmount - $discount;

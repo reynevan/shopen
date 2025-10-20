@@ -18,7 +18,7 @@ class LoginController extends Controller
 
     public function create()
     {
-        if (Auth::check()) {
+        if (Auth::guard('admin')->check()) {
             return redirect(url('/admin'));
         }
         return Inertia::render('Admin/Auth/Login', [

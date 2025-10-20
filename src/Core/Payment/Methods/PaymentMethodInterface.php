@@ -2,6 +2,7 @@
 
 namespace Shopen\Core\Payment\Methods;
 
+use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 
@@ -16,7 +17,7 @@ interface PaymentMethodInterface
 
     public function handleWebhook(array $webhookData): ?Payment;
 
-    public function checkPaymentStatus(Payment $payment): string;
+    public function checkPaymentStatus(Payment $payment): PaymentStatus;
 
     public function getName(): string;
 

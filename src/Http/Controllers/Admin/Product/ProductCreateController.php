@@ -18,7 +18,10 @@ use Shopen\Jobs\RecalculateProductPrice;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Repositories\TaxClass\TaxClassRepository;
+use Shopen\Services\CeneoService;
 use Shopen\Services\CustomAttributesService;
+use Shopen\Services\VoucherService;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 readonly class ProductCreateController
@@ -27,6 +30,9 @@ readonly class ProductCreateController
         protected CustomAttributesService $customAttributesService,
         protected ProductAttributeRepository $productAttributeRepository,
         protected CategoryRepository $categoryRepository,
+        protected VoucherService $voucherService,
+        protected TaxClassRepository $taxClassRepository,
+        protected CeneoService $ceneoService
     )
     {}
 
@@ -36,19 +42,8 @@ readonly class ProductCreateController
             'product' => ProductResource::make(new Product()),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
             'categories' => fn () => $this->categoryRepository->getArray(),
-        ]);
-    }
-
-    public function createConfiguration(Product $product): RedirectResponse|Response
-    {
-        if (!$product->isConfigurable()) {
-            return redirect(route('admin.products.create'));
-        }
-        return Inertia::render('Admin/Product/Create', [
-            'parent' => fn () => ProductResource::make($product),
-            'product' => fn () => ProductResource::make(new Product()),
-            'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => $this->categoryRepository->getArray(),
+            'ceneo_categories' => fn () => $this->ceneoService->getCategories(),
+            'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
         ]);
     }
 
@@ -69,7 +64,7 @@ readonly class ProductCreateController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock', 'visibility', 'parent_id', 'is_virtual', 'brand_id']));
+            $product->fill($data);
 
             $product->save();
 
@@ -94,6 +89,10 @@ readonly class ProductCreateController
 
             foreach ($product->variants as $variant) {
                 $variant->searchable();
+            }
+
+            if ($product->is_voucher) {
+                $this->voucherService->createPromoCodeForProduct($product, $data['price']['price']);
             }
 
             DB::commit();

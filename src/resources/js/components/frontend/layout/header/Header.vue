@@ -10,14 +10,42 @@ import {useAuthStore} from "@shopen/stores/auth.js";
 import IconHeart from "../../../icons/IconHeart.vue";
 import Navigation from "./Navigation.vue";
 import MobileMenu from "./MobileMenu.vue";
+import {onMounted, onUnmounted, ref} from "vue";
 
 const auth = useAuthStore();
 
+const showHeader = ref(false)
+const lastScrollPosition = ref(0)
 
+const handleScroll = () => {
+    const currentScrollPosition = window.scrollY || document.documentElement.scrollTop
+
+    if (currentScrollPosition < 0) {
+        return
+    }
+
+    if (currentScrollPosition > lastScrollPosition.value) {
+        showHeader.value = false
+    }
+    else {
+        showHeader.value = true
+    }
+
+    lastScrollPosition.value = currentScrollPosition
+}
+
+onMounted(() => {
+    window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+    window.removeEventListener('scroll', handleScroll)
+})
 </script>
 
 <template>
-    <header class="header mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 sticky top-0 sm:relative z-10">
+    <header class="header mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 z-10 sticky transition-all duration-300"
+            :class="showHeader ? 'top-0' : '-top-full'">
         <div class="mx-auto container px-4">
             <div class="flex flex-col sm:gap-4 sm:flex-row justify-between items-center">
                 <div class="hidden sm:block">

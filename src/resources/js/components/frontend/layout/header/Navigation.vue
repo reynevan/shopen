@@ -3,10 +3,12 @@ import {Link, usePage} from "@inertiajs/vue3";
 import {ref} from 'vue';
 import IconChevron from "../../../icons/IconChevron.vue";
 import NavCategoryImage from "./NavCategoryImage.vue";
+import {useMenuStore} from "../../../../stores/menu";
 
 const page = usePage();
-const categories = page.props.menu.categories;
 
+const menuStore = useMenuStore()
+menuStore.setMenu(page.props.menu)
 const TIMEOUT = 200;
 
 const activeLevel3 = ref(null);
@@ -45,7 +47,7 @@ const closeMenu = () => {
 
 <template>
     <div class="bg-header z-100 sm:flex flex-col sm:flex-row justify-center">
-        <div v-for="category in categories" :key="category.id" class="group/parent"
+        <div v-for="category in menuStore.menu?.categories" :key="category.id" class="group/parent"
              @mouseover="openMenu"
              @mouseleave="closeMenu">
             <div

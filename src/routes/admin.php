@@ -29,6 +29,9 @@ use Shopen\Http\Controllers\Admin\Order\OrderShowController;
 use Shopen\Http\Controllers\Admin\Order\OrdersIndexController;
 use Shopen\Http\Controllers\Admin\Product\ProductEditController;
 use Shopen\Http\Controllers\Admin\Product\ProductsIndexController;
+use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeCreateController;
+use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeEditController;
+use Shopen\Http\Controllers\Admin\PromoCode\PromoCodesIndexController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassCreateController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassEditController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassIndexController;
@@ -36,7 +39,7 @@ use Shopen\Http\Controllers\Admin\User\UserEditController;
 use Shopen\Http\Controllers\Admin\User\UserIndexController;
 use Shopen\Http\Controllers\Frontend\Api\BannerTrackController;
 
-Route::middleware(['web', 'guest'])->prefix('/admin')->name('admin.')->group(function () {
+Route::middleware(['web'])->prefix('/admin')->name('admin.')->group(function () {
     Route::get('logowanie', [LoginController::class, 'create'])->name('login');
     Route::post('logowanie', [LoginController::class, 'store']);
 });
@@ -66,7 +69,6 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::delete('/produkty/{product}', [ProductEditController::class, 'destroy'])->name('products.delete');
 
 
-
     //Route::get('/produkty/reguly-cenowe/nowa', [PriceRulesController::class, 'create'])->name('products.price-rules.create');
     //Route::post('/api/products/price-rules', [ApiPriceRulesController::class, 'store'])->name('api.products.price-rules.store');
 
@@ -85,26 +87,29 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/zamowienia/{order}', [OrderShowController::class, 'show'])->name('orders.show');
     Route::post('/zamowienia/{order}/status', [OrderShowController::class, 'updateStatus'])->name('orders.update-status');
     Route::post('/zamowienia/{order}/wysylka', [OrderShowController::class, 'updateShipping'])->name('orders.shipping');
+    Route::post('/zamowienia/{order}/wyslij-bony', [OrderShowController::class, 'sendVouchersEmail'])->name('orders.send-vouchers');
     Route::get('/api/orders', [ApiOrdersController::class, 'index']);
 
-    Route::get('/kody-promocyjne', [TaxClassIndexController::class, 'index'])->name('promo-codes.index');
-    Route::get('/kody-promocyjne/nowy', [TaxClassCreateController::class, 'create'])->name('promo-codes.create');
-    Route::post('/kody-promocyjne', [TaxClassCreateController::class, 'store'])->name('promo-codes.store');
-    Route::get('/kody-promocyjne/{promoCode}/edycja', [TaxClassEditController::class, 'edit'])->name('promo-codes.edit');
-    Route::put('/kody-promocyjne/{promoCode}', [TaxClassEditController::class, 'update'])->name('promo-codes.update');
+    Route::get('/kody-promocyjne', [PromoCodesIndexController::class, 'index'])->name('promo-codes.index');
+    Route::get('/kody-promocyjne/nowy', [PromoCodeCreateController::class, 'create'])->name('promo-codes.create');
+    Route::post('/kody-promocyjne', [PromoCodeCreateController::class, 'store'])->name('promo-codes.store');
+    Route::get('/kody-promocyjne/{promoCode}/edycja', [PromoCodeEditController::class, 'edit'])->name('promo-codes.edit');
+    Route::put('/kody-promocyjne/{promoCode}', [PromoCodeEditController::class, 'update'])->name('promo-codes.update');
+    Route::delete('/kody-promocyjne/{promoCode}', [PromoCodeEditController::class, 'destroy'])->name('promo-codes.delete');
 
     Route::get('/bannery', [BannersIndexController::class, 'index'])->name('banners.index');
     Route::get('/bannery/nowy', [BannerCreateController::class, 'create'])->name('banners.create');
     Route::post('/bannery', [BannerCreateController::class, 'store'])->name('banners.store');
     Route::get('/bannery/{banner}/edycja', [BannerEditController::class, 'edit'])->name('banners.edit');
     Route::put('/bannery/{banner}', [BannerEditController::class, 'update'])->name('banners.update');
-    Route::post('/api/banners/track/{banner}', BannerTrackController::class)->name('banners.track');
+    Route::delete('/bannery/{banner}', [BannerEditController::class, 'destroy'])->name('banners.delete');
 
     Route::get('/atrybuty', [AttributeIndexController::class, 'index'])->name('attributes.index');
     Route::get('/atrybuty/nowy', [AttributeCreateController::class, 'create'])->name('attributes.create');
     Route::post('/atrybuty', [AttributeCreateController::class, 'store'])->name('attributes.store');
     Route::get('/atrybuty/{attribute}', [AttributeEditController::class, 'edit'])->name('attributes.edit');
     Route::put('/atrybuty/{attribute}', [AttributeEditController::class, 'update'])->name('attributes.update');
+    Route::delete('/atrybuty/{attribute}', [AttributeEditController::class, 'destroy'])->name('attributes.delete');
 
     Route::get('/uzytkownicy', [UserIndexController::class, 'index'])->name('users.index');
     Route::get('/uzytkownicy/{user}', [UserEditController::class, 'edit'])->name('users.edit');

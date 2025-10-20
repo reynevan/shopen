@@ -11,7 +11,13 @@ class UserOrderShowController
 {
     public function show(Order $order): Response
     {
-        $order->load(['items', 'items.product', 'promoCode', 'shippingAddress', 'billingAddress']);
+        $order->load([
+            'items',
+            'items.product',
+            'promoCodeCoupon.promoCode',
+            'payments',
+            'shippingAddress',
+            'billingAddress']);
 
         return Inertia::render('Frontend/User/Order/Show', [
             'order' => OrderResource::make($order),

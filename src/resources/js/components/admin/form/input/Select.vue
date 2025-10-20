@@ -1,6 +1,6 @@
 <script setup>
-    defineProps({
-        options: {type: Array},
+    const props = defineProps({
+        options: {required: true},
         id: {type: String, required: true},
         disabled: {type: Boolean, default: false},
         valueKey: {type: String, default: 'id'},
@@ -9,6 +9,7 @@
         error: {type: Boolean}
     })
     const model = defineModel();
+
 </script>
 
 <template>
@@ -17,6 +18,7 @@
             v-model="model"
             :disabled="disabled">
         <option v-if="placeholder" value="" disabled>{{ placeholder }}</option>
-        <option v-for="option in options" :value="option[valueKey]" :key="option[valueKey]">{{ option[labelKey] }}</option>
+        <option v-if="options" v-for="option in options" :value="option[valueKey]" :key="option[valueKey]">{{ option[labelKey] }}</option>
+        <slot name="options"/>
     </select>
 </template>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Shopen\Http\Resources\Admin\Attribute\AttributeResource;
 use Shopen\Http\Resources\Admin\Product\Price\ProductPriceResource;
+use Shopen\Http\Resources\Admin\PromoCode\PromoCodeResource;
 use Shopen\Http\Resources\MediaResource;
 
 class ProductResource extends JsonResource
@@ -15,9 +16,12 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'is_virtual' => $this->is_virtual,
+            'is_voucher' => $this->is_voucher,
+            'is_new' => $this->is_new,
+            'is_new_to' => $this->is_new_to?->format('d-m-Y'),
             'sku' => $this->sku,
             'type' => $this->type,
-            'visibility' => $this->visibility,
+            'visible_individually' => $this->visible_individually,
             'ean' => $this->ean,
             'uses_stock' => $this->uses_stock,
             'stock_qty' => $this->stock_qty,
@@ -36,6 +40,8 @@ class ProductResource extends JsonResource
             'cross_sell_ids' => $this->whenLoaded('crossSells', $this->crossSells()->pluck('cross_sell_product_id')->toArray()),
             'up_sell_products' => BaseProductResource::collection($this->whenLoaded('upSells')),
             'up_sell_ids' => $this->whenLoaded('upSells', $this->upSells()->pluck('up_sell_product_id')->toArray()),
+            'promo_code' => PromoCodeResource::make($this->whenLoaded('promoCode')),
+            'tax_class_id' => $this->tax_class_id
         ];
     }
 }

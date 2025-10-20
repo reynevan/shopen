@@ -23,6 +23,7 @@ use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Price\ProductPriceHistoryItem;
 use Shopen\Models\Product\Price\ProductPriceRule;
 use Shopen\Models\Product\Review\ProductReview;
+use Shopen\Models\PromoCode\PromoCode;
 use Shopen\Models\ShoppingList\ShoppingList;
 use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasUrl;
@@ -31,6 +32,7 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Throwable;
 
 class Product extends Model implements HasMedia, HasCustomAttributesInterface
 {
@@ -43,11 +45,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     const ENTITY_TYPE = 'product';
 
-    const VISIBILITY_NONE = 0;
-    const VISIBILITY_CATEGORY = 1;
-    const VISIBILITY_SEARCH = 2;
-    const VISIBILITY_ALL = 3;
-
     protected $fillable = [
         'sku',
         'ean',
@@ -56,17 +53,25 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'uses_stock',
         'type',
         'brand_id',
-        'visibility',
+        'visible_individually',
         'parent_id',
-        'is_virtual'
+        'is_virtual',
+        'is_voucher',
+        'is_new',
+        'is_new_to',
+        'tax_class_id'
     ];
 
     protected $casts = [
         'is_active' => 'bool',
+        'is_voucher' => 'bool',
+        'is_new' => 'bool',
         'is_virtual' => 'bool',
         'uses_stock' => 'bool',
         'in_stock' => 'bool',
+        'visible_individually' => 'bool',
         'stock_qty' => 'int',
+        'is_new_to' => 'date:Y-m-d'
     ];
 
     protected function getAttributeClass(): string
@@ -252,6 +257,11 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function approvedReviews(): HasMany
     {
         return $this->reviews()->approved();
+    }
+
+    public function promoCode(): BelongsTo
+    {
+        return $this->belongsTo(PromoCode::class);
     }
 
     public function crossSells(): BelongsToMany
@@ -497,5 +507,23 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
 
         return config('shopen.product.default_tax_rate');
+    }
+
+    public function setIsNewToAttribute($value): void
+    {
+        try {
+            if (is_string($value)) {
+                $value = Carbon::parse($value);
+            }
+        } catch (Throwable $e) {}
+        $this->attributes['is_new_to'] = $value;
+    }
+
+    protected function beforeSave(): true
+    {
+        if (!$this->is_new) {
+            $this->is_new_to = null;
+        }
+        return true;
     }
 }

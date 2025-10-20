@@ -2,6 +2,7 @@
 
 namespace Shopen\Http\Controllers\Admin\Attribute;
 
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\Attribute\UpdateAttributeRequest;
@@ -33,6 +34,12 @@ class AttributeEditController
 
         $this->syncAttributeOptions($attribute, $request->options);
 
+    }
+
+    public function destroy(Attribute $attribute): RedirectResponse
+    {
+        $attribute->delete();
+        return back();
     }
 
     private function syncAttributeOptions(Attribute $attribute, array $options)

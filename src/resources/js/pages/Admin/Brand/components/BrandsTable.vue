@@ -6,6 +6,7 @@ import {ref} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
 
 defineProps(['brands'])
 
@@ -89,12 +90,10 @@ const removeBrand = (brand) => {
         </TableColumn>
 
         <TableColumn field="-" label="Akcje" v-slot="data" width="75px">
-            <div class="flex gap-1">
-                <Link :href="route('admin.brands.edit', data.row.id)" class="text-accent cursor-pointer">
-                    <ActionButton type="edit"/>
-                </Link>
+            <ActionButtons>
+                <ActionButton type="edit" :href="route('admin.brands.edit', data.row.id)"/>
                 <ActionButton @click="removeBrand(data.row)" type="remove"/>
-            </div>
+            </ActionButtons>
         </TableColumn>
 
     </DataTable>

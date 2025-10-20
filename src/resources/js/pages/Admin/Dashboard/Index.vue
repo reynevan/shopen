@@ -1,5 +1,5 @@
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import {Link, Head} from "@inertiajs/vue3";
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
 import IconMoney from "../../../components/icons/IconMoney.vue";
 import IconReceipt from "../../../components/icons/IconReceipt.vue";
@@ -17,6 +17,7 @@ const props = defineProps({
 </script>
 
 <template>
+    <Head title="Dashboard"/>
     <div class="py-12">
         <section class="flex flex-col sm:flex-row gap-8 mb-10">
             <div class="rounded shadow pl-2 pr-6 py-4 flex items-center gap-4">
@@ -43,7 +44,7 @@ const props = defineProps({
 
             <section class="w-1/2">
                 <h2 class="text-2xl mb-4">Ostatnie zamówienia</h2>
-                <table class="w-full table-primary">
+                <table v-if="latestOrders?.length" class="w-full table-primary">
                     <thead>
                     <tr>
                         <th class="">Klient</th>
@@ -71,17 +72,20 @@ const props = defineProps({
                     </tr>
                     </tbody>
                 </table>
+                <div v-else class="text-gray-500 text-lg">
+                    Brak zamówień
+                </div>
             </section>
 
             <section class="w-1/2">
                 <h2 class="text-2xl mb-4">Oczekujące działania</h2>
-                <div>
+                <div v-if="pending_reviews_count > 0">
                     <Link :href="route('admin.products.reviews.index', {status: 'pending'})"
-                          v-if="pending_reviews_count > 0"
-                          class="flex items-center justify-between border rounded pl-2 hover:bg-accent/50 transition-all duration-300"
-                    >
+                          class="flex items-center justify-between border rounded pl-2 hover:bg-accent/50 transition-all duration-300">
                         <div class="w-full flex items-center gap-2">
-                            <div class="text-xs px-2 py-1 bg-secondary text-white rounded">{{ pending_reviews_count }}</div>
+                            <div class="text-xs px-2 py-1 bg-secondary text-white rounded">
+                                {{ pending_reviews_count }}
+                            </div>
                             <div class="py-2">Opinie czekajace na zatwierdzenie</div>
                         </div>
 
@@ -89,6 +93,9 @@ const props = defineProps({
                             <i class="bi bi-chevron-right"></i>
                         </div>
                     </Link>
+                </div>
+                <div v-else class="text-gray-500 text-lg">
+                    Brak oczekujących działań
                 </div>
             </section>
         </div>

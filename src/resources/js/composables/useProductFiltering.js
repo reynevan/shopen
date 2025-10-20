@@ -88,7 +88,6 @@ export function useProductFiltering(props) {
         onFilterChange(currentFilters);
     }
 
-    // Zwracamy wszystko, czego komponent będzie potrzebował
     return {
         hasActiveFilters,
         onSortChange,

@@ -24,8 +24,8 @@ readonly class BannerCreateController
     public function create(): Response
     {
         return Inertia::render('Admin/Banner/Create', [
-            'placementTypes' => PlacementType::options(),
-            'placements' => Placement::options(),
+            'placementTypes' => fn () => PlacementType::options(),
+            'placements' => fn () => Placement::options(),
             'categories' => fn () => CategoryResource::collection($this->categoryRepository->getAll(0)),
         ]);
     }

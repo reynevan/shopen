@@ -16,6 +16,7 @@ use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutUpdateController;
 use Shopen\Http\Controllers\Frontend\HomeController;
 use Shopen\Http\Controllers\Frontend\Newsletter\NewsletterController;
+use Shopen\Http\Controllers\Frontend\Payment\PaymentPayController;
 use Shopen\Http\Controllers\Frontend\Payment\Payu\PayuNotifyController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
@@ -26,6 +27,7 @@ use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListIndexController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListItemController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListShowController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderCancelController;
+use Shopen\Http\Controllers\Frontend\User\Order\UserOrderPayController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrdersIndexController;
 use Shopen\Http\Controllers\Frontend\User\UserAddressesIndexController;
@@ -37,7 +39,7 @@ use \Shopen\Http\Controllers\Frontend\Api\SearchController as ApiSearchControlle
 if (env('APP_ENV') === 'local') {
     Route::get('/mail/{id?}', function ($id = 1) {
        $order = \Shopen\Models\Order\Order::query()->where('id', $id)->first();
-       return new \Shopen\Mail\Order\OrderProcessing($order, 'guwno');
+       return new \Shopen\Mail\Order\OrderVouchers($order, [['name' => 'Bon 100 zł', 'codes' => ['ABC100', 'ASD123123']], ['name' => 'Bon 200 zł', 'codes' => ['ADG123', 'SDFAFF234234']]]);
     });
 }
 
@@ -57,6 +59,7 @@ Route::middleware(['web'])->group(function () {
     Route::put('/zamowienie/metoda-platnosci', [CheckoutUpdateController::class, 'updatePaymentMethod'])->name('checkout.update-payment-method');
     Route::put('/zamowienie/kod-promocyjny', [CheckoutUpdateController::class, 'updatePromoCode'])->name('checkout.update-promo-code');
     Route::get('/zamowienie/logowanie-lub-rejestracja', [CheckoutLoginController::class, 'index'])->name('checkout.login');
+    Route::post('/zamowienie/{order:uuid}/zaplac', [UserOrderPayController::class, 'pay'])->name('order.pay');
 
     Route::post('api/cart/add-item', [ApiCartController::class, 'addItem'])->name('api.cart.items.add');
     Route::delete('/api/cart/items/{cartItem}', [ApiCartController::class, 'removeItem'])->name('api.cart.items.delete');

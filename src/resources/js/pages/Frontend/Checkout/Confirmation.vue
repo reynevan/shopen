@@ -4,13 +4,15 @@ import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
 import {Head, Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
+import {trackPurchase} from "../../../utils/ga4";
 
 defineOptions({layout: AppLayout})
 
-defineProps({
+const props = defineProps({
     order: {type: Object}
 })
 
+trackPurchase(props.order)
 </script>
 
 <template>

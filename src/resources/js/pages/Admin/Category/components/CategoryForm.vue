@@ -94,7 +94,14 @@ onBeforeUnmount(() => {
 
 <template>
     <ActionsPanel>
-        <template #title v-if="category?.attributes?.name">{{ category.attributes.name }}</template>
+        <template #title>
+            <template v-if="category">
+                {{ category.id ? category.attributes.name : 'Nowa kategoria'}}
+            </template>
+            <template v-else>
+                Kategorie
+            </template>
+        </template>
         <Button @click="save" class="button-primary">Zapisz</Button>
     </ActionsPanel>
 

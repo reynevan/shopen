@@ -53,7 +53,7 @@ class ProductsController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock', 'visibility', 'parent_id']));
+            $product->fill($data);
 
             $product->save();
 

@@ -17,6 +17,7 @@ use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 use Shopen\Console\Commands\CreateAdminUser;
 use Shopen\Console\Commands\GenerateSitemap;
+use Shopen\Console\Commands\ImportMagento;
 use Shopen\Console\Commands\RecalculateProductPrices;
 use Shopen\Console\Commands\Reindex;
 use Shopen\Console\Commands\SetupAdminUser;
@@ -65,7 +66,8 @@ class ShopenServiceProvider  extends ServiceProvider
                     Reindex::class,
                     Test::class,
                     GenerateSitemap::class,
-                    CreateAdminUser::class
+                    CreateAdminUser::class,
+                    ImportMagento::class
                 ]);
         }
         $months = [
@@ -78,7 +80,7 @@ class ShopenServiceProvider  extends ServiceProvider
             'lipiec' => 'lipca',
             'sierpień' => 'sierpnia',
             'wrzesień' => 'września',
-            'październik' => 'października',
+            //'październik' => 'października',
             'listopad' => 'listopada',
             'grudzień' => 'grudnia'
         ];
@@ -112,7 +114,7 @@ class ShopenServiceProvider  extends ServiceProvider
         });
 
         $this->app->singleton(ShippingMethodManager::class, function ($app) {
-            return new ShippingMethodManager($this->app->make(CartService::class));
+            return new ShippingMethodManager();
         });
 
         $this->app->singleton(PaymentMethodManager::class, function ($app) {

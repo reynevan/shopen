@@ -20,45 +20,53 @@ export const trackSearch = (searchTerm, resultsCount = null) => {
 
 // ===== EVENTY PRODUKTÓW =====
 
-export const trackViewItemList = (items, listName = 'Product List') => {
+export const trackViewItemList = (items, listName, listId) => {
     gtag && gtag('event', 'view_item_list', {
         item_list_name: listName,
+        item_list_id: listId,
         items: items.map((item, index) => ({
-            item_id: item.id || item.sku,
-            item_name: item.name,
-            item_category: item.category,
-            item_brand: item.brand || '',
-            price: item.price,
-            index: index,
-            quantity: item.quantity || 1
+            item_id: item.sku,
+            item_name: item.attributes.name,
+            item_brand: item.brand?.name ?? null,
+            price: parseFloat(item.price.final_price_raw),
+            index: index
         }))
     });
 };
 
-export const trackViewItem = (product, category = null) => {
+function getActiveVariant(variants) {
+    const selectedValues = variants
+        .map(variant => {
+            const selectedProduct = variant.products.find(product => product.is_selected === true);
+            return selectedProduct ? selectedProduct.attribute_value : null;
+        })
+        .filter(value => value !== null);
+
+    return selectedValues.join('|');
+}
+
+export const trackViewItem = (product, variants) => {
     gtag && gtag('event', 'view_item', {
         currency: 'PLN',
-        value: product.final_price || product.price,
+        value: product.price.final_price_raw,
         items: [{
-            item_id: product.id || product.sku,
-            item_name: product.name,
-            item_category: category,
-            item_brand: product.brand || '',
-            price: product.final_price || product.price,
-            quantity: 1
+            item_id: product.sku,
+            item_name: product.attributes.name,
+            item_variant: variants && variants.length ? getActiveVariant(variants) : null,
+            item_brand: product.brand?.name || '',
+            price: parseFloat(product.price.final_price_raw),
         }]
     });
 };
 
-export const trackSelectItem = (product, listName = 'Product List', index = 0) => {
+export const trackSelectItem = (product, listName) => {
     gtag && gtag('event', 'select_item', {
         item_list_name: listName,
         items: [{
-            item_id: product.id || product.sku,
-            item_name: product.name,
-            item_category: product.category,
-            price: product.final_price || product.price,
-            index: index
+            item_id: product.sku,
+            item_name: product.attributes.name,
+            price: parseFloat(product.price.final_price_raw),
+            item_brand: product.brand?.name ?? null
         }]
     });
 };
@@ -68,43 +76,40 @@ export const trackSelectItem = (product, listName = 'Product List', index = 0) =
 export const trackAddToCart = (product, quantity = 1) => {
     gtag && gtag('event', 'add_to_cart', {
         currency: 'PLN',
-        value: (product.final_price || product.price) * quantity,
+        value: (product.price.final_price_raw) * quantity,
         items: [{
-            item_id: product.id || product.sku,
-            item_name: product.name,
-            item_category: product.category,
-            item_brand: product.brand || '',
-            price: product.final_price || product.price,
+            item_id: product.sku,
+            item_name: product.attributes.name,
+            item_brand: product.brand?.name || null,
+            price: parseFloat(product.price.final_price_raw),
             quantity: quantity
         }]
     });
 };
 
-export const trackRemoveFromCart = (product, quantity = 1) => {
+export const trackRemoveFromCart = (item, quantity = 1) => {
     gtag && gtag('event', 'remove_from_cart', {
         currency: 'PLN',
-        value: (product.final_price || product.price) * quantity,
+        value: item.total_final_price_raw,
         items: [{
-            item_id: product.id || product.sku,
-            item_name: product.name,
-            item_category: product.category,
-            price: product.final_price || product.price,
+            item_id: item.product.sku,
+            item_name: item.product.name,
+            price: parseFloat(item.final_price_raw),
             quantity: quantity
         }]
     });
 };
 
 export const trackViewCart = (cartItems) => {
-    const totalValue = cartItems.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
+    const totalValue = cartItems.reduce((sum, item) => sum + (item.total_final_price_raw), 0);
 
     gtag && gtag('event', 'view_cart', {
         currency: 'PLN',
         value: totalValue,
         items: cartItems.map(item => ({
-            item_id: item.product_id || item.id,
-            item_name: item.name,
-            item_category: item.category,
-            price: item.final_price || item.price,
+            item_id: item.product.sku,
+            item_name: item.product.name,
+            price: parseFloat(item.total_final_price_raw),
             quantity: item.quantity
         }))
     });
@@ -112,50 +117,48 @@ export const trackViewCart = (cartItems) => {
 
 // ===== EVENTY CHECKOUT =====
 
-export const trackBeginCheckout = (cartItems, couponCode = null) => {
-    const totalValue = cartItems.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
+export const trackBeginCheckout = (cartItems) => {
+    const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'begin_checkout', {
         currency: 'PLN',
         value: totalValue,
-        ...(couponCode && { coupon: couponCode }),
         items: cartItems.map(item => ({
-            item_id: item.product_id || item.id,
-            item_name: item.name,
-            item_category: item.category,
-            price: item.final_price || item.price,
+            item_id: item.product.sku,
+            item_name: item.product.name,
+            price: parseFloat(item.total_final_price_raw),
             quantity: item.quantity
         }))
     });
 };
 
 export const trackAddShippingInfo = (cartItems, shippingMethod) => {
-    const totalValue = cartItems.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
+    const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'add_shipping_info', {
         currency: 'PLN',
         value: totalValue,
         shipping_tier: shippingMethod,
         items: cartItems.map(item => ({
-            item_id: item.product_id || item.id,
-            item_name: item.name,
-            price: item.final_price || item.price,
+            item_id: item.product.sku,
+            item_name: item.product.name,
+            price: parseFloat(item.total_final_price_raw),
             quantity: item.quantity
         }))
     });
 };
 
 export const trackAddPaymentInfo = (cartItems, paymentMethod) => {
-    const totalValue = cartItems.reduce((sum, item) => sum + (item.final_price * item.quantity), 0);
+    const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'add_payment_info', {
         currency: 'PLN',
         value: totalValue,
         payment_type: paymentMethod,
         items: cartItems.map(item => ({
-            item_id: item.product_id || item.id,
-            item_name: item.name,
-            price: item.final_price || item.price,
+            item_id: item.product.sku,
+            item_name: item.product.name,
+            price: parseFloat(item.total_final_price_raw),
             quantity: item.quantity
         }))
     });
@@ -165,17 +168,15 @@ export const trackAddPaymentInfo = (cartItems, paymentMethod) => {
 
 export const trackPurchase = (order) => {
     gtag && gtag('event', 'purchase', {
-        transaction_id: order.order_number || order.uuid,
+        transaction_id: order.order_number,
         value: order.total_amount,
         currency: 'PLN',
-        shipping: order.shipping_amount || 0,
-        tax: 0, // jeśli masz podatek osobno
-        ...(order.promo_code && { coupon: order.promo_code }),
+        shipping: order.shipping_amount_raw || 0,
+        tax: order.tax_amount_raw,
         items: order.items.map(item => ({
-            item_id: item.product_id || item.sku,
+            item_id: item.sku,
             item_name: item.name,
-            item_category: item.category,
-            price: item.final_price,
+            price: parseFloat(item.total_raw),
             quantity: item.quantity
         }))
     });
@@ -231,13 +232,11 @@ export const trackSelectPromotion = (promoCode) => {
 export const trackAddToWishlist = (product) => {
     gtag && gtag('event', 'add_to_wishlist', {
         currency: 'PLN',
-        value: product.final_price || product.price,
+        value: parseFloat(product.price.final_price_raw),
         items: [{
-            item_id: product.id || product.sku,
-            item_name: product.name,
-            item_category: product.category,
-            price: product.final_price || product.price,
-            quantity: 1
+            item_id: product.sku,
+            item_name: product.attributes.name,
+            price: parseFloat(product.price.final_price_raw)
         }]
     });
 };

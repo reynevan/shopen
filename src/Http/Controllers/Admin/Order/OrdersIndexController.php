@@ -17,10 +17,10 @@ readonly class OrdersIndexController
 
     public function index()
     {
-        $products = $this->orderRepository->getPaginated(request('sort', 'id'), request('dir', 'asc'), request('q'));
+        $orders = $this->orderRepository->getPaginated(request('sort', 'id'), request('dir', 'desc'), request('q'));
 
         return Inertia::render('Admin/Order/Index', [
-            'orders' => OrderResource::collection($products),
+            'orders' => OrderResource::collection($orders),
             'sort' => request('sort', 'id'),
             'dir' => request('dir', 'desc'),
             'q' => request('q')

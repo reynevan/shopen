@@ -3,6 +3,8 @@
 namespace Shopen\Http\Controllers\Admin\Order;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -14,10 +16,12 @@ use Shopen\Mail\Order\OrderPlaced;
 use Shopen\Mail\Order\OrderProcessing;
 use Shopen\Mail\Order\OrderRefunded;
 use Shopen\Mail\Order\OrderShipped;
+use Shopen\Mail\Order\OrderVouchers;
 use Shopen\Models\Order\Order;
 use Shopen\Repositories\Order\OrderRepository;
 use Shopen\Mail\Order\OrderCancelled;
 use Shopen\Mail\Order\OrderDelivered;
+use Throwable;
 
 readonly class OrderShowController
 {
@@ -28,7 +32,15 @@ readonly class OrderShowController
 
     public function show(Order $order): Response
     {
-        $order->load(['shippingAddress', 'billingAddress', 'items.product', 'statusHistoryItems', 'promoCode']);
+        $order->load([
+            'shippingAddress',
+            'billingAddress',
+            'payments',
+            'items.product',
+            'items.product.promoCode',
+            'items.promoCodeCoupons',
+            'statusHistoryItems'
+        ]);
 
         return Inertia::render('Admin/Order/Show', [
             'order' => OrderResource::make($order),
@@ -83,6 +95,41 @@ readonly class OrderShowController
         $order->shipped_at = Carbon::now();
         $order->save();
 
+        return back();
+    }
+
+    public function sendVouchersEmail(Order $order)
+    {
+        $contactEmail = $order->getCustomerEmail();
+        if (!$contactEmail) {
+            return back();
+        }
+        $vouchers = [];
+        $order->load(['items.product.promoCode', 'items.promoCodeCoupons']);
+
+        DB::beginTransaction();
+        try {
+            foreach ($order->items as $item) {
+                if (!$item->product || !$item->product->promoCode || $item->promoCodeCoupons->isEmpty()) {
+                    continue;
+                }
+                $voucher = [
+                    'name' => $item->product->getCustomAttributeValue('name'),
+                    'codes' => []
+                ];
+                foreach ($item->promoCodeCoupons as $coupon) {
+                    $voucher['codes'][] = $coupon->code;
+                }
+                $vouchers[] = $voucher;
+                $item->promo_code_coupon_email_sent = true;
+                $item->save();
+            }
+            Mail::to($contactEmail)->queue(new OrderVouchers($order, $vouchers));
+            DB::commit();
+        } catch (Throwable $e) {
+            Log::error($e);
+            return back()->with('error', 'Wystąpił błąd.');
+        }
         return back();
     }
 }

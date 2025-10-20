@@ -1,7 +1,10 @@
 <script setup>
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
-import BannersTable from "../../../components/admin/banner/BannersTable.vue";
-import {Link} from "@inertiajs/vue3";
+import {Link, Head} from "@inertiajs/vue3";
+import Button from "@shopen/components/admin/ui/Button.vue";
+import ActionsPanel from "../../../components/admin/ui/ActionsPanel.vue";
+import PageTitle from "../../../components/admin/ui/PageTitle.vue";
+import BannersTable from "./components/BannersTable.vue";
 
 defineOptions({layout: AdminLayout})
 
@@ -10,8 +13,14 @@ defineProps({
 });
 </script>
 <template>
+    <Head title="Bannery"/>
+    <ActionsPanel>
+        <template #title>
+            <PageTitle>Bannery</PageTitle>
+        </template>
         <Link :href="route('admin.banners.create')" class="mr-4">
-            Nowy
+            <Button>Nowy banner</Button>
         </Link>
+    </ActionsPanel>
     <BannersTable :banners="banners"/>
 </template>

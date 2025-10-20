@@ -22,9 +22,12 @@ class CartItemResource extends JsonResource
             'price' => Number::currency($this->price),
             'total_price' => Number::currency(round($this->price * $this->quantity, 2)),
             'final_price' => Number::currency($this->final_price),
+            'final_price_raw' => $this->final_price,
             'total_final_price' => Number::currency(round($this->final_price * $this->quantity, 2)),
+            'total_final_price_raw' => round($this->final_price * $this->quantity, 2),
             'product' => [
                 'id' => $product->id,
+                'sku' => $product->sku,
                 'name' => $product->getCustomAttribute('name'),
                 'image' => $product->getThumbnail(),
                 'attributes' => $product->getVariantAttributes(),

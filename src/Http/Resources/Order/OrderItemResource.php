@@ -26,6 +26,7 @@ class OrderItemResource extends JsonResource
             'price' => Number::currency($this->price),
             'final_price' => Number::currency($this->final_price),
             'total' => Number::currency($this->total),
+            'total_raw' => $this->total,
             'discount' => Number::currency($this->discount),
         ];
     }

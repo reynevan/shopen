@@ -3,15 +3,18 @@
 namespace Shopen\Http\Controllers\Admin\PromoCode;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\PromoCode\StorePromoCodeRequest;
 use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\PromoCode\PromoCodeResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCode;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Throwable;
 
 readonly class PromoCodeCreateController
 {
@@ -28,22 +31,35 @@ readonly class PromoCodeCreateController
         return Inertia::render('Admin/PromoCode/Edit', [
             'promoCode' => PromoCodeResource::make($promoCode),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => CategoryResource::collection($this->categoryRepository->getAll(0)),
+            'categories' => fn () => $this->categoryRepository->getArray(),
         ]);
     }
 
     public function store(StorePromoCodeRequest $request): RedirectResponse
     {
-        $data = $request->validated();
-        $data['conditions_serialized'] = json_encode(
-            [
-                'attributes' => request()->post('attributes'),
-                'categories' => request()->post('categories'),
-            ]
-        );
+        DB::beginTransaction();
+        try {
+            $data = $request->validated();
 
-        PromoCode::create($data);
+            $data['conditions_serialized'] = json_encode(
+                [
+                    'attributes' => request()->post('attributes'),
+                    'categories' => request()->post('categories'),
+                ]
+            );
 
-        return redirect()->to(route('admin.promo-codes.index'));
+            $promoCode = PromoCode::create($data);
+
+            foreach ($data['codes'] as $code) {
+                $promoCode->codes()->create($code);
+            }
+            DB::commit();
+
+            return redirect()->to(route('admin.promo-codes.index'));
+        } catch (Throwable $e) {
+            Log::error($e);
+            DB::rollBack();
+        }
+        return back()->with('error', 'Wystąpił błąd przy zapisie kodu.');
     }
 }

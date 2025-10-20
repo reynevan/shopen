@@ -1,7 +1,7 @@
 <script setup>
 import { Head } from '@inertiajs/vue3'
 import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
-import ProductListing from '@shopen/components/frontend/product/ProductListing.vue'; // Popraw ścieżkę!
+import ProductListing from '@shopen/components/frontend/product/ProductListing.vue';
 
 defineOptions({ layout: AppLayout })
 
@@ -18,7 +18,7 @@ const props = defineProps({
 <template>
     <Head>
         <title>Wyniki wyszukiwania dla: {{ searchQuery }}</title>
-        <meta name="robots" content="noindex, follow"> <!-- Strony wyszukiwania często nie są indeksowane -->
+        <meta name="robots" content="noindex, follow">
     </Head>
 
     <ProductListing
@@ -29,7 +29,6 @@ const props = defineProps({
         :sort-options="sortOptions"
         :search-query="props.searchQuery"
     >
-        <!-- Wypełniamy sloty dla strony wyszukiwania -->
 
         <template #header="{ resultsCount }">
             <div class="flex items-end">
@@ -38,8 +37,6 @@ const props = defineProps({
             </div>
         </template>
 
-        <!-- Pozostałe sloty można zostawić puste, jeśli nie są potrzebne.
-             Np. nie mamy tu podkategorii ani obrazka kategorii. -->
 
     </ProductListing>
 </template>

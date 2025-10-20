@@ -11,12 +11,14 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Resources\Admin\Category\BaseCategoryResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
+use Shopen\Http\Resources\Admin\TaxClass\TaxClassResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Jobs\RecalculateProductPrice;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Brand\BrandRepository;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Repositories\TaxClass\TaxClassRepository;
 use Shopen\Services\CustomAttributesService;
 
 readonly class ProductEditController
@@ -26,6 +28,7 @@ readonly class ProductEditController
         protected ProductAttributeRepository $productAttributeRepository,
         protected CategoryRepository         $categoryRepository,
         protected BrandRepository           $brandRepository,
+        protected TaxClassRepository $taxClassRepository,
     )
     {
     }
@@ -46,6 +49,7 @@ readonly class ProductEditController
             'categories' => fn() => $this->categoryRepository->getArray(),
             'brands' => fn() => $this->brandRepository->getAll()->select(['id', 'name'])->toArray(),
             'variants' => fn() => $this->getVariants($product),
+            'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
         ]);
     }
 
@@ -63,7 +67,8 @@ readonly class ProductEditController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
-            $product->fill(Arr::only($data, ['sku', 'ean', 'type', 'uses_stock', 'stock_qty', 'in_stock', 'visibility', 'parent_id', 'is_virtual', 'brand_id']));
+
+            $product->fill($data);
             $product->save();
 
             $product->createUrlRewrite($data['url_key'] ?? null);

@@ -60,7 +60,7 @@ const auth = useAuthStore();
             </li>
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
-                      :href="''">
+                      :href="route('user.settings.index')">
                     <IconSettings/>
                     Ustawienia konta
                 </Link>

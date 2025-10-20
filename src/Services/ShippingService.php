@@ -8,7 +8,8 @@ use Shopen\Models\Product\Product;
 class ShippingService
 {
     public function __construct(
-        protected ShippingMethodManager $shippingMethodManager
+        protected ShippingMethodManager $shippingMethodManager,
+        protected CartService $cartService,
     )
     {}
 
@@ -24,5 +25,18 @@ class ShippingService
             }
         }
         return false;
+    }
+
+    public function getAvailableShippingMethods(): array
+    {
+        $methods = $this->shippingMethodManager->getShippingMethods();
+        $availableMethods = [];
+        $isCartVirtual = $this->cartService->getCart()->hasOnlyVirtualItems();
+        foreach ($methods as $method) {
+            if (($isCartVirtual && $method->isVirtual()) || (!$isCartVirtual && !$method->isVirtual())) {
+                $availableMethods[] = $method;
+            }
+        }
+        return $availableMethods;
     }
 }

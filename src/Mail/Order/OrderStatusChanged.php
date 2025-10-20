@@ -17,7 +17,7 @@ class OrderStatusChanged extends Mailable
 
     public function __construct(
         public Order $order,
-        public string $comment = ''
+        public ?string $comment = ''
     ) {}
 
     public function content(): Content

@@ -3,8 +3,6 @@
 namespace Shopen\Http\Controllers\Admin\Banner;
 
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -13,11 +11,8 @@ use Shopen\Enums\Banner\Placement;
 use Shopen\Enums\Banner\PlacementType;
 use Shopen\Http\Requests\Admin\Banner\StoreBannerRequest;
 use Shopen\Http\Resources\Admin\Category\CategoryResource;
-use Shopen\Http\Resources\Banner\BannerResource;
-use Shopen\Jobs\RecalculateProductPrice;
+use Shopen\Http\Resources\Admin\Banner\BannerResource;
 use Shopen\Models\Banner\Banner;
-use Shopen\Models\Category\Category;
-use Shopen\Models\Product\Product;
 use Shopen\Repositories\Category\CategoryRepository;
 
 readonly class BannerEditController
@@ -30,9 +25,10 @@ readonly class BannerEditController
     public function edit(Banner $banner): Response
     {
         return Inertia::render('Admin/Banner/Edit', [
-            'banner' => BannerResource::make($banner),
-            'placements' => Placement::options(),
-            'categories' => fn () => CategoryResource::collection($this->categoryRepository->getAll(0)),
+            'banner' => fn () => BannerResource::make($banner),
+            'placements' => fn () => Placement::options(),
+            'placementTypes' => fn () => PlacementType::options(),
+            'categories' => fn () => $this->categoryRepository->getArray(),
         ]);
     }
 
@@ -59,6 +55,12 @@ readonly class BannerEditController
         $banner->categories()->sync($validated['category_ids'] ?? []);
 
         return Redirect::route('admin.banners.index')->with('success', 'Baner został zaktualizowany.');
+    }
+
+    public function destroy(Banner $banner): RedirectResponse
+    {
+        $banner->delete();
+        return back();
     }
 
 }

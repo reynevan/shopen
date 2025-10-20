@@ -3,6 +3,7 @@
 namespace Shopen\Services;
 
 use Illuminate\Support\Facades\Cache;
+use Shopen\Models\Category\Attribute\Value\CategoryAttributeBool;
 use Shopen\Models\Category\Attribute\Value\CategoryAttributeString;
 use Shopen\Models\Category\Category;
 use Shopen\Models\UrlRewrite;
@@ -25,7 +26,8 @@ class MenuService
             $urls = $this->getUrls();
 
             $categories = Category::query()
-                ->where('is_active', true)
+                ->with(['media'])
+                ->filterByAttribute('is_active', true)
                 ->orderBy('level', 'desc')
                 ->orderBy('sort_index')
                 ->get();
@@ -36,10 +38,16 @@ class MenuService
                 ->select(['entity_id', 'value'])
                 ->pluck('value', 'entity_id');
 
+            $displayInMenuAttribute = $this->categoryAttributeRepository->getByCode('display_in_menu');
+            $menuDisplayValues = CategoryAttributeBool::query()
+                ->where('attribute_id', $displayInMenuAttribute->id)
+                ->select(['entity_id', 'value'])
+                ->pluck('value', 'entity_id');
+
             $map = [];
 
             foreach ($categories as $category) {
-                if ($category->level === 0 && !$category->display_in_menu) {
+                if ($category->level === 0 && !($menuDisplayValues[$category->id] ?? false)) {
                     continue;
                 }
                 $category->subcategories = [];
@@ -97,5 +105,10 @@ class MenuService
             })
             ->pluck('url', 'entity_id')
             ->toArray();
+    }
+
+    public function getMenu()
+    {
+        return ['categories' => $this->getCategories()];
     }
 }

@@ -20,6 +20,9 @@ return new class extends Migration
             $table->foreignId('store_id');
             $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
             $table->timestamps();
+
+            $table->index('request_path');
+            $table->index('entity_type');
         });
     }
 

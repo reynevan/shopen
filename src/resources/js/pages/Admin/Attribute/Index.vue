@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
-import {Link} from "@inertiajs/vue3";
+import {Link, Head} from "@inertiajs/vue3";
 import AttributesTable from "./components/AttributesTable.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import PageTitle from "@shopen/components/admin/ui/PageTitle.vue";
@@ -13,8 +13,11 @@ defineProps({
 });
 </script>
 <template>
-    <PageTitle>Atrybuty</PageTitle>
+    <Head title="Atrybuty"/>
     <ActionsPanel>
+        <template #title>
+            <PageTitle>Atrybuty</PageTitle>
+        </template>
         <Link :href="route('admin.attributes.create')">
             <Button>Nowy atrybut</Button>
         </Link>

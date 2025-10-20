@@ -5,7 +5,11 @@ namespace Shopen\Models\Order;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Shopen\Enums\Promocode\ApplyType;
 use Shopen\Models\Product\Product;
+use Shopen\Models\PromoCode\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 
 class OrderItem extends Model
 {
@@ -20,12 +24,15 @@ class OrderItem extends Model
         'price',
         'final_price',
         'total',
+        'tax_amount',
+        'promo_code_discount_amount'
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'final_price' => 'decimal:2',
         'total' => 'decimal:2',
+        'promo_code_coupon_email_sent' => 'boolean'
     ];
 
     public function getDiscountAttribute()
@@ -41,5 +48,19 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function promoCodeCoupons(): BelongsToMany
+    {
+        return $this->belongsToMany(PromoCodeCoupon::class);
+    }
+
+    public function calcTotalAmount(?PromoCode $promoCode)
+    {
+       $promoCodeDiscountAmount = 0;
+        if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($this->product)) {
+            $promoCodeDiscountAmount = $this->quantity * $promoCode->calculateDiscount($this->final_price);
+        }
+        return $this->final_price * $this->quantity - $promoCodeDiscountAmount;
     }
 }

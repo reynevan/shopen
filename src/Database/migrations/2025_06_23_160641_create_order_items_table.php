@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained();
+            $table->boolean('promo_code_coupon_email_sent')->default(false);
             $table->string('sku');
             $table->string('name');
             $table->integer('quantity');
@@ -19,9 +20,10 @@ return new class extends Migration
             $table->decimal('final_price', 10, 2);
             $table->decimal('promo_code_discount_amount', 10, 2)->default(0);
             $table->decimal('total', 10, 2);
+            $table->decimal('tax_amount', 10, 2)->default(0);
             $table->timestamps();
 
-            $table->index('order_id');
+            $table->index(['order_id', 'product_id']);
         });
     }
 

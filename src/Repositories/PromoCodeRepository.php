@@ -3,7 +3,7 @@
 namespace Shopen\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCode;
 
 class PromoCodeRepository
 {

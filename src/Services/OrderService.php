@@ -10,15 +10,16 @@ use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Address\AddressType;
 use Shopen\Enums\Order\OrderStatus;
+use Shopen\Enums\Promocode\ApplyType;
+use Shopen\Mail\Order\OrderPlaced;
+use Shopen\Mail\Order\OrderStatusChanged;
 use Shopen\Models\Address;
 use Shopen\Models\Cart\Cart;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\OrderAddress;
 use Shopen\Models\Order\OrderItem;
 use Shopen\Models\Product\Product;
-use Shopen\Models\PromoCode;
-use Shopen\Mail\Order\OrderPlaced;
-use Shopen\Mail\Order\OrderStatusChanged;
+use Shopen\Models\PromoCode\PromoCode;
 
 readonly class OrderService
 {
@@ -41,22 +42,22 @@ readonly class OrderService
             ]);
         }
 
+
         return DB::transaction(function () use (
             $userId, $cart, $options, $customBillingAddress
         ) {
             $this->validateStock($cart);
 
-            $promoCode = $this->getPromoCode($cart);
-
-            if ($promoCode) {
-                $promoCode->increment('current_usage_count');
+            $coupon = $this->getPromoCodeCoupon($cart);
+            if ($coupon) {
+                $coupon->increment('usage_count');
             }
 
-            $totals = $this->calculateTotals($cart, $promoCode);
+            $totals = $this->calculateTotals($cart, $coupon->promoCode ?? null);
 
             $order = Order::create([
                 'user_id' => $userId,
-                'promo_code_id' => $promoCode->id ?? null,
+                'promo_code_coupon_id' => $coupon->id ?? null,
                 'order_number' => Order::generateOrderNumber(),
                 'status' => OrderStatus::NEW,
                 'shipping_method' => $cart->shipping_method,
@@ -68,12 +69,12 @@ readonly class OrderService
                 'discount_amount' => $totals['discount_amount'],
                 'promo_code_discount_amount' => $totals['promo_code_discount_amount'] ?? 0,
                 'total_amount' => $totals['total_amount'],
+                'tax_amount' => $totals['tax_amount'],
                 'notes' => $options['notes'] ?? null,
                 'uuid' => Str::uuid()
             ]);
 
-
-            $this->createOrderItems($order, $cart, $promoCode);
+            $this->createOrderItems($order, $cart, $coupon->promoCode ?? null);
 
             $this->createOrderAddresses($order, $customBillingAddress);
 
@@ -119,15 +120,19 @@ readonly class OrderService
         return $this->updateOrderStatus($order, OrderStatus::CANCELLED);
     }
 
-    private function getPromoCode(Cart $cart)
+    private function getPromoCodeCoupon(Cart $cart)
     {
-        $promoCode = $cart->promoCode;
-        if ($promoCode && (!$promoCode->isValid() || !$promoCode->meetsMinimumOrderValue($cart->totalPrice()))) {
+        $coupon = $cart->promoCodeCoupon;
+        if (!$coupon) {
+            return null;
+        }
+        $promoCode = $coupon->promoCode;
+        if ($promoCode && (!$promoCode->isValid() || !$promoCode->meetsMinimumOrderValue($cart->totalPrice())) || !$coupon->hasUsageLeft()) {
             throw ValidationException::withMessages([
                 'promo_code' => "Nieprawidłowy kod promocyjny"
             ]);
         }
-        return $promoCode;
+        return $coupon;
     }
 
     private function validateStock($cart): void
@@ -174,6 +179,8 @@ readonly class OrderService
         $discountAmount = $cart->items->sum(fn($item) => ($item->price - $item->final_price) * $item->quantity);
         $promoCodeDiscountAmount = 0;
 
+
+
         if ($promoCode) {
             if ($promoCode->minimum_order_value > $subtotal) {
                 throw ValidationException::withMessages([
@@ -197,7 +204,23 @@ readonly class OrderService
             'discount_amount' => $discountAmount,
             'promo_code_discount_amount' => $promoCodeDiscountAmount,
             'total_amount' => $subtotal + $shippingAmount - $promoCodeDiscountAmount,
+            'tax_amount' => $this->calculateTotalTaxes($cart, $promoCode),
         ];
+    }
+
+    private function calculateTotalTaxes(Cart $cart, ?PromoCode $promoCode = null): float
+    {
+        $tax = .0;
+        foreach ($cart->items as $item) {
+            $product = $item->product;
+            $promoCodeDiscountAmount = 0;
+            if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($product)) {
+                $promoCodeDiscountAmount = $item->quantity * $promoCode->calculateDiscount($item->final_price);
+            }
+            $total = $item->final_price * $item->quantity - $promoCodeDiscountAmount;
+            $tax += $product->taxClass ? $total * $product->taxClass->rate / 100 : 0;
+        }
+        return $tax;
     }
 
 
@@ -208,11 +231,14 @@ readonly class OrderService
             $finalPrice = $item->final_price;
 
             $promoCodeDiscountAmount = 0;
-            if ($promoCode && $promoCode->isAppliedToProduct($product)) {
+            if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($product)) {
                 $promoCodeDiscountAmount = $item->quantity * $promoCode->calculateDiscount($finalPrice);
             }
+            $total = $item->final_price * $item->quantity - $promoCodeDiscountAmount;
 
-            OrderItem::create([
+            $tax = $product->taxClass ? $total * $product->taxClass->rate / 100 : 0;
+
+            $orderItem = OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $item->product_id,
                 'sku' => $product->sku,
@@ -220,9 +246,17 @@ readonly class OrderService
                 'quantity' => $item->quantity,
                 'price' => $item->price,
                 'final_price' => $finalPrice,
-                'promo_code_discount_amount' => $promoCodeDiscountAmount ?? 0,
-                'total' => $item->final_price * $item->quantity,
+                'promo_code_discount_amount' => $promoCodeDiscountAmount,
+                'total' => $total,
+                'tax_amount' => $tax,
             ]);
+
+            if ($product->is_voucher && $product->promoCode) {
+                for ($i = 0; $i < $item->quantity; $i++) {
+                    $promoCodeCoupon = $product->promoCode->createCoupon();
+                    $orderItem->promoCodeCoupons()->attach($promoCodeCoupon->id);
+                }
+            }
         }
     }
 

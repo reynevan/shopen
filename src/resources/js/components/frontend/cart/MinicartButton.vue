@@ -21,7 +21,7 @@ const openMinicart = () => {
 </script>
 
 <template>
-    <div @click="openMinicart" class="cursor-pointer relative">
+    <div @click="openMinicart" class="cursor-pointer relative" title="Koszyk">
         <div>
             <IconCart size="2xl"/>
         </div>

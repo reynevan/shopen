@@ -27,6 +27,11 @@ abstract class AbstractShippingMethod implements JsonSerializable, ShippingMetho
         return config("shipping.{$this->getKey()}.virtual", false);
     }
 
+    public function isTrackable(): bool
+    {
+        return config("shipping.{$this->getKey()}.trackable", false);
+    }
+
     public function getDescription(): ?string
     {
         return config("shipping.{$this->getKey()}.description");

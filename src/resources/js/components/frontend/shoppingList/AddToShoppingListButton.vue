@@ -7,6 +7,7 @@ import IconHeart from "../../icons/IconHeart.vue";
 import IconHeartFull from "../../icons/IconHeartFull.vue";
 import IconLoader from "../../icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
+import {trackAddToWishlist} from "../../../utils/ga4";
 
 const props = defineProps({
     product: {type: Object},
@@ -24,6 +25,7 @@ const addToDefaultListForm = useForm({
 
 const handleAddToShoppingList = () => {
     if (shoppingLists.value.length === 0) {
+        trackAddToWishlist(props.product)
         addToDefaultListForm.post(route('shopping-lists.items.store'), {
             preserveScroll: true
         });

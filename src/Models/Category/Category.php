@@ -33,6 +33,7 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected $fillable = [
         'is_active',
+        'parent_id'
     ];
 
     protected function getAttributeClass(): string
@@ -104,31 +105,34 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
         return $this->hasMany(UrlRewrite::class, 'entity_id')->where('entity_type', self::ENTITY_TYPE);
     }
 
-    public function generateUrlRewrite()
+    public function generateUrlRewrite($key = null): void
     {
-        $rewrite = new UrlRewrite();
-        $url = Str::slug($this->getCustomAttribute('name'));
+        $url = $key ?? Str::slug($this->getCustomAttribute('name'));
         $parent = $this->parent;
-        while ($parent) {
-            $url = Str::slug($parent->getCustomAttribute('name')) . '/' . $url;
-            $parent = $parent->parent;
+        if ($parent) {
+            $url = $parent->urlRewrites()->first()?->request_path . '/' . $url;
+            $url = trim($url, '/');
         }
+        $rewrite = UrlRewrite::query()
+            ->where('entity_type', self::ENTITY_TYPE)
+            ->where('entity_id', $this->id)
+            ->firstOrNew();
         $rewrite->request_path = $url;
         $rewrite->entity_type = self::ENTITY_TYPE;
         $rewrite->entity_id = $this->id;
         $rewrite->store_id = 1;
         $rewrite->target_path = '/categories/' . $this->id;
         $rewrite->save();
-
     }
 
-    public function getUrl()
+    public function getUrl($absolute = true)
     {
         $urlRewrite = $this->urlRewrites()->first();
         if (!$urlRewrite) {
             return null;
         }
-        return config('app.url') . '/' . $urlRewrite->request_path;
+        $appUrl = $absolute ? (config('app.url') . '/') : '';
+        return $appUrl . $urlRewrite->request_path;
     }
 
     public function setParentId($parentId): static

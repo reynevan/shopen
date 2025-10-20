@@ -49,9 +49,7 @@ readonly class CategoryEditController
         try {
             $validated = $request->validated();
             foreach ($validated['attributes'] as $key => $value) {
-                if ($value) {
-                    $category->setCustomAttribute($key, $value);
-                }
+                $category->setCustomAttribute($key, $value);
             }
 
             if ($request->hasFile('image_menu')) {

@@ -10,7 +10,7 @@ class TaxClassRepository
 
     public function getAll()
     {
-        return TaxClass::query();
+        return TaxClass::query()->orderBy('name')->get();
     }
 
     public function getPaginated($sortField, $sortDir, $searchQuery = null)

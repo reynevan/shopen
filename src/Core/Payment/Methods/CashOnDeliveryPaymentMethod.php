@@ -10,7 +10,7 @@ class CashOnDeliveryPaymentMethod extends AbstractPaymentMethod
 {
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        return $this->createPayment($order, Payment::STATUS_PENDING);
+        return $this->createPayment($order);
     }
 
     public function getKey(): string

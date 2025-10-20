@@ -25,7 +25,7 @@ const submit = () => {
             <div v-if="order.shipped_at">Wysłano: {{ order.shipped_at }}</div>
             <div v-if="shipping_tracking_code">Numer przesyłki: {{ order.shipping_tracking_code }}</div>
         </div>
-        <div>
+        <div v-if="order.shipping_method_trackable">
             <form @submit.prevent="submit" method="POST">
                 <div class="mb-4">
                     <label for="shipping_tracking_code">Numer przesyłki</label>

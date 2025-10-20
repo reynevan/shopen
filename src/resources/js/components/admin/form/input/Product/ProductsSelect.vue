@@ -38,7 +38,6 @@ const openModal = async () => {
 };
 
 const closeModal = () => {
-    console.trace();
     showModal.value = false;
 };
 

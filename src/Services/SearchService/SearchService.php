@@ -95,7 +95,6 @@ class SearchService
 
         if ($this->categoryId) {
             $filters[] = ['term' => [ 'category_id' => $this->categoryId ]];
-            $filters[] = ['terms' => [ 'visibility' => [Product::VISIBILITY_ALL, Product::VISIBILITY_CATEGORY] ]];
         }
 
         if ($this->brandId) {
@@ -112,6 +111,36 @@ class SearchService
 
         $params = [
             'index' => 'shopen_products',
+            'body' => ['query' => $query],
+        ];
+
+        if ($this->limit) {
+            $params['body']['size'] = $this->limit;
+        }
+        $result = $this->client->search($params)->asArray();
+
+        return new SearchServiceResult($result);
+    }
+
+    public function getCategories()
+    {
+        $filters = [];
+
+        if ($this->categoryId) {
+            $filters[] = ['term' => [ 'parent_id' => $this->categoryId ]];
+            $filters[] = ['range' => [ 'products_count' => ['gt' => 0] ]];
+        }
+
+        if ($this->ids) {
+            $filters[] = ['terms' => ['id' => $this->ids]];
+        }
+
+        $query = count($filters)
+            ? ['bool' => ['filter' => $filters]]
+            : ['match_all' => new \stdClass()];
+
+        $params = [
+            'index' => 'shopen_categories',
             'body' => ['query' => $query],
         ];
 
@@ -192,7 +221,6 @@ class SearchService
         $this->addBrandFilter($queryFilters);
         $this->addAttributeFilters($queryFilters, $filters, $exclude);
         $this->addPriceRangeFilter($queryFilters, $filters);
-        $this->addVisibilityFilter($queryFilters);
 
         return $queryFilters;
     }
@@ -230,14 +258,6 @@ class SearchService
             }
             $queryFilters[] = ['terms' => [$attribute => $values]];
         }
-    }
-
-    private function addVisibilityFilter(array &$queryFilters): void
-    {
-        $queryFilters[] = ['terms' => ['visibility' => [
-            Product::VISIBILITY_ALL,
-            Product::VISIBILITY_SEARCH
-        ]]];
     }
 
     private function addPriceRangeFilter(array &$queryFilters, array $allFilters): void

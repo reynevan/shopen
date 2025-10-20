@@ -6,6 +6,7 @@ import {ref} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
 
 defineProps(['attributes'])
 
@@ -36,6 +37,18 @@ const onSearch = () => {
 
     })
 }
+
+const removeAttribute = (attribute) => {
+    if (attribute.is_system) {
+        return;
+    }
+    if (!confirm(`Na pewno chcesz usunąć atrybut "${attribute.name}"?`)) {
+        return;
+    }
+    router.delete(route('admin.attributes.delete', attribute.id), {
+        preserveScroll: true,
+    })
+}
 </script>
 
 <template>
@@ -57,17 +70,17 @@ const onSearch = () => {
         paginated
         :meta="attributes.meta"
     >
+        <TableColumn field="entity_type" label="Typ" sortable v-slot="data">
+            <span v-if="data.row.entity_type === 'product'">Produkt</span>
+            <span v-if="data.row.entity_type === 'category'">Kategoria</span>
+        </TableColumn>
+
         <TableColumn field="name" label="Nazwa" sortable v-slot="data">
             {{ data.row.name }}
         </TableColumn>
 
         <TableColumn field="code" label="Kod" sortable v-slot="data">
             {{ data.row.code }}
-        </TableColumn>
-
-        <TableColumn field="entity_type" label="Typ" sortable v-slot="data">
-            <span v-if="data.row.entity_type === 'product'">Produkt</span>
-            <span v-if="data.row.entity_type === 'category'">Kategoria</span>
         </TableColumn>
 
         <TableColumn field="is_system" label="System" sortable v-slot="data" width="75px">
@@ -93,9 +106,10 @@ const onSearch = () => {
         </TableColumn>
 
         <TableColumn field="-" label="Akcje" v-slot="data" width="75px">
-            <Link :href="route('admin.attributes.edit', data.row.id)">
-                <ActionButton type="edit"/>
-            </Link>
+            <ActionButtons>
+                <ActionButton type="edit" :href="route('admin.attributes.edit', data.row.id)"/>
+                <ActionButton type="remove" :disabled="data.row.is_system" @click="removeAttribute(data.row)"/>
+            </ActionButtons>
         </TableColumn>
 
 

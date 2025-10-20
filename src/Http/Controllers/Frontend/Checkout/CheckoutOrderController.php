@@ -56,6 +56,7 @@ readonly class CheckoutOrderController
         $paymentMethod = $this->paymentMethodManager->get($order->payment_method);
 
         $payment = $paymentMethod->initializePayment($order);
+
         if ($paymentMethod->requiresRedirect()) {
             return Inertia::location($paymentMethod->getPaymentUrl($payment));
         }

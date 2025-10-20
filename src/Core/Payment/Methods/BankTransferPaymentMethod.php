@@ -2,6 +2,7 @@
 
 namespace Shopen\Core\Payment\Methods;
 
+use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 
@@ -9,14 +10,14 @@ class BankTransferPaymentMethod extends AbstractPaymentMethod
 {
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        return $this->createPayment($order, Payment::STATUS_PENDING, [
+        return $this->createPayment($order, PaymentStatus::PENDING, [
             'bank_account' => $this->config['bank_account'],
             'bank_name' => $this->config['bank_name'],
             'transfer_title' => 'Order ' . $order->order_number,
         ]);
     }
 
-    public function checkPaymentStatus(Payment $payment): string
+    public function checkPaymentStatus(Payment $payment): PaymentStatus
     {
         return $payment->status;
     }

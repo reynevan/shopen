@@ -5,12 +5,12 @@ namespace Shopen\Services;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Log;
 use Shopen\Enums\Address\AddressType;
 use Shopen\Models\Address;
 use Shopen\Models\Cart\Cart;
 use Shopen\Models\Cart\CartAddress;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 
 class CartService
 {
@@ -203,11 +203,11 @@ class CartService
         $this->cart->save();
     }
 
-    public function setPromoCode(?PromoCode $code)
+    public function setPromoCodeCoupon(?PromoCodeCoupon $code)
     {
         $this->createCart();
 
-        $this->cart->promo_code_id = $code->id ?? null;
+        $this->cart->promo_code_coupon_id = $code->id ?? null;
         $this->cart->save();
     }
 }

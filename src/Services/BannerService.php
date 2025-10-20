@@ -14,8 +14,7 @@ use Shopen\Models\Product\Product;
 
 class BannerService
 {
-    private const CACHE_TTL = 1 * 60;
-
+    private const CACHE_TTL = 60 * 60;
 
     public function getForPlacement(string $placementKey): Collection
     {

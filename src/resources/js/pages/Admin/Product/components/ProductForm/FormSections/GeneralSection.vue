@@ -5,6 +5,8 @@ import Select from "@shopen/components/admin/form/input/Select.vue";
 import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
 import AttributesSelect from "@shopen/components/admin/form/input/AttributesSelect.vue";
 import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
+import DateInput from "../../../../../../components/admin/form/input/DateInput.vue";
+import CategorySelect from "../../../../../../components/admin/form/input/Category/CategorySelect/CategorySelect.vue";
 
 const form = defineModel();
 
@@ -12,9 +14,10 @@ const props = defineProps({
     product: {type: Object},
     parent: {type: Object},
     categories: { type: Array },
+    ceneoCategories: {type: Array},
     attributes: { type: Array },
     brands: { type: Array },
-
+    taxClasses: { type: Array },
 })
 
 const types = [
@@ -22,12 +25,6 @@ const types = [
     {id: 'configurable', value: 'Konfigurowalny'},
 ]
 
-const visibilityOptions = [
-    {id: 0, value: 'Brak'},
-    {id: 1, value: 'Kategorie'},
-    {id: 2, value: 'Wyszukiwanie'},
-    {id: 3, value: 'Kategorie i Wyszukiwanie'},
-]
 </script>
 
 <template>
@@ -39,6 +36,11 @@ const visibilityOptions = [
     <FormField
         label="Produkt wirtualny" label-for="is_virtual">
         <Toggle v-model="form.is_virtual" id="is_virtual"/>
+    </FormField>
+
+    <FormField
+        label="Bon podarunkowy" label-for="is_voucher">
+        <Toggle v-model="form.is_voucher" id="is_voucher"/>
     </FormField>
 
     <FormField
@@ -61,9 +63,9 @@ const visibilityOptions = [
     </FormField>
 
     <FormField
-        label-for="visibility"
-        label="Widoczność">
-        <Select v-model="form.visibility" id="visibility" :options="visibilityOptions"/>
+        label-for="visible_individually"
+        label="Widoczny w kategoriach">
+        <Toggle v-model="form.visible_individually" id="visible_individually"/>
     </FormField>
 
     <FormField
@@ -114,9 +116,35 @@ const visibilityOptions = [
     </FormField>
 
     <FormField
+        label="Nowość" label-for="is_new">
+        <Toggle v-model="form.is_new" id="is_new"/>
+    </FormField>
+
+    <FormField
+        v-show="form.is_new"
+        label="Nowość do"
+        label-for="is_new_to">
+        <div class="flex items-center">
+            <DateInput v-model="form.is_new_to" id="is_new_to"/>
+        </div>
+    </FormField>
+
+    <FormField
         label-for="brand_id"
         label="Marka">
         <Select v-model="form.brand_id" id="brand_id" :options="brands"/>
+    </FormField>
+
+    <FormField
+        label-for="ceneo_category_id"
+        label="Kategoria Ceneo">
+        <CategorySelect v-model="form.ceneo_category_id" :categories="ceneoCategories"/>
+    </FormField>
+
+    <FormField
+        label-for="tax_class_id"
+        label="Stawka VAT">
+        <Select v-model="form.tax_class_id" id="tax_class_id" :options="taxClasses"/>
     </FormField>
 
 </template>

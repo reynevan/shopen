@@ -77,7 +77,7 @@ const addOption = () => {
     </ActionsPanel>
     <div>
 
-        <section class="pb-6 mb-6border-b border-light">
+        <section class="pb-6 mb-6 border-b border-light">
             <FormField
                 :required="true"
                 :error="form.errors.name"

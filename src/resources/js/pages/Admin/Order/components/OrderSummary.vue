@@ -1,8 +1,8 @@
 <script setup>
+import {Link} from "@inertiajs/vue3";
 
-    const props = defineProps(['order']);
+const props = defineProps(['order']);
 
-   
 </script>
 
 <template>
@@ -23,18 +23,20 @@
             <div>Obniżki</div>
             <div>{{ -1 * order.discount_amount }}</div>
         </div>
-        <div v-if="order.promoCode" class="flex items-center justify-between mb-1 py-1 border-b">
-            <div>Kod promocyjny</div>
+        <div v-if="order.promo_code_coupon" class="flex items-center justify-between mb-1 py-1 border-b">
+            <div>Kod rabatowy</div>
             <div class="flex items-center gap-2">
-                <div class="bg-accent/10 hover:bg-accent/30 transition-colors text-accent-600 text-xs">
-                    <a href="" class="block px-2 py-1">
-                        {{ order.promoCode.code }}
-                    </a>
-                </div>
+                <Link class="cursor-pointer underline" :href="route('admin.promo-codes.edit', order.promo_code_coupon.promo_code.id)">
+                    {{ order.promo_code_coupon.promo_code.name }}
+                </Link>
                 <div>
                     {{ order.promo_code_discount_amount }}
                 </div>
             </div>
+        </div>
+        <div class="flex items-center justify-between mb-1 py-1 border-b">
+            <div>Podatek</div>
+            <div>{{ order.tax_amount }}</div>
         </div>
         <div class="flex items-center justify-between mb-1 py-1 border-b">
             <div>Suma</div>

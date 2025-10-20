@@ -12,7 +12,7 @@ trait Searchable
 
     public function shouldBeSearchable(): bool
     {
-        return $this->is_active;
+        return !!$this->is_active && $this->visible_individually;
     }
 
     public function toSearchableArray()
@@ -21,7 +21,7 @@ trait Searchable
             'id' => $this->id,
             'name' => $this->getCustomAttribute('name'),
             'description' => $this->getCustomAttribute('description'),
-            'visibility' => $this->visibility ?? 0,
+            'visible_individually' => $this->visible_individually,
             'sku' => $this->sku,
             'category_id' => $this->categories->pluck('id')->toArray(),
             'brand_id' => $this->brand_id ?? ($this->parent ? $this->parent->brand_id : null),

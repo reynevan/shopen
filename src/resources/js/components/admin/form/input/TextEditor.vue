@@ -7,6 +7,10 @@ import editorCssUrl from '@resources/css/app.css?url'
 const EditorComponent = shallowRef(null);
 const model = defineModel();
 
+const props = defineProps({
+    id: {type: String}
+})
+
 const image_upload_handler = (blobInfo, progress) => {
     return new Promise((resolve, reject) => {
         const formData = new FormData()
@@ -103,7 +107,7 @@ onMounted(async () => {
         <div v-if="EditorComponent && editing">
             <component
                 v-model="model"
-                id="uuid"
+                :id="id ?? 'uuid'"
                 :init="init"
                 :is="EditorComponent"
                 />

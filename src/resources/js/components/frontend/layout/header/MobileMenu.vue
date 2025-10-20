@@ -4,31 +4,24 @@ import { ref, computed, watch, nextTick } from 'vue';
 import IconChevron from "../../../icons/IconChevron.vue";
 import IconMenu from "../../../icons/IconMenu.vue";
 import IconX from "../../../icons/IconX.vue";
+import {useMenuStore} from "../../../../stores/menu";
 
 // --- State Management ---
 
 const page = usePage();
-const categories = page.props.menu.categories;
+const menuStore = useMenuStore()
+menuStore.setMenu(page.props.menu)
 
 const isOpen = ref(false);
-// Stos nawigacji przechowuje "ścieżkę" kliknięć użytkownika.
-// Każdy element to obiekt z tytułem i listą kategorii do wyświetlenia.
-const navigationStack = ref([{ title: 'Menu', items: categories }]);
-// Kierunek animacji (w przód / w tył)
+const navigationStack = ref([{ title: 'Menu', items: menuStore.menu?.categories }]);
 const navigationDirection = ref('forward');
 
-// Elementy DOM do zarządzania focusem
 const menuPanel = ref(null);
 const openMenuButton = ref(null);
 
-// --- Computed Properties ---
-
-// Zawsze wyświetlamy ostatni element ze stosu nawigacji.
 const currentLevel = computed(() => navigationStack.value[navigationStack.value.length - 1]);
-// Sprawdzamy, czy jesteśmy na najwyższym poziomie menu.
 const isBaseLevel = computed(() => navigationStack.value.length === 1);
 
-// --- Methods ---
 
 const openMenu = () => {
     isOpen.value = true;
@@ -38,15 +31,13 @@ const closeMenu = () => {
     isOpen.value = false;
 };
 
-// Przejście do podkategorii
 const selectCategory = (category) => {
     if (category.subcategories && category.subcategories.length > 0) {
         navigationDirection.value = 'forward';
-        navigationStack.value.push({ title: category.name, items: category.subcategories });
+        navigationStack.value.push({ title: category.name, items: category.subcategories, url: category.url });
     }
 };
 
-// Powrót do nadrzędnej kategorii
 const goBack = () => {
     if (!isBaseLevel.value) {
         navigationDirection.value = 'backward';
@@ -54,30 +45,21 @@ const goBack = () => {
     }
 };
 
-// --- Accessibility & Side Effects (Watchers) ---
-
-// Zarządzanie stanem strony (blokowanie scrolla, focus) po otwarciu/zamknięciu menu
 watch(isOpen, (newVal) => {
     if (newVal) {
-        // Blokujemy scrollowanie body
         document.body.classList.add('overflow-hidden');
-        // Ustawiamy focus wewnątrz menu po jego otwarciu
         nextTick(() => {
             menuPanel.value?.focus();
         });
-        // Resetujemy nawigację do stanu początkowego
-        navigationStack.value = [{ title: 'Menu', items: categories }];
+        navigationStack.value = [{ title: 'Menu', items: menuStore.menu?.categories }];
     } else {
-        // Odblokowujemy scrollowanie
         document.body.classList.remove('overflow-hidden');
-        // Przywracamy focus na przycisk, który otworzył menu
         nextTick(() => {
             openMenuButton.value?.focus();
         });
     }
 });
 
-// Obsługa zamykania menu klawiszem Escape
 const handleKeydown = (e) => {
     if (e.key === 'Escape' && isOpen.value) {
         closeMenu();
@@ -86,7 +68,6 @@ const handleKeydown = (e) => {
 </script>
 
 <template>
-    <!-- Przycisk otwierający menu -->
     <button
         ref="openMenuButton"
         @click="openMenu"
@@ -128,19 +109,27 @@ const handleKeydown = (e) => {
             :class="isOpen ? 'translate-x-0' : '-translate-x-full'"
         >
             <!-- Nagłówek menu -->
-            <header class="flex items-center justify-between border-b border-gray-200 p-4">
-                <button v-if="!isBaseLevel" @click="goBack" class="flex items-center gap-2 p-2 text-lg font-semibold" aria-label="Wróć do poprzedniego poziomu">
-                    <IconChevron left size="xl" />
-                    <span>{{ currentLevel.title }}</span>
-                </button>
-                <h2 v-else class="text-xl font-bold">{{ currentLevel.title }}</h2>
-
-                <button @click="closeMenu" aria-label="Zamknij menu" class="p-2">
-                    <IconX size="2xl" />
-                </button>
+            <header>
+                <div class="flex items-center justify-between border-b border-light p-4 font-light">
+                    <h2 class="text-xl">{{ currentLevel.title }}</h2>
+                    <button @click="closeMenu" aria-label="Zamknij menu" class="p-2">
+                        <IconX size="2xl" />
+                    </button>
+                </div>
+                <div v-if="!isBaseLevel" class="flex items-center justify-between bg-accent text-neutral-600 ">
+                    <button @click="goBack" class="flex items-center gap-1 p-2" aria-label="Wróć do poprzedniego poziomu">
+                        <IconChevron left size="xl" />
+                        <span class="tracking-wider uppercase text-sm">Wstecz</span>
+                    </button>
+                    <Link
+                        :href="currentLevel.url"
+                        @click="closeMenu"
+                        class="block px-4 py-3 tracking-wider uppercase text-sm">
+                        Zobacz wszystkie
+                    </Link>
+                </div>
             </header>
 
-            <!-- Kontener na zmieniające się listy kategorii (dla animacji) -->
             <div class="relative flex-1 overflow-y-auto overflow-x-hidden">
                 <transition
                     enter-active-class="transition-transform duration-300 ease-in-out"
@@ -148,26 +137,23 @@ const handleKeydown = (e) => {
                     :enter-from-class="navigationDirection === 'forward' ? 'translate-x-full' : '-translate-x-full'"
                     :leave-to-class="navigationDirection === 'forward' ? '-translate-x-full' : 'translate-x-full'"
                 >
-                    <!-- Używamy `key`, aby Vue wiedziało, że komponent się zmienił i należy go animować -->
                     <div :key="currentLevel.title" class="absolute inset-0">
                         <nav :aria-label="currentLevel.title">
                             <ul class="flex flex-col">
                                 <li v-for="category in currentLevel.items" :key="category.id">
-                                    <!-- Jeśli kategoria ma podkategorie, jest przyciskiem -->
                                     <button
                                         v-if="category.subcategories && category.subcategories.length > 0"
                                         @click="selectCategory(category)"
                                         class="flex w-full items-center justify-between px-4 py-3 text-left text-gray-700 hover:bg-gray-100"
                                     >
-                                        <span class="text-lg">{{ category.name }}</span>
+                                        <span class="text-lg font-light">{{ category.name }}</span>
                                         <IconChevron right />
                                     </button>
-                                    <!-- W przeciwnym razie jest linkiem nawigacyjnym -->
                                     <Link
                                         v-else
                                         :href="category.url"
                                         @click="closeMenu"
-                                        class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100"
+                                        class="block px-4 py-3 text-lg text-gray-700 hover:bg-gray-100 font-light"
                                     >
                                         {{ category.name }}
                                     </Link>

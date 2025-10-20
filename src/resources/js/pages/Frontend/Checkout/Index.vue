@@ -8,6 +8,8 @@ import CheckoutSummary from "@shopen/pages/Frontend/Checkout/components/Checkout
 import CheckoutShippingMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutShippingMethods.vue";
 import CheckoutPaymentMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutPaymentMethods.vue";
 import GeoWidget from "../../../components/frontend/shipping/GeoWidget.vue";
+import {trackBeginCheckout} from "../../../utils/ga4";
+import {usePage} from "@inertiajs/vue3";
 
 defineOptions({ layout: CheckoutLayout })
 
@@ -35,7 +37,7 @@ defineProps({
         default: false
     }
 })
-
+trackBeginCheckout(usePage().props?.cart?.items)
 </script>
 
 <template>

@@ -5,6 +5,7 @@ namespace Shopen\Models\Banner;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Shopen\Enums\Banner\Placement;
 use Shopen\Enums\Banner\PlacementType;
 use Shopen\Models\Category\Category;
 
@@ -15,7 +16,7 @@ class Banner extends Model
         'is_active' => 'boolean',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
-        'placement_type' => PlacementType::class,
+        'placement_type' => PlacementType::class
     ];
 
     protected $fillable = [

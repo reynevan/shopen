@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('shipping_method')->nullable();
             $table->json('delivery_point')->nullable();
             $table->string('payment_method')->nullable();
-            $table->foreignId('promo_code_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('promo_code_coupon_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

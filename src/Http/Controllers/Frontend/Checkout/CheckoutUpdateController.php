@@ -11,7 +11,7 @@ use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Address\AddressType;
 use Shopen\Http\Requests\Frontend\Checkout\UpdateAddressRequest;
 use Shopen\Models\Cart\CartAddress;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 use Shopen\Services\CartService;
 
 readonly class CheckoutUpdateController
@@ -129,10 +129,14 @@ readonly class CheckoutUpdateController
     {
         $code = request('code');
         if (!$code) {
-            $this->cartService->setPromoCode(null);
+            $this->cartService->setPromoCodeCoupon(null);
             return back();
         }
-        $promoCode = PromoCode::query()->where('code', $code)->first();
+        $code = PromoCodeCoupon::query()->where('code', $code)->first();
+        if (!$code || !$code->hasUsageLeft()) {
+            return back()->withErrors(['code' => 'Nieprawidłowy kod']);
+        }
+        $promoCode = $code->promoCode;
         if (!$promoCode || !$promoCode->isValid()) {
             return back()->withErrors(['code' => 'Nieprawidłowy kod']);
         }
@@ -142,7 +146,7 @@ readonly class CheckoutUpdateController
         if (!$promoCode->meetsMinimumOrderValue($this->cartService->getCart()->totalPrice())) {
             return back()->withErrors(['code' => 'Minimalna kwota zamówienia dla tego kodu to ' . Number::currency($promoCode->minimum_order_value)]);
         }
-        $this->cartService->setPromoCode($promoCode);
+        $this->cartService->setPromoCodeCoupon($code);
         return back();
     }
 }

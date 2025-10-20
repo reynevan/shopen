@@ -7,6 +7,7 @@ import Input from "@shopen/components/admin/form/input/Input.vue";
 import Toggle from "@shopen/components/admin/form/input/Toggle.vue";
 import {ref} from "vue";
 import ImageInput from "@shopen/components/admin/form/input/ImageInput.vue";
+import PageTitle from "../../../../components/admin/ui/PageTitle.vue";
 
 const props = defineProps({
     brand: {
@@ -67,6 +68,9 @@ const previewImage = (event) => {
 
 <template>
     <ActionsPanel back-route="admin.brands.index">
+        <template #title v-if="brand.id">
+            <PageTitle>{{ brand.name }}</PageTitle>
+        </template>
         <Button @click="save" class="button-primary">Zapisz</Button>
     </ActionsPanel>
     <div>

@@ -11,8 +11,8 @@ class PromoCodeResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'code' => $this->code,
             'name' => $this->name,
+            'codes' => PromoCodeCouponResource::collection($this->whenLoaded('coupons')),
             'description' => $this->description,
             'is_active' => $this->is_active,
             'discount_type' => $this->discount_type->value ?? null,

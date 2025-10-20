@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+@plugin "@tailwindcss/typography";
+
+.prose { max-width: none; }
+.prose h1 { @apply text-4xl leading-tight font-semibold; }

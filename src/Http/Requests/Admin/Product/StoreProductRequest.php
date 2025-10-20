@@ -17,8 +17,11 @@ class StoreProductRequest extends FormRequest
     {
         $rules = [
             'type' => 'nullable',
-            'visibility' => 'nullable',
+            'visible_individually' => 'nullable|boolean',
             'is_virtual' => 'nullable|boolean',
+            'is_new' => 'nullable|boolean',
+            'is_new_from' => 'nullable|date',
+            'is_voucher' => 'nullable|boolean',
             'sku' => 'required|unique:products,sku',
             'url_key' => 'nullable|unique:url_rewrites,request_path',
             'attributes.name' => 'required',
@@ -30,6 +33,7 @@ class StoreProductRequest extends FormRequest
             'related_ids' => 'nullable|array',
             'related_ids.*' => 'exists:products,id',
             'parent_id' => 'nullable|:exists:products,id',
+            'tax_class_id' => 'nullable|exists:tax_classes,id',
         ];
         if ($this->request->get('type') === Product::TYPE_SIMPLE || !$this->request->get('type') ) {
             $rules['price.price'] = 'required|numeric';

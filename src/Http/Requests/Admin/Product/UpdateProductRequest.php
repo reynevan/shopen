@@ -17,8 +17,11 @@ class UpdateProductRequest extends FormRequest
     {
 
         $rules = [
-            'visibility' => 'nullable',
+            'visible_individually' => 'nullable|boolean',
             'is_virtual' => 'nullable|boolean',
+            'is_voucher' => 'nullable|boolean',
+            'is_new' => 'nullable|boolean',
+            'is_new_from' => 'nullable|date',
             'sku' => 'required|unique:products,sku,' . $this->route('product')->id,
             'url_key' => 'nullable|unique:url_rewrites,request_path,' . $this->getRewriteId(),
             'attributes.name' => 'required',
@@ -29,6 +32,7 @@ class UpdateProductRequest extends FormRequest
             'up_sell_ids.*' => 'exists:products,id',
             'related_ids' => 'nullable|array',
             'related_ids.*' => 'exists:products,id',
+            'tax_class_id' => 'nullable|exists:tax_classes,id',
         ];
         if ($this->request->get('type') === Product::TYPE_SIMPLE || !$this->request->get('type') ) {
             $rules['price.price'] = 'required|numeric';

@@ -64,12 +64,18 @@ const trackClick = (banner) => {
         <Flicking :options="options"
                   @changed="onPreviewChange"
                   ref="flicking">
-            <Link :href="banner.link_url" v-for="(banner, i) in banners" :key="i"
-                  @click="trackClick(banner)"
-                  class="block flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                <img class="img hidden sm:block" :src="banner.image_url_desktop" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
-                <img class="img block sm:hidden" :src="banner.image_url_mobile" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
-            </Link>
+            <template v-for="(banner, i) in banners" :key="i">
+                <Link v-if="banner.link_url" :href="banner.link_url"
+                      @click="trackClick(banner)"
+                      class="block flicking-panel bg-gray-100 w-full flex justify-center items-center">
+                    <img class="img hidden sm:block" :src="banner.image_url_desktop" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
+                    <img class="img block sm:hidden" :src="banner.image_url_mobile" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
+                </Link>
+                <div v-else class="block flicking-panel bg-gray-100 w-full flex justify-center items-center">
+                    <img class="img hidden sm:block" :src="banner.image_url_desktop" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
+                    <img class="img block sm:hidden" :src="banner.image_url_mobile" :alt="banner.alt_text" :loading="i > 0 ? 'lazy' : 'eager'">
+                </div>
+            </template>
         </Flicking>
 
         <div v-if="banners.length > 1" @click="nextImage"

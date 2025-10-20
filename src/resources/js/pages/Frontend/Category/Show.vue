@@ -1,7 +1,7 @@
 <script setup>
 import { Head, Link } from '@inertiajs/vue3'
 import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
-import ProductListing from '@shopen/components/frontend/product/ProductListing.vue'; // Popraw ścieżkę!
+import ProductListing from '@shopen/components/frontend/product/ProductListing.vue';
 import BannersContainer from "@shopen/components/frontend/banner/BannersContainer.vue";
 
 defineOptions({ layout: AppLayout })
@@ -17,6 +17,7 @@ const props = defineProps({
     sortOptions: { type: Array },
     title: { type: String }
 })
+
 </script>
 
 <template>
@@ -24,15 +25,21 @@ const props = defineProps({
         <!-- Twoje tagi SEO specyficzne dla kategorii -->
         <title>{{ title }}</title>
         <meta name="description" :content="category.seo.seo_description">
+        <link rel="canonical" :href="products.meta.path + (products.meta.current_page > 1 ? `?strona=${products.meta.current_page}` : '')">
+        <link rel="next" v-if="products.links.next" :href="products.links.next">
+        <link rel="prev" v-if="products.links.prev" :href="products.links.prev">
         <!-- ... reszta tagów ... -->
     </Head>
 
     <ProductListing
         :products="products"
+        :categories="subcategories"
         :filters="filters"
         :active-filters="activeFilters"
         :active-sort="activeSort"
         :sort-options="sortOptions"
+        :list-name="category.name"
+        :list-id="category.id"
     >
         <!-- Wypełniamy sloty specyficzną treścią dla strony kategorii -->
 
@@ -41,16 +48,13 @@ const props = defineProps({
         </template>
 
         <template #header="{ resultsCount }">
-            <div class="flex items-end">
+            <div class="flex items-start flex-col">
                 <div class="text-3xl mr-2">{{ category.name }}</div>
-                <div class="text-neutral-600">({{ resultsCount }})</div>
+                <div class="text-neutral-600 font-light">{{ resultsCount }}</div>
             </div>
         </template>
 
         <template #sidebar-prepend>
-            <div v-for="subcategory in subcategories" :key="subcategory.id">
-                <Link :href="subcategory.url">{{ subcategory.name }}</Link>
-            </div>
             <BannersContainer :banners="banners.category_page_filters_top"/>
         </template>
 

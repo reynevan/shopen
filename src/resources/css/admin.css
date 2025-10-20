@@ -1,0 +1,93 @@
+@source '../js/components/admin/**/*.vue';
+@source '../js/layouts/admin/**/*.vue';
+@source '../js/pages/Admin/**/*.vue';
+
+@theme static {
+    --color-body: #fff;
+    --color-primary: #000;
+    --color-secondary: #1e1e1e;
+    --color-accent: #fff1ee;
+    --color-accent-strong: #aa6e5e;
+    --color-accent-hover: #f3e4e1;
+
+    --color-page-cover: rgba(0,0,0,.7);
+    --color-border-primary: #d8d8d8;
+    --color-border-light: #efefef;
+    --color-border-strong: #616161;
+    --color-link: var(--color-blue-400);
+    --color-link-hover: var(--color-blue-600);
+}
+
+@layer base {
+    *,
+    ::before,
+    ::after {
+        border-color: var(--color-border-primary);
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: textfield;
+    }
+    body {
+        font-family: "Lato", sans-serif;
+    }
+    input, select {
+        width: 100%;
+        @apply bg-body;
+    }
+    .border-strong {
+        border-color: var(--color-border-strong);
+    }
+    .border-light {
+        border-color: var(--color-border-light);
+    }
+
+    .form {
+        .section {
+            @apply px-4;
+        }
+    }
+    .form-section-title {
+        @apply text-xl mb-4;
+    }
+    .panel {
+        @apply px-4 py-4 border rounded mb-4;
+
+        .panel-title {
+            @apply bg-accent py-2 px-2;
+        }
+    }
+
+    .table-primary {
+        @apply border-b;
+
+        thead {
+            @apply bg-secondary text-white;
+
+            th {
+                @apply text-sm text-left py-2 px-2 font-normal;
+            }
+        }
+        tbody {
+            tr {
+                @apply odd:bg-accent/50;
+
+                td {
+                    @apply px-2 py-2;
+
+                    &:not(:last-child) {
+                        @apply border-r border-border-light;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@layer utilities {
+    .prose { max-width: none; }
+    .prose h1 { @apply text-4xl leading-tight font-semibold; }
+}
+
+

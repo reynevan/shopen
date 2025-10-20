@@ -18,7 +18,7 @@ const loading = ref(false);
 const form = useForm({
     id: null,
     first_name: '', last_name: '', company: '', nip: '', email: '',
-    address_line: '', postal_code: '', city: '', phone: '', is_default: false
+    address_line: '', postal_code: '', city: '', phone: '', is_default: true
 });
 
 watch(() => props.address, (newAddress) => {

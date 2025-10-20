@@ -5,12 +5,13 @@ namespace Shopen\Models\Cart;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Address\AddressType;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 use Shopen\Models\User;
+use Shopen\Services\ShippingService;
 
 class Cart extends Model
 {
@@ -43,9 +44,9 @@ class Cart extends Model
         return $this->hasMany(CartItem::class);
     }
 
-    public function promoCode(): BelongsTo
+    public function promoCodeCoupon(): BelongsTo
     {
-        return $this->belongsTo(PromoCode::class);
+        return $this->belongsTo(PromoCodeCoupon::class);
     }
 
     public function shippingAddress()
@@ -134,7 +135,7 @@ class Cart extends Model
         if ($this->hasOnlyVirtualItems()) {
             return 0;
         }
-        $shippingMethods = app(ShippingMethodManager::class)->getShippingMethods();
+        $shippingMethods = app(ShippingService::class)->getAvailableShippingMethods();
         $shipping = null;
         foreach ($shippingMethods as $shippingMethod) {
             $price = $shippingMethod->getPrice();

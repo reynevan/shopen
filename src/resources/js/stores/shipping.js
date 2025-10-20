@@ -4,6 +4,7 @@ import axios from 'axios'
 import {useCheckoutStore} from "./checkout";
 import {useAddressStore} from "./address";
 import {router, usePage} from "@inertiajs/vue3";
+import {trackAddShippingInfo} from "../utils/ga4";
 
 export const useShippingStore = defineStore('shipping', () => {
 
@@ -51,6 +52,7 @@ export const useShippingStore = defineStore('shipping', () => {
     }
 
     function selectMethod(key, deliveryPoint = null) {
+        trackAddShippingInfo(usePage().props?.cart?.items, key)
         if (page.props.errors.shipping_method) {
             page.props.errors.shipping_method = null;
         }

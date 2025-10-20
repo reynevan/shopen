@@ -2,8 +2,7 @@
 
 namespace Shopen\Http\Controllers\Frontend\Api;
 
-use Shopen\Http\Resources\CategoryResource;
-use Shopen\Http\Resources\Product\ProductResource;
+use Shopen\Http\Resources\Category\CategoryResource;
 use Shopen\Http\Resources\Product\ProductSearchResultResource;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Repositories\Product\ProductRepository;

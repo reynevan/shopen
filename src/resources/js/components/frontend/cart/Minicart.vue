@@ -10,6 +10,7 @@ import {Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconLoader from "../../icons/IconLoader.vue";
 import ProductImage from "../product/ProductImage.vue";
+import {trackRemoveFromCart} from "../../../utils/ga4";
 
 defineOptions({
     name: 'Minicart'
@@ -26,6 +27,7 @@ const closeMinicart = () => {
 }
 
 const removeItem = (item) => {
+    trackRemoveFromCart(item, item.quantity);
     cart.removeItem(item.id);
 }
 

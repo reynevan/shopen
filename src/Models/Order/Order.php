@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Order\OrderStatus;
-use Shopen\Models\PromoCode;
+use Shopen\Enums\Payment\PaymentStatus;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 use Shopen\Models\User;
 
 class Order extends Model
@@ -20,7 +21,7 @@ class Order extends Model
     protected $fillable = [
         'uuid',
         'user_id',
-        'promo_code_id',
+        'promo_code_coupon_id',
         'order_number',
         'status',
         'shipping_method',
@@ -33,6 +34,7 @@ class Order extends Model
         'shipping_amount',
         'payment_amount',
         'total_amount',
+        'tax_amount',
         'notes',
         'shipped_at',
         'delivered_at'
@@ -72,9 +74,9 @@ class Order extends Model
         return $this->hasOne(OrderAddress::class)->where('type', 'billing');
     }
 
-    public function promoCode(): BelongsTo
+    public function promoCodeCoupon(): BelongsTo
     {
-        return $this->belongsTo(PromoCode::class);
+        return $this->belongsTo(PromoCodeCoupon::class);
     }
 
     public function statusHistoryItems()
@@ -114,12 +116,19 @@ class Order extends Model
 
     public function isPaid(): bool
     {
-        return $this->payments()->where('status', Payment::STATUS_COMPLETED)->exists();
+        return $this->payments()->where('status', PaymentStatus::COMPLETED->value)->exists();
     }
 
     public function getStatusLabelAttribute(): string
     {
         return $this->status->label();
+    }
+
+    public function hasVouchers(): bool
+    {
+        return $this->items()->whereHas('product', function (Builder $query) {
+            $query->where('is_voucher', true);
+        })->exists();
     }
 
     public static function getStatusOptions(): array

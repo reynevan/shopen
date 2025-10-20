@@ -6,17 +6,19 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use OpenPayU_Configuration;
 use OpenPayU_Order;
+use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 
 class PayUPaymentMethod extends AbstractPaymentMethod
 {
+
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        $payment = $this->createPayment($order, Payment::STATUS_PENDING);
+        $payment = $this->createPayment($order);
 
         try {
-            $response = $this->createPayUOrder($order, $payment);
+            $response = $this->createPayUOrder($order, $payment, $data);
 
             $payment->update([
                 'gateway_transaction_id' => $response->orderId ?? null,
@@ -26,7 +28,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
             return $payment;
         } catch (\Exception $e) {
             $payment->update([
-                'status' => Payment::STATUS_FAILED,
+                'status' => PaymentStatus::FAILED,
                 'notes' => 'Failed to initialize PayU payment: ' . $e->getMessage(),
             ]);
             throw $e;
@@ -44,31 +46,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
         return $gatewayData['redirectUri'] ?? null;
     }
 
-    public function handleWebhook(array $webhookData): ?Payment
-    {
-        if (!isset($webhookData['order']['orderId'])) {
-            return null;
-        }
-
-        $payment = Payment::where('gateway_transaction_id', $webhookData['order']['orderId'])->first();
-
-        if (!$payment) {
-            Log::warning('PayU webhook: Payment not found', $webhookData);
-            return null;
-        }
-
-        $newStatus = $this->mapPayUStatusToPaymentStatus($webhookData['order']['status']);
-
-        $payment->update([
-            'status' => $newStatus,
-            'gateway_data' => array_merge($payment->gateway_data ?? [], $webhookData),
-            'processed_at' => $newStatus === Payment::STATUS_COMPLETED ? now() : $payment->processed_at,
-        ]);
-
-        return $payment;
-    }
-
-    public function checkPaymentStatus(Payment $payment): string
+    public function checkPaymentStatus(Payment $payment): PaymentStatus
     {
         try {
             $response = Http::withHeaders([
@@ -113,12 +91,11 @@ class PayUPaymentMethod extends AbstractPaymentMethod
             'oauth_client_id' => config('payment.payu.oauth_client_id'),
             'oauth_client_secret' => config('payment.payu.oauth_client_secret'),
             'api_url' => config('payment.payu.api_url'),
-            'continue_url' => config('payment.payu.continue_url'),
             'notify_url' => route('payu.notify'),
         ];
     }
 
-    private function createPayUOrder(Order $order, Payment $payment): object
+    private function createPayUOrder(Order $order, Payment $payment, $data): object
     {
         OpenPayU_Configuration::setEnvironment($this->config['env']);
         OpenPayU_Configuration::setMerchantPosId($this->config['pos_id']);
@@ -128,7 +105,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
 
         $orderData = [
             'notifyUrl' => $this->config['notify_url'],
-            'continueUrl' => route('checkout.success', $order),
+            'continueUrl' => $data['continueUrl'] ?? route('checkout.success', $order),
             'customerIp' => request()->ip(),
             'merchantPosId' => $this->config['pos_id'],
             'description' => 'Order ' . $order->order_number,
@@ -171,15 +148,14 @@ class PayUPaymentMethod extends AbstractPaymentMethod
         ];
     }
 
-    private function mapPayUStatusToPaymentStatus(string $payuStatus): string
+    private function mapPayUStatusToPaymentStatus(string $payuStatus): PaymentStatus
     {
         return match ($payuStatus) {
-            'NEW', 'PENDING' => Payment::STATUS_PENDING,
-            'WAITING_FOR_CONFIRMATION' => Payment::STATUS_PROCESSING,
-            'COMPLETED' => Payment::STATUS_COMPLETED,
-            'CANCELED' => Payment::STATUS_CANCELLED,
-            'REJECTED' => Payment::STATUS_FAILED,
-            default => Payment::STATUS_PENDING,
+            'WAITING_FOR_CONFIRMATION' => PaymentStatus::PROCESSING,
+            'COMPLETED' => PaymentStatus::COMPLETED,
+            'CANCELED' => PaymentStatus::CANCELLED,
+            'REJECTED' => PaymentStatus::FAILED,
+            default => PaymentStatus::PENDING,
         };
     }
 

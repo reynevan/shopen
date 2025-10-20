@@ -18,10 +18,15 @@ const props = defineProps({
     }
 })
 
+const emits = defineEmits(["onAddConfigurable"]);
 
 const qty = ref(1);
 
 const addToCart = async () => {
+    if (props.product.is_configurable) {
+        emits('onAddConfigurable')
+        return
+    }
     await cart.addToCart(props.product, qty.value);
     minicart.open();
 }

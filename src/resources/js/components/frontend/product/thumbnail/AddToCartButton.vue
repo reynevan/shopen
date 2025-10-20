@@ -5,6 +5,7 @@ import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import IconCartPlus from "@shopen/components/icons/IconCartPlus.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
+import {router} from "@inertiajs/vue3";
 
 const cart = useCartStore();
 const minicart = useMiniCartStore();
@@ -23,6 +24,13 @@ const props = defineProps({
     }
 })
 const addToCart = async () => {
+    if (cart.addingToCart[props.product.id] || props.disabled) {
+        return
+    }
+    if (props.product.is_configurable) {
+        router.visit(props.product.url)
+        return;
+    }
     await cart.addToCart(props.product, props.amount);
     minicart.open();
 }

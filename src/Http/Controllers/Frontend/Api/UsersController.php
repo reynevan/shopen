@@ -27,7 +27,8 @@ class UsersController extends Controller
 
     public function storeShippingAddress(StoreShippingAddressRequest $request): RedirectResponse
     {
-        $address = Auth::user()->addresses()->create($request->validated());
+        $data = $request->validated();
+        $address = Auth::user()->addresses()->create($data);
         $this->addressRepository->syncDefaultAddresses($address);
 
         if ($this->cartService->hasCart()) {

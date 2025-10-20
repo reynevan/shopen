@@ -52,7 +52,7 @@ const auth = useAuthStore();
                 <Link :href="route('admin.promo-codes.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <div class="uppercase text-center">Kody promocyjne</div>
+                    <div class="uppercase text-center">Kody rabatowe</div>
                 </Link>
             </li>
 

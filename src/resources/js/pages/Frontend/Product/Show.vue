@@ -14,6 +14,9 @@ import Button from "@shopen/components/frontend/ui/Button.vue";
 import AddToShoppingListButton from "../../../components/frontend/shoppingList/AddToShoppingListButton.vue";
 import ProductDescription from "./components/ProductDescription.vue";
 import ProductBrand from "./components/ProductBrand.vue";
+import {ref} from "vue";
+import {trackViewItem} from "../../../utils/ga4";
+import DetailsSection from "./components/DetailsSection.vue";
 
 defineOptions({layout: AppLayout})
 
@@ -32,6 +35,12 @@ const props = defineProps({
     banners: {type: Object}
 })
 
+const showVariantsError = ref(false);
+const onAddConfigurableToCart = () => {
+    showVariantsError.value = true
+}
+trackViewItem(props.product, props.variants)
+
 </script>
 
 <template>
@@ -39,7 +48,7 @@ const props = defineProps({
         <BannersContainer :banners="banners.product_page_top"/>
 
 
-        <div class="flex flex-col sm:flex-row py-10 px-6">
+        <div class="flex flex-col sm:flex-row py-10">
             <section class="mr-0 sm:mr-6">
                 <Gallery :images="images"/>
             </section>
@@ -56,10 +65,14 @@ const props = defineProps({
                     <ProductPrice :price="product.price"/>
                 </div>
 
-                <VariantSelect :variants="variants"/>
+                <VariantSelect :variants="variants" :showError="showVariantsError"/>
 
                 <section class="mb-8">
-                    <AddToCartButton :product="product" v-if="product.in_stock"></AddToCartButton>
+                    <AddToCartButton
+                        v-if="product.in_stock"
+                        @onAddConfigurable="onAddConfigurableToCart"
+                        :product="product"
+                    ></AddToCartButton>
                     <div v-else>
                         <Button type="disabled" disabled>
                             Produkt chwilowo niedostępny
@@ -70,13 +83,13 @@ const props = defineProps({
                 <div>
                     <ProductBrand :product="product"/>
 
-                    <ProductAttributes :product="product" :attributes="attributes"/>
+                    <ProductDescription v-if="product.attributes.short_description" :description="product.attributes.short_description"/>
                 </div>
             </section>
         </div>
 
         <section>
-            <ProductDescription :description="product.attributes.description ?? ''"/>
+            <DetailsSection :product="product" :attributes="attributes" />
         </section>
 
         <section v-if="relatedProducts && relatedProducts.length">

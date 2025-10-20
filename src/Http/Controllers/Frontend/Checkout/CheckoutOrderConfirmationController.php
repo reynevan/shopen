@@ -3,16 +3,9 @@
 namespace Shopen\Http\Controllers\Frontend\Checkout;
 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Number;
 use Inertia\Inertia;
-use Inertia\Response;
-use Shopen\Core\Payment\PaymentMethodManager;
-use Shopen\Core\Shipping\ShippingMethodManager;
-use Shopen\Http\Resources\User\AddressResource;
-use Shopen\Models\Address;
+use Shopen\Http\Resources\Order\OrderResource;
 use Shopen\Models\Order\Order;
-use Shopen\Services\CartService;
 
 readonly class CheckoutOrderConfirmationController
 {
@@ -23,8 +16,9 @@ readonly class CheckoutOrderConfirmationController
                 return redirect('/');
             }
         }
+        $order->load('items.product');
         return Inertia::render('Frontend/Checkout/Confirmation', [
-            'order' => $order,
+            'order' => OrderResource::make($order),
         ]);
     }
 }

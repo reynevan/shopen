@@ -1,5 +1,5 @@
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import {Link, Head} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
 import ProductsTable from "@shopen/components/admin/product/ProductsTable.vue";
@@ -13,6 +13,7 @@ const props = defineProps({
 })
 </script>
 <template>
+    <Head title="Produkty"/>
     <ActionsPanel>
         <template #title>
             <PageTitle>Produkty</PageTitle>

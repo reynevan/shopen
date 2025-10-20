@@ -3,6 +3,7 @@
 namespace Shopen\Core\Payment\Methods;
 
 use JsonSerializable;
+use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 use Shopen\Services\CartService;
@@ -19,7 +20,7 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         $this->config = $this->getDefaultConfig();
     }
 
-    protected function createPayment(Order $order, string $status = 'pending', array $additionalData = []): Payment
+    protected function createPayment(Order $order, PaymentStatus $status = PaymentStatus::PENDING, array $additionalData = []): Payment
     {
         return Payment::create([
             'order_id' => $order->id,
@@ -100,7 +101,7 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return false;
     }
 
-    public function checkPaymentStatus(Payment $payment): string
+    public function checkPaymentStatus(Payment $payment): PaymentStatus
     {
         return $payment->status;
     }

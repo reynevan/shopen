@@ -6,10 +6,10 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\PromoCode\UpdatePromoCodeRequest;
-use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\PromoCode\PromoCodeResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
-use Shopen\Models\PromoCode;
+use Shopen\Models\PromoCode\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
@@ -23,10 +23,12 @@ readonly class PromoCodeEditController
 
     public function edit(PromoCode $promoCode): Response
     {
+        $promoCode->load('coupons');
+
         return Inertia::render('Admin/PromoCode/Edit', [
             'promoCode' => PromoCodeResource::make($promoCode),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
-            'categories' => fn () => CategoryResource::collection($this->categoryRepository->getAll(0)),
+            'categories' => fn () => $this->categoryRepository->getArray(),
         ]);
     }
 
@@ -41,6 +43,23 @@ readonly class PromoCodeEditController
         );
         $promoCode->update($data);
 
+        $codeIds = array_filter(array_map(fn($code) => $code['id'] ?? null, $data['codes']));
+        $promoCode->codes()->whereNotIn('id', $codeIds)->delete();
+
+        foreach ($data['codes'] as $code) {
+            if ($code['id'] ?? null) {
+                PromoCodeCoupon::query()->where('id', $code['id'])->update(['code' => $code['code']]);
+                continue;
+            }
+            $promoCode->codes()->create($code);
+        }
+
+        return redirect()->to(route('admin.promo-codes.index'));
+    }
+
+    public function destroy(PromoCode $promoCode): RedirectResponse
+    {
+        $promoCode->delete();
         return redirect()->to(route('admin.promo-codes.index'));
     }
 }

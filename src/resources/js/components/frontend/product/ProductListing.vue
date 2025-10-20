@@ -1,35 +1,61 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { useProductFiltering } from "@shopen/composables/useProductFiltering.js"; // Popraw ścieżkę!
+import {ref, computed, watch, onBeforeUnmount, onMounted, onUnmounted} from 'vue'
+import {useProductFiltering} from "@shopen/composables/useProductFiltering.js";
 
-// Importuj wszystkie potrzebne komponenty
 import OpenFiltersButton from "@shopen/components/frontend/category/Filters/OpenFiltersButton.vue";
 import FiltersPanel from "@shopen/components/frontend/category/Filters/FiltersPanel.vue";
 import ProductThumbnail from "@shopen/components/frontend/product/thumbnail/ProductThumbnail.vue";
 import ActiveFilters from "@shopen/components/frontend/category/Filters/ActiveFilters.vue";
 import SortSelect from "@shopen/components/frontend/category/SortSelect.vue";
 import Pagination from "@shopen/components/frontend/ui/Pagination.vue";
+import {trackSelectItem, trackViewItemList} from "../../../utils/ga4";
+import {router} from "@inertiajs/vue3";
+import Button from "../ui/Button.vue";
+import IconX from "../../icons/IconX.vue";
 
-// Definiujemy propsy, które będą wspólne dla obu widoków
 const props = defineProps({
-    products: { type: Object, required: true },
-    filters: { type: Object, required: true },
-    activeFilters: { type: Object, default: () => ({}) },
-    activeSort: { type: String },
-    sortOptions: { type: Array },
-    searchQuery: { type: String }
-    // Nie definiujemy tutaj `category` ani `searchQuery`, bo będą one używane w komponentach nadrzędnych
+    products: {type: Object, required: true},
+    categories: {type: Array},
+    filters: {type: Object, required: true},
+    activeFilters: {type: Object, default: () => ({})},
+    activeSort: {type: String},
+    sortOptions: {type: Array},
+    searchQuery: {type: String},
+    listName: {type: String, default: ''},
+    listId: {type: String},
 });
 
-// Używamy naszego composable do logiki
-const { hasActiveFilters, onSortChange, onFilterChange, clearAllFilters, removeFilter } = useProductFiltering(props);
+let routerTrackListener = null;
+onMounted(() => {
+    if (props.listName || props.listId) {
+        routerTrackListener = router.on('success', (e) => {
+            trackViewItemList(props.products.data, props.listName, props.listId)
+        })
+    }
+})
+onBeforeUnmount(() => {
+    routerTrackListener && routerTrackListener()
+})
 
-// Logika specyficzna dla UI (stan mobilnych filtrów) pozostaje tutaj
+const trackProductSelect = (product) => {
+    if (props.listName) {
+        trackSelectItem(product, props.listName)
+    }
+}
+
+const {hasActiveFilters, onSortChange, onFilterChange, clearAllFilters, removeFilter} = useProductFiltering(props);
+
 const isMobileFiltersOpen = ref(false)
-const openMobileFilters = () => isMobileFiltersOpen.value = true
-const closeMobileFilters = () => isMobileFiltersOpen.value = false
 
-// Pozostałe computed properties
+const openMobileFilters = () => {
+    isMobileFiltersOpen.value = true
+    document.body.classList.add('overflow-hidden');
+}
+const closeMobileFilters = () => {
+    isMobileFiltersOpen.value = false
+    document.body.classList.remove('overflow-hidden');
+}
+
 const resultsCount = computed(() => {
     const total = props.products.meta.total;
     if (total === 0) {
@@ -51,54 +77,84 @@ const resultsCount = computed(() => {
 })
 const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).length);
 
+const stickyElement = ref(null)
+const isStuck = ref(false)
+const observer = ref(null)
+
+onMounted(() => {
+    // Metoda 1: Intersection Observer (zalecana)
+    const sentinel = document.createElement('div')
+    sentinel.style.position = 'absolute'
+    sentinel.style.top = '0'
+    sentinel.style.height = '1px'
+
+    stickyElement.value.parentElement.insertBefore(sentinel, stickyElement.value)
+
+    observer.value = new IntersectionObserver(
+        ([entry]) => {
+            isStuck.value = !entry.isIntersecting
+        },
+        { threshold: [1] }
+    )
+
+    observer.value.observe(sentinel)
+})
+
+onUnmounted(() => {
+    if (observer.value) {
+        observer.value.disconnect()
+    }
+})
+
 </script>
 
 <template>
-    <div class="container mx-auto px-4">
+    <div class="container mx-auto">
         <!-- Slot na bannery na górze strony -->
         <slot name="page-top-banners"></slot>
 
-        <div class="lg:hidden mb-4">
-            <OpenFiltersButton @onOpen="openMobileFilters" :totalActiveFiltersCount="totalActiveFiltersCount"/>
-        </div>
-
         <div class="mb-4">
-            <!-- Slot na główny nagłówek strony (np. nazwa kategorii lub info o wyszukiwaniu) -->
             <slot name="header" :resultsCount="resultsCount"></slot>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-6">
+        <div>
             <!-- Filters Sidebar -->
-            <div class="hidden lg:block sm:w-64 md:w-80 lg:flex-shrink-0 px-4" aria-labelledby="filters-title">
-                <!-- Slot na dodatkowe elementy w sidebarze (np. lista podkategorii) -->
+            <div class="hidden sm:block">
                 <slot name="sidebar-prepend"></slot>
-
-                <div class="hidden lg:block py-6">
-                    <h2 class="text-xl font-semibold text-gray-900" id="filters-title">Filtry</h2>
-                </div>
-
+            </div>
+            <div class="hidden sm:block sticky top-0 z-1" ref="stickyElement" :class="isStuck ? 'shadow-lg' : ''">
                 <FiltersPanel
                     @filterChange="onFilterChange"
+                    @onRemoveFilter="removeFilter"
                     :attributes="filters.attributes"
                     :active-filters="activeFilters"
                     :price-range="filters.priceRange"
+                    :categories="categories"
                 />
-
-                <!-- Slot na bannery pod filtrami -->
+            </div>
+            <div class="hidden sm:block">
                 <slot name="sidebar-append"></slot>
             </div>
 
             <!-- Główna kolumna z produktami -->
-            <div class="flex-1 min-w-0">
-                <ActiveFilters
-                    :activeFilters="activeFilters"
-                    :hasActiveFilters="hasActiveFilters"
-                    :attributes="filters.attributes"
-                    @onClearFilters="clearAllFilters"
-                    @onRemoveFilter="removeFilter"/>
+            <div>
+                <div class="sm:hidden mb-4 sticky top-0">
+                    <OpenFiltersButton @onOpen="openMobileFilters" :totalActiveFiltersCount="totalActiveFiltersCount"/>
+                </div>
 
-                <div class="flex flex-col sm:flex-row justify-end sm:items-center gap-4 mb-4">
-                    <SortSelect @onChange="onSortChange" :sortOptions="sortOptions" :activeSort="activeSort"/>
+                <div class="flex justify-center sm:justify-between items-start gap-6">
+                    <div class="hidden sm:block">
+                        <ActiveFilters
+                            :activeFilters="activeFilters"
+                            :hasActiveFilters="hasActiveFilters"
+                            :attributes="filters.attributes"
+                            @onClearFilters="clearAllFilters"
+                            @onRemoveFilter="removeFilter"/>
+                    </div>
+                    <div v-if="products.data?.length"
+                         class="flex justify-end items-center w-full sm:w-sm mb-4">
+                        <SortSelect @onChange="onSortChange" :sortOptions="sortOptions" :activeSort="activeSort"/>
+                    </div>
                 </div>
 
                 <!-- Slot na treść przed listą produktów (np. obrazek kategorii) -->
@@ -107,8 +163,11 @@ const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).
                 <!-- Products Grid -->
                 <Transition name="fade" mode="out-in">
                     <div v-if="products.data.length > 0" :key="products.data.length"
-                         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <ProductThumbnail v-for="product in products.data" :key="product.id" :product="product"/>
+                         class="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
+                        <ProductThumbnail v-for="product in products.data"
+                                          :key="product.id"
+                                          @onClick="trackProductSelect(product)"
+                                          :product="product"/>
                     </div>
                 </Transition>
 
@@ -130,36 +189,37 @@ const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).
 
     <!-- Mobile Filters Panel (Teleport) -->
     <Teleport to="body">
-        <div v-if="isMobileFiltersOpen" class="fixed inset-0 bg-black bg-opacity-50 z-40" @click="closeMobileFilters"></div>
-        <div v-if="isMobileFiltersOpen" class="fixed inset-0 bg-body z-50 flex flex-col sm:hidden">
-            <header class="flex items-center justify-between p-4 border-b border-light bg-white sticky top-0">
-                <h2 class="text-lg font-semibold">Filtry</h2>
-                <button @click="closeMobileFilters" class="p-2 mr-2 hover:text-gray-600">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                    </svg>
-                </button>
-            </header>
+        <div v-if="isMobileFiltersOpen" class="fixed inset-0 bg-body z-50 flex flex-col sm:hidden justify-between overflow-y-auto">
+            <div>
+                <div class="sm:hidden px-4 py-2 mb-4 border-b border-light flex items-center justify-between">
+                    <span class="text-2xl">Filtry</span>
+                    <IconX size="2xl" @click="closeMobileFilters"/>
+                </div>
 
-            <div class="flex-1 overflow-y-auto">
+                <ActiveFilters
+                    :activeFilters="activeFilters"
+                    :hasActiveFilters="hasActiveFilters"
+                    :attributes="filters.attributes"
+                    @onClearFilters="clearAllFilters"
+                    @onRemoveFilter="removeFilter"/>
+
                 <FiltersPanel
+                    is-mobile
                     @filterChange="onFilterChange"
                     :attributes="filters.attributes"
                     :active-filters="activeFilters"
                     :price-range="filters.priceRange"
+                    :categories="categories"
                 />
             </div>
-
             <div class="p-4 border-t border-light bg-body sticky bottom-0">
                 <div class="flex gap-4">
-                    <button @click="clearAllFilters"
-                            class="flex-1 px-4 py-3 border border-light rounded-lg text-center font-medium shadow-sm hover:bg-gray-100">
+                    <Button type="primary" full-width size="md" @click="clearAllFilters">
                         Wyczyść
-                    </button>
-                    <button @click="closeMobileFilters"
-                            class="flex-1 px-4 py-3 bg-blue-600 text-white rounded-lg text-center font-medium shadow-sm hover:bg-blue-700">
+                    </Button>
+                    <Button type="secondary" full-width size="md" @click="closeMobileFilters">
                         Pokaż wyniki ({{ products.meta.total }})
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>
