@@ -1,5 +1,5 @@
 <script setup>
-import {Link, router} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import {computed} from "vue";
 
@@ -7,9 +7,11 @@ defineProps({
     backRoute: {type: String}
 })
 
+const page = usePage()
+
 const goBack = () => {
-    if (window.history.length > 1) {
-        window.history.back()
+    if (page.props.referer) {
+        router.visit(page.props.referer)
     } else {
         router.visit(route(props.backRoute))
     }

@@ -56,7 +56,7 @@ const trackClick = (banner) => {
 </script>
 
 <template>
-    <div class="relative w-full mb-4 group">
+    <div class="relative w-full group">
         <div v-if="banners?.length > 1" @click="prevImage"
              class="flex z-2 justify-center items-center absolute top-0 bottom-0 w-16 left-0 bg-white/30 opacity-0 duration-300 group-hover:opacity-100 transition-opacity cursor-pointer">
             <IconChevron left lg/>

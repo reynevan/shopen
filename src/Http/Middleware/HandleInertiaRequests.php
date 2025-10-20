@@ -76,7 +76,7 @@ class HandleInertiaRequests extends Middleware
             'route' => $request->route()->getName()
         ];
         if (Route::is('admin.*')) {
-
+            $data['referer'] = $request->header('referer');
         } else {
             $data['cart'] = function () use ($request) {
                 $subtotal = 0;

@@ -11,15 +11,11 @@
 
 <template>
     <button @click="onOpen"
-        class="w-full px-4 py-2 bg-white flex items-center justify-center space-x-2 transition-colors">
+        class="filters-button w-full flex items-center justify-center space-x-2">
         <span v-if="totalActiveFiltersCount > 0"
-              class="text-xs bg-accent px-2 py-1 flex items-center justify-center">
+              class="filters-button-count flex items-center justify-center">
                 {{ totalActiveFiltersCount }}
         </span>
-        <span class="text-sm">Filtry</span>
+        <span class="filters-button-label">Filtry</span>
     </button>
 </template>
-
-<style scoped>
-
-</style>

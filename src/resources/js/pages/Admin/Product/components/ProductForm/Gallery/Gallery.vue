@@ -4,11 +4,14 @@ import draggable from 'vuedraggable'
 import GalleryItem from "./GalleryItem.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
+import {useBodyScrollLock} from "../../../../../../composables/useBodyScrollLock";
 
 
 const images = defineModel('images');
 const drag = ref(false);
 const selectedMedia = ref(null);
+
+const bodyScrollLock = useBodyScrollLock()
 
 const removeImage = (index) => {
     images.value.splice(index, 1);
@@ -38,11 +41,11 @@ const toggleType = (image, type) => {
 }
 
 const selectMedia = (media) => {
-    document.body.classList.add("overflow-hidden");
+    bodyScrollLock.lock()
     selectedMedia.value = media;
 }
 const closeMediaDetails = () => {
-    document.body.classList.remove("overflow-hidden");
+    bodyScrollLock.unlock()
     selectedMedia.value = null;
 }
 </script>

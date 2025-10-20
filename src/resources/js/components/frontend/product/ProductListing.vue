@@ -12,6 +12,8 @@ import {trackSelectItem, trackViewItemList} from "../../../utils/ga4";
 import {router} from "@inertiajs/vue3";
 import Button from "../ui/Button.vue";
 import IconX from "../../icons/IconX.vue";
+import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
+import {useBodyScrollLock} from "../../../composables/useBodyScrollLock";
 
 const props = defineProps({
     products: {type: Object, required: true},
@@ -24,6 +26,8 @@ const props = defineProps({
     listName: {type: String, default: ''},
     listId: {type: String},
 });
+
+const bodyScrollLock = useBodyScrollLock()
 
 let routerTrackListener = null;
 onMounted(() => {
@@ -49,11 +53,11 @@ const isMobileFiltersOpen = ref(false)
 
 const openMobileFilters = () => {
     isMobileFiltersOpen.value = true
-    document.body.classList.add('overflow-hidden');
+    bodyScrollLock.lock()
 }
 const closeMobileFilters = () => {
     isMobileFiltersOpen.value = false
-    document.body.classList.remove('overflow-hidden');
+    bodyScrollLock.unlock()
 }
 
 const resultsCount = computed(() => {
@@ -77,25 +81,31 @@ const resultsCount = computed(() => {
 })
 const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).length);
 
-
-import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
 const { isScrollingUp } = useScrollDirection()
-
-const stickyElement = ref(null)
+const filtersPanel = ref(null)
+const filtersButton = ref(null)
 const targetElement = ref(null)
-const isOverTarget = ref(false)
+const isFiltersPanelSticky = ref(false)
+const isFiltersButtonSticky = ref(false)
 
 const checkOverlap = () => {
-    if (!stickyElement.value || !targetElement.value) return
-
-    const stickyRect = stickyElement.value.getBoundingClientRect()
     const targetRect = targetElement.value.getBoundingClientRect()
 
-    // Sprawdź czy sticky element nakłada się na target element
-    isOverTarget.value = (
-        stickyRect.bottom > targetRect.top &&
-        stickyRect.top < targetRect.bottom
-    )
+    if (filtersPanel.value && targetElement.value) {
+        const stickyRect = filtersPanel.value.getBoundingClientRect()
+        isFiltersPanelSticky.value = (
+            stickyRect.bottom > targetRect.top &&
+            stickyRect.top < targetRect.bottom
+        )
+    }
+
+    if (filtersButton.value && targetElement.value) {
+        const stickyRect = filtersButton.value.getBoundingClientRect()
+        isFiltersButtonSticky.value = (
+            stickyRect.bottom > targetRect.top &&
+            stickyRect.top < targetRect.bottom
+        )
+    }
 }
 
 onMounted(() => {
@@ -123,9 +133,9 @@ onUnmounted(() => {
             <div class="hidden sm:block">
                 <slot name="sidebar-prepend"></slot>
             </div>
-            <div class="hidden sm:block top-0 z-1" ref="stickyElement"
+            <div class="hidden sm:block top-0 z-1" ref="filtersPanel"
                  :class="[
-                     isOverTarget ? 'shadow-lg' : '',
+                     isFiltersPanelSticky ? 'shadow-lg' : '',
                      isScrollingUp ? 'relative' : 'sticky'
                  ]">
                 <FiltersPanel
@@ -143,11 +153,13 @@ onUnmounted(() => {
 
             <!-- Główna kolumna z produktami -->
             <div>
-                <div class="sm:hidden mb-4 sticky top-0 z-10">
+                <div class="sm:hidden mb-4 sticky top-0 z-1"
+                     :class="isFiltersButtonSticky ? 'shadow-lg' : ''"
+                     ref="filtersButton">
                     <OpenFiltersButton @onOpen="openMobileFilters" :totalActiveFiltersCount="totalActiveFiltersCount"/>
                 </div>
 
-                <div class="flex justify-center sm:justify-between items-start gap-6">
+                <div class="flex justify-center sm:justify-between items-start sm:gap-6">
                     <div class="hidden sm:block">
                         <ActiveFilters
                             :activeFilters="activeFilters"

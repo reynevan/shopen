@@ -5,6 +5,7 @@ import IconChevron from "../../../icons/IconChevron.vue";
 import IconMenu from "../../../icons/IconMenu.vue";
 import IconX from "../../../icons/IconX.vue";
 import {useMenuStore} from "../../../../stores/menu";
+import {useBodyScrollLock} from "../../../../composables/useBodyScrollLock";
 
 // --- State Management ---
 
@@ -22,6 +23,7 @@ const openMenuButton = ref(null);
 const currentLevel = computed(() => navigationStack.value[navigationStack.value.length - 1]);
 const isBaseLevel = computed(() => navigationStack.value.length === 1);
 
+const bodyScrollLock = useBodyScrollLock()
 
 const openMenu = () => {
     isOpen.value = true;
@@ -47,13 +49,13 @@ const goBack = () => {
 
 watch(isOpen, (newVal) => {
     if (newVal) {
-        document.body.classList.add('overflow-hidden');
+        bodyScrollLock.lock()
         nextTick(() => {
             menuPanel.value?.focus();
         });
         navigationStack.value = [{ title: 'Menu', items: menuStore.menu?.categories }];
     } else {
-        document.body.classList.remove('overflow-hidden');
+        bodyScrollLock.unlock()
         nextTick(() => {
             openMenuButton.value?.focus();
         });
