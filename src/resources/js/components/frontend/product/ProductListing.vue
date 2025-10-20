@@ -77,6 +77,10 @@ const resultsCount = computed(() => {
 })
 const totalActiveFiltersCount = computed(() => Object.keys(props.activeFilters).length);
 
+
+import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
+const { isScrollingUp } = useScrollDirection()
+
 const stickyElement = ref(null)
 const targetElement = ref(null)
 const isOverTarget = ref(false)
@@ -106,7 +110,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="container mx-auto">
+    <div class="product-listing">
         <!-- Slot na bannery na górze strony -->
         <slot name="page-top-banners"></slot>
 
@@ -119,7 +123,11 @@ onUnmounted(() => {
             <div class="hidden sm:block">
                 <slot name="sidebar-prepend"></slot>
             </div>
-            <div class="hidden sm:block sticky top-0 z-1" ref="stickyElement" :class="isOverTarget ? 'shadow-lg' : ''">
+            <div class="hidden sm:block top-0 z-1" ref="stickyElement"
+                 :class="[
+                     isOverTarget ? 'shadow-lg' : '',
+                     isScrollingUp ? 'relative' : 'sticky'
+                 ]">
                 <FiltersPanel
                     @filterChange="onFilterChange"
                     @onRemoveFilter="removeFilter"
@@ -135,7 +143,7 @@ onUnmounted(() => {
 
             <!-- Główna kolumna z produktami -->
             <div>
-                <div class="sm:hidden mb-4 sticky top-0">
+                <div class="sm:hidden mb-4 sticky top-0 z-10">
                     <OpenFiltersButton @onOpen="openMobileFilters" :totalActiveFiltersCount="totalActiveFiltersCount"/>
                 </div>
 
@@ -175,10 +183,13 @@ onUnmounted(() => {
                     <!-- ... treść gdy brak wyników ... -->
                 </div>
 
-                <!-- Slot na treść po liście produktów (np. bannery, opis SEO kategorii) -->
-                <slot name="after-products"></slot>
-
+            </div>
+        </div>
+        <div>
+            <div>
                 <Pagination :links="products.meta.links" :only="['products']"/>
+
+                <slot name="after-products"></slot>
             </div>
         </div>
 

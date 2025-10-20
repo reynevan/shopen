@@ -17,12 +17,11 @@ const onChange = () => {
 
 <template>
     <div class="flex items-center w-full justify-end" data-ai="sort">
-        <label for="sort-by" class="whitespace-nowrap mr-2 text-sm text-gray-700">
+        <label class="whitespace-nowrap mr-2 sort-label">
             Sortuj:
         </label>
 
-        <Select id="sort-by"
-                title="Sortuj"
+        <Select title="Sortuj"
                 @onChange="onChange"
                 v-model="selectedSort"
                 :options="sortOptions"/>

@@ -142,7 +142,7 @@ onUnmounted(() => {
 <template>
     <div class="filters-panel px-4">
         <form method="get" data-ai="filters">
-            <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-0 divide-y divide-border-light sm:divide-y-0">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-0 divide-y divide-light sm:divide-y-0">
                 <Filter :attribute="{slug: 'price', name: 'Cena'}"
                         :is-mobile="isMobile"
                         @onClear="clearAttributeFilter('price')"

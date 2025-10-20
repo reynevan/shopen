@@ -57,7 +57,7 @@ const removeItem = (item) => {
 
             <section class="w-full lg:flex-1" aria-labelledby="cart-items-heading">
                 <h2 id="cart-items-heading" class="text-2xl font-semibold mb-4">Koszyk</h2>
-                <ul class="bg-body divide-y divide-border-light px-4 py-4 rounded shadow">
+                <ul class="bg-body divide-y divide-light px-4 py-4 rounded shadow">
                     <li v-for="item in cart.items" :key="item.id" class="flex flex-col md:flex-row items-center gap-4 py-4">
 
                         <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">

@@ -50,7 +50,7 @@ const props = defineProps({
         <template #header="{ resultsCount }">
             <div class="flex items-start flex-col">
                 <div class="text-3xl mr-2">{{ category.name }}</div>
-                <div class="text-neutral-600 font-light">{{ resultsCount }}</div>
+                <div class="listing-products-count">{{ resultsCount }}</div>
             </div>
         </template>
 

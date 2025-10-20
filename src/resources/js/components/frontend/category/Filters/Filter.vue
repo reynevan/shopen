@@ -35,21 +35,21 @@
 </script>
 
 <template>
-    <fieldset class="relative sm:px-6 pb-4 sm:pb-0"
+    <fieldset class="filter relative"
               ref="filterRef"
               :data-facet="attribute.slug"
               :data-label="attribute.name">
-        <legend class="flex items-center cursor-pointer sm:px-6 sm:py-4 tracking-wider" @click="toggleOpen">
+        <legend class="filter-label" @click="toggleOpen">
             <span v-if="activeFilterCount > 0"
-                  class="mr-1 text-xs bg-accent px-2 py-1">
+                  class="active-options-count">
                 {{ activeFilterCount }}
             </span>
-            <span class="text-lg font-light sm:text-sm sm:font-normal">{{ attribute.name }}</span>
-            <span class="transition-all duration-300 pt-1" :class="isOpened ? 'rotate-180' : ''">
+            <span class="filter-name">{{ attribute.name }}</span>
+            <span class="transition-all duration-300 filter-arrow" :class="isOpened ? 'rotate-180' : ''">
                 <IconChevron down/>
             </span>
         </legend>
-        <div class="space-y-2 sm:px-6 sm:py-4 bg-white sm:absolute sm:top-full sm:z-1 sm:min-w-md sm:shadow-lg" v-show="isOpened">
+        <div class="filter-options sm:absolute sm:top-full sm:z-1" v-show="isOpened">
             <div>
                 <slot/>
             </div>

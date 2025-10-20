@@ -77,7 +77,7 @@
                     @apply px-2 py-2;
 
                     &:not(:last-child) {
-                        @apply border-r border-border-light;
+                        @apply border-r border-light;
                     }
                 }
             }

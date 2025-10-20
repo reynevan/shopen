@@ -108,7 +108,7 @@ const resetSearch = () => {
 
 <template>
     <div class="relative w-full h-full">
-        <div class="border rounded z-50 bg-header"
+        <div class="border border-light rounded relative z-50 bg-header"
         :class="mobileViewOpen ? 'fixed top-0 left-0 bottom-0 right-0 z-100' : ''"
         >
             <!-- input -->
@@ -156,26 +156,24 @@ const resetSearch = () => {
 
             <!-- wyniki -->
             <div v-if="(showResults && hasResults) || mobileViewOpen"
-                class="border-t border-light sm:border-none w-full bg-header max-h-96 overflow-y-auto px-6">
-                <div v-if="showResults" class="sm:border-t sm:border-light pt-6 my-6 flex">
+                class="search-box-results w-full max-h-96 overflow-y-auto px-6 pt-6 my-6">
+                <div v-if="showResults" class="flex">
                     <!-- Kategorie -->
-                    <div class="pr-4 w-[300px]">
+                    <div class="pr-4 w-full sm:w-[300px]">
                         <div class="px-3 py-2">
-                            <h3 class="text-xs text-gray-600 uppercase tracking-wide">
+                            <h3 class="search-box-results-label">
                                 Kategorie
                             </h3>
                         </div>
-                        <div class="divide-y divide-border-light">
+                        <div class="divide-y divide-light">
                             <div v-if="searchResults.categories.length > 0"
                                  v-for="category in searchResults.categories"
                                  :key="`category-${category.id}`"
                                  @mousedown="selectCategory(category)"
                                  class="flex items-center p-3 cursor-pointer hover:bg-accent/30 transition-all">
-                                <div>
-                                    <h4 class="text-sm font-medium text-gray-900 truncate">
-                                        {{ category.name }}
-                                    </h4>
-                                </div>
+                                <h4 class="search-box-category-name">
+                                    {{ category.name }}
+                                </h4>
                             </div>
                             <div v-else>
                                 Brak wyników
@@ -186,7 +184,7 @@ const resetSearch = () => {
                     <!-- Produkty -->
                     <div class="pl-4 w-full">
                         <div class="px-3 py-2">
-                            <h3 class="text-xs text-gray-600 uppercase tracking-wide">
+                            <h3 class="search-box-results-label">
                                 Produkty
                             </h3>
                         </div>

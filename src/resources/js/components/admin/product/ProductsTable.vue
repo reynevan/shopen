@@ -119,7 +119,7 @@ const removeProduct = (product) => {
         </TableColumn>
 
         <TableColumn label="Akcje" v-slot="data" width="100px">
-            <div class="flex divide-x divide-border-light">
+            <div class="flex divide-x divide-light">
                 <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer">
                     <ActionButton type="edit"/>
                 </Link>

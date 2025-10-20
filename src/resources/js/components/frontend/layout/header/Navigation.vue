@@ -46,14 +46,14 @@ const closeMenu = () => {
 </script>
 
 <template>
-    <div class="bg-header z-100 sm:flex flex-col sm:flex-row justify-center">
+    <div class="navigation bg-header sm:flex flex-col sm:flex-row justify-center">
         <div v-for="category in menuStore.menu?.categories" :key="category.id" class="group/parent"
              @mouseover="openMenu"
              @mouseleave="closeMenu">
             <div
                 class="nav-link group-hover/parent:shadow-lg group-hover/parent:underline px-4 py-2"
                 :class="category.subcategories.length > 0 ? 'has-subcategories rounded-t-md' : 'rounded-md'">
-                <Link :href="category.url" class="text-lg text-gray-700">
+                <Link :href="category.url" class="navigation-label">
                     {{ category.name }}
                 </Link>
             </div>

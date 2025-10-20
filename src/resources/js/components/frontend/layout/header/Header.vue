@@ -10,51 +10,26 @@ import {useAuthStore} from "@shopen/stores/auth.js";
 import IconHeart from "../../../icons/IconHeart.vue";
 import Navigation from "./Navigation.vue";
 import MobileMenu from "./MobileMenu.vue";
-import {onMounted, onUnmounted, ref} from "vue";
 
 const auth = useAuthStore();
 
-const showHeader = ref(false)
-const lastScrollPosition = ref(0)
+import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
+const { isScrollingDown } = useScrollDirection()
 
-const handleScroll = () => {
-    const currentScrollPosition = window.scrollY || document.documentElement.scrollTop
-
-    if (currentScrollPosition < 0) {
-        return
-    }
-
-    if (currentScrollPosition > lastScrollPosition.value) {
-        showHeader.value = false
-    }
-    else {
-        showHeader.value = true
-    }
-
-    lastScrollPosition.value = currentScrollPosition
-}
-
-onMounted(() => {
-    window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-})
 </script>
 
 <template>
     <header class="header mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 z-10 sticky transition-all duration-300"
-            :class="showHeader ? 'top-0' : '-top-full'">
+            :class="isScrollingDown ? '-top-full' : 'top-0'">
         <div class="mx-auto container px-4">
             <div class="flex flex-col sm:gap-4 sm:flex-row justify-between items-center">
-                <div class="hidden sm:block">
-                    <Link href="/">
-                        <img src="/img/shopen-logo.png" alt="Shopen"/>
-                    </Link>
-                </div>
                 <div class="flex items-center w-full order-2 sm:order-1 h-auto sm:h-[42px]">
                     <SearchBox/>
+                </div>
+                <div class="hidden sm:block">
+                    <Link href="/">
+                        <img src="/img/labizu.svg" alt="Shopen"/>
+                    </Link>
                 </div>
                 <div class="flex justify-between items-center w-full sm:w-auto sm:gap-2 order-1 sm:order-2">
                     <div class="sm:hidden">
@@ -69,7 +44,7 @@ onUnmounted(() => {
 
                     <div class="flex items-center sm:gap-2">
                         <div class="user-menu-btn group relative">
-                            <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-border-light">
+                            <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-light">
                                 <Link :href="route('user.orders.index')" class="flex items-center gap-2">
                                     <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
                                     <IconProfile size="2xl"/>

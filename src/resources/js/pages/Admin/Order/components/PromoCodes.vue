@@ -19,7 +19,7 @@ const allSent = computed(() => !props.order.items.some(item => !item.promo_code_
 </script>
 
 <template>
-    <div class="divide-y divide-border-light">
+    <div class="divide-y divide-light">
         <template v-for="item in order.items" :key="item.id">
             <div v-if="item.promo_code_coupons" class="flex items-center gap-2 py-2">
                 <div>{{ item.product.promo_code.name }}</div>

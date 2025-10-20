@@ -5,12 +5,11 @@ namespace Shopen\Services\SearchService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Shopen\Http\Resources\Attribute\FilterResource;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
+use Shopen\Pagination\LengthAwarePaginator;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
 class SearchServiceResult

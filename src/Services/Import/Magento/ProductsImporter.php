@@ -195,7 +195,11 @@ trait ProductsImporter
         $count = count($result);
         foreach ($result as $i => $data) {
             echo "$i/$count\r";
-            $this->importProduct($data);
+            try {
+                $this->importProduct($data);
+            } catch (\Exception $e) {
+                echo "\n" . $e->getMessage() . "\n";
+            }
         }
     }
 

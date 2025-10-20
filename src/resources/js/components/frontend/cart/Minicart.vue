@@ -65,7 +65,7 @@ const updateItem = debounce((item, val) => {
                 Wróć do sklepu
             </Button>
         </div>
-        <div class="overflow-y-auto grow divide-y divide-border-light">
+        <div class="overflow-y-auto grow divide-y divide-light">
             <div v-for="item in items" :key="item.id" class="flex mx-4 py-6 relative px-6">
                 <div class="absolute top-2 right-2 cursor-pointer" @click="removeItem(item)">
                     <icon-x md/>
