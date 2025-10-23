@@ -40,7 +40,8 @@ const addToCart = async () => {
     <Button @click="addToCart"
             type="ghost"
             :disabled="cart.addingToCart[product.id] || disabled">
-        <div class="flex items-center">
+        <div class="flex items-center gap-2">
+            <span class="thumbnail-add-to-cart-btn-label">Dodaj do koszyka</span>
             <IconCartPlus sm v-if="!cart.addingToCart[product.id]"></IconCartPlus>
             <IconLoader sm v-if="cart.addingToCart[product.id]"></IconLoader>
         </div>

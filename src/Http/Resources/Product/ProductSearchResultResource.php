@@ -26,10 +26,12 @@ class ProductSearchResultResource extends JsonResource
             'price' => ProductPriceResource::make($this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
-            'rating' => $this->rating,
-            'reviews_count' => $this->reviews_count,
             'images' => $this->images,
         ];
+        if (config('shopen.product.reviews.enabled')) {
+            $data['rating'] = $this->rating;
+            $data['reviews_count'] = $this->reviews_count;
+        }
         foreach ($this->resource->getCustomAttributes() as $key => $value) {
             $data['attributes'][$key] = $value;
         }

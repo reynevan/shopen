@@ -89,6 +89,7 @@ const isFiltersPanelSticky = ref(false)
 const isFiltersButtonSticky = ref(false)
 
 const checkOverlap = () => {
+    if (!targetElement.value) { return }
     const targetRect = targetElement.value.getBoundingClientRect()
 
     if (filtersPanel.value && targetElement.value) {
@@ -129,11 +130,8 @@ onUnmounted(() => {
         </div>
 
         <div>
-            <!-- Filters Sidebar -->
-            <div class="hidden sm:block">
-                <slot name="sidebar-prepend"></slot>
-            </div>
-            <div class="hidden sm:block top-0 z-1" ref="filtersPanel"
+            <!-- Filters  -->
+            <div class="hidden sm:block top-0 z-5 mb-4" ref="filtersPanel"
                  :class="[
                      isFiltersPanelSticky ? 'shadow-lg' : '',
                      isScrollingUp ? 'relative' : 'sticky'
@@ -144,16 +142,14 @@ onUnmounted(() => {
                     :attributes="filters.attributes"
                     :active-filters="activeFilters"
                     :price-range="filters.priceRange"
+                    :brands="filters.brands"
                     :categories="categories"
                 />
-            </div>
-            <div class="hidden sm:block">
-                <slot name="sidebar-append"></slot>
             </div>
 
             <!-- Główna kolumna z produktami -->
             <div>
-                <div class="sm:hidden mb-4 sticky top-0 z-1"
+                <div class="sm:hidden mb-4 sticky top-0 z-5"
                      :class="isFiltersButtonSticky ? 'shadow-lg' : ''"
                      ref="filtersButton">
                     <OpenFiltersButton @onOpen="openMobileFilters" :totalActiveFiltersCount="totalActiveFiltersCount"/>
@@ -198,11 +194,11 @@ onUnmounted(() => {
             </div>
         </div>
         <div>
-            <div>
+            <div class="mb-6">
                 <Pagination :links="products.meta.links" :only="['products']"/>
-
-                <slot name="after-products"></slot>
             </div>
+
+            <slot name="after-products"></slot>
         </div>
 
         <!-- Slot na bannery na dole strony -->
@@ -232,6 +228,7 @@ onUnmounted(() => {
                     :active-filters="activeFilters"
                     :price-range="filters.priceRange"
                     :categories="categories"
+                    :brands="filters.brands"
                 />
             </div>
             <div class="p-4 border-t border-light bg-body sticky bottom-0">

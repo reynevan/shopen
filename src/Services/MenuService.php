@@ -3,6 +3,7 @@
 namespace Shopen\Services;
 
 use Illuminate\Support\Facades\Cache;
+use Shopen\Core\Context;
 use Shopen\Models\Category\Attribute\Value\CategoryAttributeBool;
 use Shopen\Models\Category\Attribute\Value\CategoryAttributeString;
 use Shopen\Models\Category\Category;
@@ -16,12 +17,13 @@ class MenuService
 
     public function __construct(
         protected readonly UrlRewriteRepository $urlRewriteRepository,
-        protected readonly CategoryAttributeRepository $categoryAttributeRepository,
+        protected readonly CategoryAttributeRepository $categoryAttributeRepository
     )
     {}
 
     public function getCategories()
     {
+
         return Cache::remember('menu.categories', config('app.debug') ? 0 : self::CACHE_TTL, function () {
             $urls = $this->getUrls();
 
@@ -32,17 +34,9 @@ class MenuService
                 ->orderBy('sort_index')
                 ->get();
 
-            $nameAttribute = $this->categoryAttributeRepository->getByCode('name');
-            $names = CategoryAttributeString::query()
-                ->where('attribute_id', $nameAttribute->id)
-                ->select(['entity_id', 'value'])
-                ->pluck('value', 'entity_id');
+            $names = $this->categoryAttributeRepository->getValues('name');
 
-            $displayInMenuAttribute = $this->categoryAttributeRepository->getByCode('display_in_menu');
-            $menuDisplayValues = CategoryAttributeBool::query()
-                ->where('attribute_id', $displayInMenuAttribute->id)
-                ->select(['entity_id', 'value'])
-                ->pluck('value', 'entity_id');
+            $menuDisplayValues = $this->categoryAttributeRepository->getValues('display_in_menu');
 
             $map = [];
 
@@ -78,20 +72,6 @@ class MenuService
 
             return $tree;
         });
-    }
-
-    public function getCssClasses(Category $category)
-    {
-        $classes = [];
-        if ($category->is_current) {
-            $classes[] = 'is-active';
-        }
-
-        if ($category->has_current) {
-            $classes[] = 'has-active';
-        }
-
-        return implode(' ', $classes);
     }
 
     protected function getUrls(): array

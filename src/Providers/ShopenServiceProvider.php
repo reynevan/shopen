@@ -40,6 +40,7 @@ use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Services\CartService;
 use Shopen\Services\CustomAttributesService;
 use Shopen\Observers\ProductPriceObserver;
+use Shopen\Services\FiltersService;
 use Shopen\Services\ShoppingListService;
 
 class ShopenServiceProvider  extends ServiceProvider
@@ -98,8 +99,8 @@ class ShopenServiceProvider  extends ServiceProvider
         Number::useCurrency(config('app.currency'));
         Number::useLocale(config('app.locale'));
 
-        $this->app->singleton(Context::class, function ($app) {
-            return new Context();
+        $this->app->singleton(FiltersService::class, function ($app) {
+            return new FiltersService();
         });
 
         $this->app->singleton(CustomAttributesService::class, function ($app) {
@@ -143,11 +144,6 @@ class ShopenServiceProvider  extends ServiceProvider
         ProductPrice::observe(ProductPriceObserver::class);
 
         EncryptCookies::except('cart_uuid');
-
-        Blade::directive('block', function ($expression)
-        {
-            return app(BlockDirective::class)->handle($expression);
-        });
 
         Paginator::currentPathResolver(function () {
             return '/' . request()->path();

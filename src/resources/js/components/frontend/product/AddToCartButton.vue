@@ -40,7 +40,7 @@ const updateQty = (newQty) => {
     <div class="flex items-center gap-4">
         <AmountInput :value="qty" @onChange="updateQty" :min="1" size="lg"/>
         <Button @click="addToCart"
-                type="success"
+                type="primary"
                 :disabled="cart.addingToCart[product.id]">
             <div class="flex items-center">
                 <IconCartPlus size="xl" v-if="!cart.addingToCart[product.id]"></IconCartPlus>

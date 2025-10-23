@@ -25,8 +25,6 @@ class ProductResource extends JsonResource
             'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
-            'rating' => $this->rating,
-            'reviews_count' => $this->reviews_count,
             'images' => $this->images,
             'image' => $this->image,
             'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource),
@@ -35,6 +33,10 @@ class ProductResource extends JsonResource
             'is_configurable' => $this->isConfigurable(),
             'is_new' => $this->is_new && $this->is_new_to && $this->is_new_to->isFuture()
         ];
+        if (config('shopen.product.reviews.enabled')) {
+            $data['rating'] = $this->rating;
+            $data['reviews_count'] = $this->reviews_count;
+        }
         foreach ($this->resource->getCustomAttributes() as $key => $value) {
             if (is_null($value)) {
                 continue;

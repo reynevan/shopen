@@ -34,17 +34,17 @@ const splitPrice = computed(() => {
 const sizeClasses = computed(() => {
     const sizes = {
         sm: {
-            whole: 'text-sm font-semibold',
+            whole: 'text-sm',
             decimal: 'text-xs',
             currency: 'text-xs'
         },
         md: {
-            whole: 'text-xl font-semibold',
+            whole: 'text-xl',
             decimal: 'text-sm',
             currency: 'text-sm'
         },
         lg: {
-            whole: 'text-3xl font-semibold',
+            whole: 'text-3xl',
             decimal: 'text-lg',
             currency: 'text-lg'
         }
@@ -55,9 +55,8 @@ const sizeClasses = computed(() => {
 </script>
 
 <template>
-  <span>
-    <span :class="sizeClasses.whole">{{ splitPrice.whole }}</span
-    ><span v-if="splitPrice.decimal">,<span :class="sizeClasses.decimal">{{ splitPrice.decimal }}</span></span>
-    <span :class="sizeClasses.currency">{{ splitPrice.currency }}</span>
+  <span class="price">
+    <span :class="sizeClasses.whole" class="price-whole">{{ splitPrice.whole }}</span><span v-if="splitPrice.decimal && splitPrice.decimal !== '00'">,<span :class="sizeClasses.decimal" class="price-decimal">{{ splitPrice.decimal }}</span></span>
+    <span :class="sizeClasses.currency" class="price-currency">{{ splitPrice.currency }}</span>
   </span>
 </template>

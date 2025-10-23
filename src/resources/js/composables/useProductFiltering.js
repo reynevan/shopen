@@ -3,6 +3,23 @@ import { computed } from 'vue'
 
 export function useProductFiltering(props) {
 
+    const getActiveFilters = () => {
+        let filters = {};
+        Object.entries(props.activeFilters).forEach(
+            ([key, filter]) => {
+                if (key === 'price') {
+                    for (let i = 1; i < filter.options; i++) {
+                        filters[filter.options[i].slug] = filter.options[i].value
+                    }
+                } else {
+                    filters[filter.slug] = filter.options.map((v) => v.slug)
+                }
+            }
+        );
+
+        return filters
+    }
+
     const hasActiveFilters = computed(() => {
         return Object.keys(props.activeFilters).some(key => {
             const value = props.activeFilters[key]
@@ -16,10 +33,10 @@ export function useProductFiltering(props) {
             if (filters[key] === null || (Array.isArray(filters[key]) && filters[key].length === 0)) {
                 continue;
             }
-            if (key === 'price_min') {
-                urlFilters['cena_od'] = filters[key];
-            } else if (key === 'price_max') {
-                urlFilters['cena_do'] = filters[key]
+            if (key === 'cena-od') {
+                urlFilters['cena-od'] = filters[key];
+            } else if (key === 'cena-do') {
+                urlFilters['cena-do'] = filters[key]
             } else {
                 urlFilters[key] = Array.isArray(filters[key]) ? filters[key].join(',') : filters[key];
             }
@@ -35,7 +52,7 @@ export function useProductFiltering(props) {
 
     const onSortChange = (value) => {
         let sort = value === 'default' ? null : value;
-        router.get(window.location.pathname, prepareFiltersForUrl(props.activeFilters, sort), {
+        router.get(window.location.pathname, prepareFiltersForUrl(getActiveFilters(), sort), {
             preserveState: true,
             preserveScroll: true,
             only: ['products', 'activeSort']
@@ -64,12 +81,12 @@ export function useProductFiltering(props) {
     }
 
     const removeFilter = (filterKey, valueToRemove = null) => {
-        const currentFilters = { ...props.activeFilters }
+        const currentFilters = getActiveFilters()
 
-        if (filterKey === 'price_min') {
-            delete currentFilters.price_min
-        } else if (filterKey === 'price_max') {
-            delete currentFilters.price_max
+        if (filterKey === 'cena-od') {
+            delete currentFilters['cena-od']
+        } else if (filterKey === 'cena-do') {
+            delete currentFilters['cena-do']
         } else if (valueToRemove === null) {
             delete currentFilters[filterKey]
         } else {
@@ -94,5 +111,6 @@ export function useProductFiltering(props) {
         onFilterChange,
         clearAllFilters,
         removeFilter,
+        getActiveFilters
     }
 }

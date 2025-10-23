@@ -4,6 +4,11 @@ import { useForm, usePage } from '@inertiajs/vue3';
 import BaseModal from "@shopen/components/frontend/ui/BaseModal.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {useShoppingListStore} from "../../../stores/shoppingList";
+import Checkbox from "../input/Checkbox.vue";
+import IconPlus from "../../icons/IconPlus.vue";
+import Input from "../input/Input.vue";
+import IconCheck from "../../icons/IconCheck.vue";
+import IconX from "../../icons/IconX.vue";
 
 
 const emit = defineEmits(['close']);
@@ -65,6 +70,11 @@ const saveNewList = () => {
     });
 };
 
+const cancelNewListForm = () => {
+    showNewListInput.value = false;
+    newListForm.reset()
+}
+
 const isSubmitDisabled = computed(() => {
     return form.processing;
 });
@@ -72,23 +82,18 @@ const isSubmitDisabled = computed(() => {
 
 <template>
     <BaseModal :show="shoppingListStore.isModalOpen" @onClose="closeModal">
-        <div class="p-6">
-            <h2 class="text-lg font-medium text-gray-900">
-                Dodaj do listy zakupowej
-            </h2>
-
-            <form @submit.prevent="submit" class="mt-6">
+        <template #header>
+            Dodaj do listy zakupowej
+        </template>
+        <div class="shopping-list-modal">
+            <form @submit.prevent="submit">
                 <div v-if="userLists.length > 0" class="space-y-3 mb-4">
-                    <p class="text-sm text-gray-600 mb-4">Wybierz listy, do których chcesz dodać produkt.</p>
+                    <p class="text-sm mb-4">Wybierz listy, do których chcesz dodać produkt.</p>
                     <div v-for="list in userLists" :key="list.id" class="flex items-center">
-                        <input
-                            type="checkbox"
-                            :id="`list-${list.id}`"
-                            :value="list.id"
-                            v-model="form.list_ids"
-                            class="h-4 w-4 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                        >
-                        <label :for="`list-${list.id}`" class="ml-3 block text-sm font-medium text-gray-700">
+                        <Checkbox :id="`list-${list.id}`"
+                                  :value="list.id"
+                                  v-model="form.list_ids"/>
+                        <label :for="`list-${list.id}`" class="block list-name">
                             {{ list.name }} ({{ list.products_count }} prod.)
                         </label>
                     </div>
@@ -97,37 +102,48 @@ const isSubmitDisabled = computed(() => {
                 <div class="mt-4">
                     <div v-if="showNewListInput">
                         <div class="flex items-center space-x-2">
-                            <input
-                                id="new_list_name"
+                            <Input
+                                id="new-list-name"
                                 v-model="newListForm.name"
-                                type="text"
-                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                                 placeholder="Nazwa nowej listy"
                                 @keyup.enter.prevent="saveNewList"
                             />
-                            <Button @click="saveNewList" :disabled="newListForm.processing" :class="{ 'opacity-25': newListForm.processing }">Zapisz</Button>
-                            <Button @click="showNewListInput = false; newListForm.reset()" type="ghost">Anuluj</Button>
+                            <Button @click.prevent="saveNewList"
+                                    size="sm"
+                                    icon-size="xl"
+                                    :loading="newListForm.processing">
+                                <IconCheck size="xl"/>
+                            </Button>
+                            <Button @click.prevent="cancelNewListForm"
+                                    size="sm"
+                                    icon-size="xl"
+                                    :loading="newListForm.processing"
+                                    type="ghost">
+                                <IconX size="xl"/>
+                            </Button>
                         </div>
                         <p v-if="newListForm.errors.name" class="mt-2 text-sm text-red-600">
                             {{ newListForm.errors.name }}
                         </p>
                     </div>
-                    <Button v-else @click="showNewListInput = true" type="outline">
-                        Stwórz nową listę
-                    </Button>
-                </div>
-
-                <div class="mt-8 flex justify-end border-t pt-4">
-                    <Button @click="closeModal" type="ghost" class="mr-3">Anuluj</Button>
-                    <Button
-                        role="submit"
-                        :class="{ 'opacity-25': isSubmitDisabled }"
-                        :disabled="isSubmitDisabled"
-                    >
-                        Zapisz
+                    <Button v-else @click.prevent="showNewListInput = true" type="ghost" no-padding-x>
+                        <IconPlus size="xl"/>
+                        Dodaj nową listę
                     </Button>
                 </div>
             </form>
         </div>
+
+        <template #buttons>
+            <Button @click="closeModal" type="ghost" class="mr-3">Anuluj</Button>
+            <Button
+                @click="submit"
+                role="submit"
+                :class="{ 'opacity-25': isSubmitDisabled }"
+                :disabled="isSubmitDisabled"
+            >
+                Zapisz
+            </Button>
+        </template>
     </BaseModal>
 </template>

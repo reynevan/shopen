@@ -1,9 +1,8 @@
 <script setup>
-import {useTemplateRef} from "vue";
+import {useTemplateRef, watch} from "vue";
 import IconX from "@shopen/components/icons/IconX.vue";
 
 const emits = defineEmits(['onClose']);
-
 const cover = useTemplateRef('cover')
 const onCoverCLick = (e) => {
     if (!props.closableCover) {
@@ -44,7 +43,6 @@ const props = defineProps({
     }
 });
 
-
 </script>
 
 <template>
@@ -55,7 +53,7 @@ const props = defineProps({
                  class="fixed inset-0 flex items-center justify-center z-100">
                 <div ref="cover" class="modal-backdrop absolute inset-0 bg-black/60"></div>
                 <div :class="props.class"
-                     class="modal-content relative bg-white rounded-lg max-h-[100vh] shadow-xl flex flex-col">
+                     class="modal-content relative bg-white shadow-lg max-h-[100vh] flex flex-col">
                     <div class="py-4 px-8 mb-4 border-b text-lg bg-white shadow relative flex-shrink-0" v-if="$slots.header">
                         <slot name="header"/>
                         <button v-if="closable" class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer" @click="emits('onClose')">

@@ -114,6 +114,9 @@ class AttributeRepository
     public function getValues($attributeCode, $ids = null)
     {
         $attribute = $this->getByCode($attributeCode);
+        if (!$attribute) {
+            return [];
+        }
         return $attribute->getValueModel()::query()
             ->where('attribute_id', $attribute->id)
             ->when($ids, function ($query) use ($ids) {

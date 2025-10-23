@@ -2,28 +2,46 @@
 
 namespace Shopen\Http\Controllers\Frontend\Category;
 
+use App\Support\ProductSorting\ProductSortRegistry;
 use Inertia\Inertia;
 use Inertia\Response;
-use Shopen\Http\Controllers\Frontend\ProductsListController;
-use Shopen\Http\Resources\Category\BaseCategoryResource;
 use Shopen\Http\Resources\Category\CategoryResource;
 use Shopen\Http\Resources\Product\ProductResource;
 use Shopen\Models\Category\Category;
+use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Repositories\Product\ProductRepository;
+use Shopen\Services\BannerService;
+use Shopen\Services\FiltersService;
+use Shopen\Services\SearchService\SearchService;
 
-readonly class CategoryShowController extends ProductsListController
+readonly class CategoryShowController
 {
+
+    public function __construct(
+        protected ProductAttributeRepository $productAttributeRepository,
+        protected ProductRepository          $productRepository,
+        protected BannerService              $bannerService,
+        protected ProductSortRegistry        $productSortRegistry,
+        protected SearchService              $searchService,
+        protected FiltersService             $filtersService,
+    )
+    {
+    }
+
     public function index(Category $category): Response
     {
+
         if (request()->query('sort')) {
             $this->productSortRegistry->setDefault(request()->query('sort'));
         }
         $searchResult = $this
             ->searchService
             ->setCategoryId($category->id)
-            ->setFilters($this->filters)
+            ->setFilters($this->filtersService->getSimpleFilters())
             ->setSort(request()->query('sort'))
             ->setPage(request()->query('strona', 1))
             ->searchProducts();
+
         $products = $searchResult->paginatedProducts();
 
         $category->loadAttributes(['description', 'name']);
@@ -31,30 +49,19 @@ readonly class CategoryShowController extends ProductsListController
         return Inertia::render('Frontend/Category/Show', [
             'products' => fn() => ProductResource::collection($products),
             'filters' => fn() => [
-                'attributes' => $searchResult->getAttributesFilters(),
+                'attributes' => $searchResult->getFilters(),
                 'priceRange' => $searchResult->getPriceFilters()
             ],
-            'activeFilters' => fn() => $this->getActiveFilters('slug', 'slug'),
+            'activeFilters' => fn() => $this->filtersService->getFullActiveFilters(),
             'banners' => fn() => $this->bannerService->getForCategory($category),
-            'category' => fn () => CategoryResource::make($category),
-            'subcategories' => fn() => $this->getSubcategories($category),
-            'activeSort' => fn () => request()->query('sort') ?? $this->productSortRegistry->defaultKey(),
-            'sortOptions' => fn () => $this->productSortRegistry->allOptions(),
-            'title' => fn () => $this->getTitle($category),
+            'category' => fn() => CategoryResource::make($category),
+            'activeSort' => fn() => request()->query('sort') ?? $this->productSortRegistry->defaultKey(),
+            'sortOptions' => fn() => $this->productSortRegistry->allOptions(),
+            'title' => fn() => $this->getTitle($category),
         ]);
     }
 
-    protected function getSubcategories(Category $category)
-    {
-        $searchResult = $this
-            ->searchService
-            ->setCategoryId($category->id)
-            ->setSort(request()->query('sort'))
-            ->getCategories();
-        return BaseCategoryResource::collection($searchResult->categories());
-    }
-
-    protected function getTitle(Category $category = null): string
+    protected function getTitle(?Category $category = null): string
     {
         $title = [$category->name];
         if (request()->query('strona') > 1) {
@@ -62,8 +69,6 @@ readonly class CategoryShowController extends ProductsListController
         }
         return implode(' - ', $title);
     }
-
-
 
 
 }

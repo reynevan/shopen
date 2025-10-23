@@ -66,7 +66,7 @@ trait ProductsImporter
             'manufacturer', 'color', 'material', 'color2', 'size', 'materials',
             // visibility i tax_class_id też bywają selectami, ale użytkownik prosił o etykiety dla 'attributes'
         ];
-        $optionLabels = $this->fetchAttributeOptionLabels($attributeDefs, $optionableCodes, 0);
+        $optionLabels = $this->fetchAttributeOptionLabels($attributeDefs, $optionableCodes, 1);
 
         // Mapy: attribute_code => attribute_id lub null, jeśli brak w instancji
         $attr = [];
@@ -89,7 +89,9 @@ trait ProductsImporter
 
         $productIds = array_column($products, 'entity_id');
 
-        $values = $this->fetchProductAttributeValuesForStore($productIds, $attributeDefs);
+        $values0 = $this->fetchProductAttributeValuesForStore($productIds, $attributeDefs, 0);
+
+        $values1 = $this->fetchProductAttributeValuesForStore($productIds, $attributeDefs, 1);
 
         $productCategories = $this->fetchProductCategories($productIds);
 
@@ -105,8 +107,8 @@ trait ProductsImporter
             $id = (int)$p['entity_id'];
             $sku = $p['sku'];
 
-            $get = function (string $code) use ($values, $id) {
-                return $values[$code][$id] ?? null;
+            $get = function (string $code) use ($values0, $values1, $id) {
+                return $values1[$code][$id] ?? $values0[$code][$id] ?? null;
             };
 
             $status = (int)($get('status') ?? 0);
@@ -266,7 +268,7 @@ trait ProductsImporter
 
     }
 
-    private function fetchAttributeOptionLabels(array $attributeDefs, array $attributeCodes, int $storeId = 0): array
+    private function fetchAttributeOptionLabels(array $attributeDefs, array $attributeCodes, int $storeId = 1): array
     {
         // Wyfiltruj tylko atrybuty, które istnieją i mają source z opcjami (typowo frontend_input in ['select','multiselect'])
         $attrIds = [];
@@ -337,7 +339,7 @@ trait ProductsImporter
      * w oparciu o backend_type i attribute_id z eav_attribute.
      * Zwraca mapę: [attribute_code => [product_id => value]]
      */
-    private function fetchProductAttributeValuesForStore(array $productIds, array $attributeDefs, int $storeId = 0): array
+    private function fetchProductAttributeValuesForStore(array $productIds, array $attributeDefs, int $storeId = 1): array
     {
         if (empty($productIds)) {
             return [];

@@ -50,8 +50,10 @@ const updateItem = debounce((item, val) => {
         ref="minicart-element">
         <div class="flex items-center justify-between pl-4 mb-2 py-4 shadow">
             <div class="text-xl">Podgląd koszyka</div>
-            <div @click="closeMinicart" class="mr-4 cursor-pointer hover:text-black transition-colors">
-                <IconX lg/>
+            <div @click="closeMinicart"
+                 title="Zamknij podgląd koszyka"
+                 class="mr-4 cursor-pointer hover:text-black transition-colors">
+                <IconX size="2xl"/>
             </div>
         </div>
         <div v-if="!items || items.length === 0" class="flex flex-col items-center px-6 ">
@@ -66,11 +68,15 @@ const updateItem = debounce((item, val) => {
             </Button>
         </div>
         <div class="overflow-y-auto grow divide-y divide-light">
-            <div v-for="item in items" :key="item.id" class="flex mx-4 py-6 relative px-6">
-                <div class="absolute top-2 right-2 cursor-pointer" @click="removeItem(item)">
+            <div v-for="item in items"
+                 :key="item.id"
+                 class="minicart-item flex items-start mx-4 py-6 relative px-6">
+                <div class="absolute top-2 right-2 cursor-pointer minicart-item-remove-btn"
+                     title="Usuń produkt z koszyka"
+                     @click="removeItem(item)">
                     <icon-x md/>
                 </div>
-                <div class="w-[100px]">
+                <div class="w-[100px] product-image">
                     <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
                                   :width="100"/>
                 </div>
@@ -97,10 +103,10 @@ const updateItem = debounce((item, val) => {
                         </div>
                         <div v-if="!item.loading">
                             <div v-if="item.total_final_price !== item.total_price"
-                                 class="text-gray-400 line-through text-sm">
+                                 class="old-price">
                                 {{ item.total_price }}
                             </div>
-                            <div class="font-semibold">
+                            <div class="final-price">
                                 {{ item.total_final_price }}
                             </div>
                         </div>
@@ -114,12 +120,12 @@ const updateItem = debounce((item, val) => {
                 <div>{{ subtotal }}</div>
             </div>
             <Link :href="route('cart.index')" @click="closeMinicart">
-                <Button type="secondary" full-width>
+                <Button type="primary" size="lg" full-width>
                     Koszyk
                 </Button>
             </Link>
             <div class="text-center mt-4">
-                lub <a class="hover:underline cursor-pointer" @click.prevent="closeMinicart">
+                lub <a class="continue-shopping-link" @click.prevent="closeMinicart">
                 Kontynuuj zakupy →
             </a>
             </div>

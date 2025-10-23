@@ -12,8 +12,6 @@ enum Placement: string
     case CATEGORY_PAGE_BOTTOM = 'category_page_bottom';
     case CATEGORY_PAGE_PRODUCTS_TOP = 'category_page_products_top';
     case CATEGORY_PAGE_PRODUCTS_BOTTOM = 'category_page_products_bottom';
-    case CATEGORY_PAGE_FILTERS_TOP = 'category_page_filters_top';
-    case CATEGORY_PAGE_FILTERS_BOTTOM = 'category_page_filters_bottom';
     case PRODUCT_PAGE_TOP = 'product_page_top';
     case PRODUCT_PAGE_BOTTOM = 'product_page_bottom';
 
@@ -29,12 +27,11 @@ enum Placement: string
             self::CATEGORY_PAGE_BOTTOM => 'Strona kategorii - na dole',
             self::CATEGORY_PAGE_PRODUCTS_TOP => 'Strona kategorii - nad produktami',
             self::CATEGORY_PAGE_PRODUCTS_BOTTOM => 'Strona kategorii - pod produktami',
-            self::CATEGORY_PAGE_FILTERS_TOP => 'Strona kategorii - nad filtrami',
-            self::CATEGORY_PAGE_FILTERS_BOTTOM => 'Strona kategorii - pod filtrami',
             self::PRODUCT_PAGE_TOP => 'Strona produktu - na górze',
             self::PRODUCT_PAGE_BOTTOM => 'Strona produktu - na dole',
         };
     }
+
 
     public static function options(): array
     {

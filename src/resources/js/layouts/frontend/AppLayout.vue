@@ -10,6 +10,7 @@ import Minicart from "@shopen/components/frontend/cart/Minicart.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
 import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
+import BannersContainer from "../../components/frontend/banner/BannersContainer.vue";
 
 const page = usePage();
 const cart = computed(() => page.props.cart);
@@ -18,8 +19,11 @@ const cart = computed(() => page.props.cart);
 
 <template>
     <Header/>
-    <div class="container mx-auto max-w-7xl px-4 py-12">
-        <Breadcrumbs/>
+    <div class="container mx-auto max-w-7xl px-4 py-6">
+        <div class="mb-6">
+            <Breadcrumbs/>
+        </div>
+        <BannersContainer :banners="page.props.banners?.page_top"/>
         <slot/>
     </div>
     <Footer/>

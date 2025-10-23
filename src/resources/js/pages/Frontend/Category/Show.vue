@@ -15,7 +15,7 @@ const props = defineProps({
     category: { type: Object, required: true },
     subcategories: { type: Array },
     sortOptions: { type: Array },
-    title: { type: String }
+    title: { type: String },
 })
 
 </script>
@@ -43,23 +43,11 @@ const props = defineProps({
     >
         <!-- Wypełniamy sloty specyficzną treścią dla strony kategorii -->
 
-        <template #page-top-banners>
-            <BannersContainer :banners="banners.category_page_top"/>
-        </template>
-
         <template #header="{ resultsCount }">
             <div class="flex items-start flex-col">
-                <div class="text-3xl mr-2">{{ category.name }}</div>
+                <div class="text-3xl mb-2">{{ category.name }}</div>
                 <div class="listing-products-count">{{ resultsCount }}</div>
             </div>
-        </template>
-
-        <template #sidebar-prepend>
-            <BannersContainer :banners="banners.category_page_filters_top"/>
-        </template>
-
-        <template #sidebar-append>
-            <BannersContainer :banners="banners.category_page_filters_bottom"/>
         </template>
 
         <template #before-products>

@@ -32,53 +32,48 @@ const props = defineProps({
         type: Boolean,
         default: false
     },
-    shadow: {
+    noPaddingX: {
         type: Boolean,
-        default: true
+        default: false
+    },
+    iconSize: {
+        type: String
     }
 })
 
 const sizeClasses = {
-    sm: 'py-1 px-2 text-sm',
-    md: 'py-2 px-4 text-base',
-    lg: 'py-3 px-6 text-base',
-    xl: 'py-4 px-8 text-lg'
+    sm: 'py-0.5 text-sm',
+    md: 'py-1 text-base',
+    lg: 'py-3 text-base',
+    xl: 'py-4 text-lg'
 }
-
-const typeClasses = {
-    primary: 'bg-accent hover:bg-accent-hover disabled:bg-accent/70',
-    secondary: 'bg-secondary text-white hover:text-gray-100 hover:bg-secondary-hover disabled:bg-secondary/50 disabled:text-gray-300',
-    ghost: 'bg-transparent text-gray-700 hover:bg-accent active:bg-accent/90 disabled:text-gray-400',
-    disabled: 'bg-gray-600 text-gray-200',
-    danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-300',
-    success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 disabled:bg-green-300'
+const paddingXClasses = {
+    sm: props.noPaddingX ? '' : 'px-2',
+    md: props.noPaddingX ? '' : 'px-4',
+    lg: props.noPaddingX ? '' : 'px-6',
+    xl: props.noPaddingX ? '' : 'px-8'
 }
 </script>
 
 <template>
     <button
+        class="button"
         :class="[
           'inline-flex items-center justify-center duration-300 cursor-pointer transition-all',
           'disabled:cursor-not-allowed disabled:opacity-50',
-          !disabled && shadow ? 'hover:shadow-lg' : '',
+          type,
+          paddingXClasses[size],
           sizeClasses[size],
-          typeClasses[type],
           fullWidth && 'w-full',
-          props.class,
-          props.class.indexOf('rounded') >= 0 ? '' : 'rounded'
+          props.class
         ]"
         :type="role"
         :disabled="disabled || loading"
     >
         <IconLoader
             v-if="loading"
-            :class="[
-        size === 'sm' && 'w-4 h-4',
-        size === 'md' && 'w-5 h-5',
-        size === 'lg' && 'w-5 h-5',
-        size === 'xl' && 'w-6 h-6'
-      ]"
+            :size="iconSize ?? 'md'"
         />
-      <slot v-else />
+        <slot v-else/>
     </button>
 </template>

@@ -7,6 +7,7 @@ use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
+use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use stdClass;
@@ -219,10 +220,23 @@ class SearchService
 
         $this->addCategoryFilter($queryFilters);
         $this->addBrandFilter($queryFilters);
+        if ($exclude !== 'brand') {
+            $this->addBrandsFilter($queryFilters, $filters);
+        }
+        if ($exclude !== 'category') {
+            $this->addCategoriesFilter($queryFilters, $filters);
+        }
         $this->addAttributeFilters($queryFilters, $filters, $exclude);
         $this->addPriceRangeFilter($queryFilters, $filters);
 
         return $queryFilters;
+    }
+
+    private function addBrandsFilter(array &$queryFilters, $filters): void
+    {
+        if ($filters['brand'] ?? false) {
+            $queryFilters[] = ['terms' => ['brand_id' => array_values($filters['brand'])]];
+        }
     }
 
     private function addBrandFilter(array &$queryFilters): void
@@ -248,9 +262,16 @@ class SearchService
         }
     }
 
+    private function addCategoriesFilter(array &$queryFilters, $filters): void
+    {
+        if ($filters['category'] ?? false) {
+            $queryFilters[] = ['terms' => ['category_id' => array_values($filters['category'])]];
+        }
+    }
+
     private function addAttributeFilters(array &$queryFilters, array $allFilters, ?string $excludeAttribute): void
     {
-        $attributeFilters = Arr::except($allFilters, ['price_min', 'price_max']);
+        $attributeFilters = Arr::except($allFilters, ['price_min', 'price_max', 'brand', 'category']);
 
         foreach ($attributeFilters as $attribute => $values) {
             if ($attribute === $excludeAttribute) {
@@ -281,54 +302,97 @@ class SearchService
         $aggregations = [];
 
         foreach ($this->productAttributeRepository->getFilterable() as $attribute) {
-            $hasFilter = in_array($attribute->code, array_keys($this->filters));
-
-            if ($hasFilter) {
-                $aggregation = [
-                    'global' => new stdClass(),
-                    'aggs' => [
-                        'filters' => [
-                            'filter' => [
-                                'bool' => [
-                                    'filter' => $this->buildFiltersArray($this->filters, $attribute->code),
-                                ],
-                            ],
-                            'aggs' => [
-                                'count' => ['terms' => ['field' => $attribute->code]],
-                            ],
-                        ],
-                    ],
-                ];
-                if ($this->searchQuery) {
-                    $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
-                }
-            } else {
-                $aggregation = [
-                    'filter' => [
-                        'bool' => [
-                            'filter' => [],
-                        ],
-                    ],
-                    'aggs' => [
-                        'count' => ['terms' => ['field' => $attribute->code]],
-                    ],
-                ];
-                if ($this->searchQuery) {
-                    $aggregation['filter']['bool']['must'] = $this->getSearchQueryFilter();
-                }
-            }
-
-            $aggregations[$attribute->code] = $aggregation;
+            $aggregations[$attribute->code] = $this->getAttributeAggregation($attribute);
         }
 
-        $aggregations['price_stats'] = [
+        $aggregations['brand'] = $this->getBrandsAggregations();
+
+        $aggregations['price_stats'] = $this->getPriceAggregations();
+
+        $aggregations['category'] = $this->getCategoryAggregations();
+
+        return $aggregations;
+    }
+
+    private function getCategoryAggregations(): array
+    {
+        $aggregation = [
             'global' => new stdClass(),
             'aggs' => [
                 'filters' => [
                     'filter' => [
                         'bool' => [
                             'filter' => $this->buildFiltersArray(
-                                Arr::except($this->filters, ['price_min', 'price_max', 'sort'])
+                                Arr::except($this->filters, ['category'])
+                            ),
+                        ],
+                    ],
+                    'aggs' => [
+                        'count' => ['terms' => ['field' => 'category_id']],
+                    ],
+                ],
+            ],
+        ];
+
+        if ($this->searchQuery) {
+            $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+        }
+
+        return $aggregation;
+    }
+
+    private function getAttributeAggregation(Attribute $attribute): array
+    {
+        $hasFilter = in_array($attribute->code, array_keys($this->filters));
+
+        if ($hasFilter) {
+            $aggregation = [
+                'global' => new stdClass(),
+                'aggs' => [
+                    'filters' => [
+                        'filter' => [
+                            'bool' => [
+                                'filter' => $this->buildFiltersArray($this->filters, $attribute->code),
+                            ],
+                        ],
+                        'aggs' => [
+                            'count' => ['terms' => ['field' => $attribute->code]],
+                        ],
+                    ],
+                ],
+            ];
+            if ($this->searchQuery) {
+                $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+            }
+        } else {
+            $aggregation = [
+                'filter' => [
+                    'bool' => [
+                        'filter' => [],
+                    ],
+                ],
+                'aggs' => [
+                    'count' => ['terms' => ['field' => $attribute->code]],
+                ],
+            ];
+            if ($this->searchQuery) {
+                $aggregation['filter']['bool']['must'] = $this->getSearchQueryFilter();
+            }
+        }
+
+        return $aggregation;
+    }
+
+    private function getPriceAggregations(): array
+    {
+        $aggregation = [
+            'global' => new stdClass(),
+            'aggs' => [
+                'filters' => [
+                    'filter' => [
+                        'bool' => [
+                            'filter' => $this->buildFiltersArray(
+                                Arr::except($this->filters, ['price_min', 'price_max'])
                             ),
                         ],
                     ],
@@ -341,10 +405,37 @@ class SearchService
         ];
 
         if ($this->searchQuery) {
-            $aggregations['price_stats']['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+            $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
         }
 
-        return $aggregations;
+        return $aggregation;
+    }
+
+    private function getBrandsAggregations(): array
+    {
+        $aggregation = [
+            'global' => new stdClass(),
+            'aggs' => [
+                'filters' => [
+                    'filter' => [
+                        'bool' => [
+                            'filter' => $this->buildFiltersArray(
+                                Arr::except($this->filters, ['brand'])
+                            ),
+                        ],
+                    ],
+                    'aggs' => [
+                        'count' => ['terms' => ['field' => 'brand_id']],
+                    ],
+                ],
+            ],
+        ];
+
+        if ($this->searchQuery) {
+            $aggregation['aggs']['filters']['filter']['bool']['must'] = $this->getSearchQueryFilter();
+        }
+
+        return $aggregation;
     }
 
     private function getSearchQueryFilter(): array

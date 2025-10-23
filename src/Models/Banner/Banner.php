@@ -38,4 +38,29 @@ class Banner extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+
+    public function getPagePlacementKey(): string
+    {
+        $placementsPageTop = [
+            Placement::ALL_PAGE_TOP->value,
+            Placement::HOME_PAGE_TOP->value,
+            Placement::CATEGORY_PAGE_TOP->value,
+            Placement::PRODUCT_PAGE_TOP->value,
+        ];
+        if (in_array($this->placement_key, $placementsPageTop)) {
+            return 'page_top';
+        }
+        $placementsPageBottom = [
+            Placement::ALL_PAGE_BOTTOM->value,
+            Placement::HOME_PAGE_BOTTOM->value,
+            Placement::CATEGORY_PAGE_BOTTOM->value,
+            Placement::PRODUCT_PAGE_BOTTOM->value,
+        ];
+        if (in_array($this->placement_key, $placementsPageBottom)) {
+            return 'page_bottom';
+        }
+
+        return $this->placement_key;
+    }
 }

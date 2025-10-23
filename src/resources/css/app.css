@@ -8,6 +8,7 @@
     --color-body: #fff;
     --color-header: var(--color-body);
     --color-footer: var(--color-body);
+    --color-primary: #C6A15B;
     --color-secondary: #1e1e1e;
     --color-checkout: #fff1ee;
 
@@ -33,11 +34,6 @@
 }
 
 @layer properties {
-    *,
-    ::before,
-    ::after {
-        border-color: var(--color-border-primary);
-    }
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
         -webkit-appearance: none;
@@ -47,10 +43,6 @@
         font-family: "Lato", sans-serif;
         color: #1c1c1c;
         @apply bg-body overflow-x-hidden;
-    }
-
-    input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea {
-        @apply px-4 py-2 border border-border-primary/70 focus:outline-none focus:border-accent transition-all shadow-xs focus:shadow hover:shadow rounded w-full ;
     }
 
     .form-field {
@@ -84,20 +76,7 @@
     .page-title {
         @apply text-2xl font-semibold my-2 py-2;
     }
-    .slider-connect {
-        --slider-connect-bg: var(--color-accent-hover);
-    }
-    .slider-tooltip {
-        --slider-tooltip-bg: var(--color-accent-hover);
-        --slider-tooltip-color: #333;
-    }
 
-    .m-range-theme {
-        --c-primary: var(--color-accent); /* primary color */
-        --c-fill: #e4e7ed; /* track's fill color */
-        --c-fill-stop: #f5f5f5; /* stop's fill color */
-        --c-fill-thumb: #fff; /* thumb's fill color */
-    }
     .flicking-camera {
         @apply items-stretch;
     }
@@ -110,17 +89,6 @@
 
             &.last {
                 @apply text-neutral-400;
-            }
-        }
-    }
-
-    .minicart-panel {
-        @apply bg-white text-neutral-700;
-
-        .minicart-item {
-
-            .item-title {
-                @apply font-semibold;
             }
         }
     }
@@ -192,20 +160,6 @@
 
     .order-thumbnail {
         @apply p-4 bg-white border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300;
-    }
-
-    .product-thumbnail {
-        &.out-of-stock {
-            @apply opacity-60 hover:opacity-100;
-        }
-
-        .price {
-            @apply text-xl;
-        }
-
-        .info-label {
-            @apply text-sm text-neutral-500;
-        }
     }
 
     .product-show {

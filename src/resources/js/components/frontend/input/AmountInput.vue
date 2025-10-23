@@ -68,11 +68,10 @@ const onInput = (event) => {
             @click="dec"
             :disabled="disabled"
             :class="[
-        disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
-        'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
-        cls.btn
-      ]"
-        >
+                disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
+                'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
+                cls.btn
+            ]">
             <IconMinus />
         </button>
 
@@ -82,24 +81,19 @@ const onInput = (event) => {
             :min="min"
             @input="onInput"
             :class="[
-        'text-center py-0 px-2 border border-light shadow-none rounded-none',
-        cls.input
-      ]"
-        />
+                'text-center py-0 px-2 border border-light shadow-none rounded-none font-light',
+                cls.input
+            ]"/>
 
         <button
             @click="inc"
             :disabled="disabled"
             :class="[
-        disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
-        'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
-        cls.btn
-      ]"
-        >
+                disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
+                'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
+                cls.btn
+            ]">
             <IconPlus />
         </button>
     </div>
 </template>
-
-<style scoped>
-</style>

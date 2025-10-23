@@ -21,35 +21,39 @@ defineProps({
 
 const emits = defineEmits(['onPaginate'])
 
+
 </script>
 
 <template>
     <nav v-if="links.length > 3" class="flex justify-center mt-8">
         <div class="pagination flex">
             <template v-for="(link, index) in links" :key="index">
-                <Link
-                    v-if="link.url"
-                    :href="link.url + (to ?? '')"
-                    prefetch
-                    :class="[
+                <div v-if="link.url">
+                    <Link
+                        :href="link.url + (to ?? '')"
+                        prefetch
+                        :class="[
                         'pagination-item',
+                        link.previous ? 'pagination-item-prev' : '',
+                        link.next ? 'pagination-item-next' : '',
                         link.active ? 'pagination-item-active'
                             : link.url ? 'pagination-item-url' : 'pagination-item-no-url'
                     ]"
-                    :only="only"
-                    :preserve-scroll="preserveScroll"
-                    preserve-state
-                >
+                        :only="only"
+                        :preserve-scroll="preserveScroll"
+                        preserve-state
+                    >
                     <span v-if="link.previous">
                         <IconChevron left size="2xl"/>
                     </span>
-                    <span v-else-if="link.next">
+                        <span v-else-if="link.next" class="pagination-item-next">
                         <IconChevron right size="2xl"/>
                     </span>
-                    <span v-else>
+                        <span v-else>
                         {{ link.label }}
                     </span>
-                </Link>
+                    </Link>
+                </div>
             </template>
         </div>
     </nav>

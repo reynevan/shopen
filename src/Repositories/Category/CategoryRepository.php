@@ -80,6 +80,11 @@ class CategoryRepository
         }
     }
 
+    public function getAllByIds($ids): \Illuminate\Database\Eloquent\Collection
+    {
+        return Category::query()->whereIn('id', $ids)->get();
+    }
+
     public function getById($id)
     {
         return Category::query()->where('id', $id)->first();

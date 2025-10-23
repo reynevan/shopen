@@ -160,7 +160,7 @@ const resetSearch = () => {
 
                 <!-- wyniki -->
                 <div v-if="(showResults && hasResults) || mobileViewOpen"
-                     class="search-box-results w-full sm:max-h-96 overflow-y-auto px-6 py-6 mt-6">
+                     class="search-box-results w-full sm:max-h-96 overflow-y-auto px-6 py-6 sm:mt-6">
                     <div v-if="showResults" class="flex flex-col sm:flex-row">
                         <!-- Kategorie -->
                         <div class="pr-4 w-full sm:w-[300px] order-2 sm:order-1">

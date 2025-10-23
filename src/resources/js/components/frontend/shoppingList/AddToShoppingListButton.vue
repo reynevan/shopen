@@ -36,15 +36,15 @@ const handleAddToShoppingList = () => {
 </script>
 
 <template>
-    <button class="cursor-pointer p-2 hover:bg-accent rounded transition-colors"
-            @click="handleAddToShoppingList"
+    <button class="add-to-shopping-list-btn cursor-pointer"
+            @click.prevent="handleAddToShoppingList"
             :disabled="addToDefaultListForm.processing">
         <span v-if="addToDefaultListForm.processing">
-            <IconLoader size="size"/>
+            <IconLoader :size="size"/>
         </span>
         <span v-else class="flex items-center gap-2">
-            <IconHeartFull v-if="product.is_on_list" size="size"/>
-            <IconHeart v-else size="size"/>
+            <IconHeartFull v-if="product.is_on_list" :size="size"/>
+            <IconHeart v-else :size="size"/>
             <span class="mb-1" v-if="label && !product.is_on_list">Dodaj do listy</span>
             <span class="mb-1" v-if="label && product.is_on_list">Usuń z listy</span>
         </span>

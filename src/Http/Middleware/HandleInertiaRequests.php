@@ -95,7 +95,7 @@ class HandleInertiaRequests extends Middleware
             };
             $data['menu'] = $request->inertia()
                 ? Inertia::lazy(fn () => app(MenuService::class)->getMenu())
-                : app(MenuService::class)->getMenu();
+                : fn() => app(MenuService::class)->getMenu();
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
             $data['shoppingLists'] = fn () => app(ShoppingListService::class)
                 ->getCurrentUserListsQuery()

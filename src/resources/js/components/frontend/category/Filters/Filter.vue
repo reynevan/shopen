@@ -49,7 +49,7 @@
                 <IconChevron down/>
             </span>
         </legend>
-        <div class="filter-options sm:absolute sm:top-full sm:z-1" v-show="isOpened">
+        <div class="filter-options sm:absolute sm:top-full sm:z-10" v-show="isOpened">
             <div>
                 <slot/>
             </div>

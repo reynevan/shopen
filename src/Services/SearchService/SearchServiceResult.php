@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Shopen\Http\Resources\Attribute\FilterResource;
+use Shopen\Models\Brand\Brand;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Pagination\LengthAwarePaginator;
+use Shopen\Repositories\Brand\BrandRepository;
+use Shopen\Repositories\Category\CategoryAttributeRepository;
+use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
 class SearchServiceResult
@@ -31,13 +36,16 @@ class SearchServiceResult
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
 
+        $reviewsEnabled = config('shopen.product.reviews.enabled');
         foreach ($products as $product) {
             $source = $sources[$product->id] ?? [];
             foreach ($source['list_attributes'] ?? [] as $code => $value) {
                 $product->setCustomAttribute($code, $value);
             }
-            $product->rating = round((float)$source['rating'] ?? 0, 2);
-            $product->reviews_count = $source['reviews_count'] ?? 0;
+            if ($reviewsEnabled) {
+                $product->rating = round((float)$source['rating'] ?? 0, 2);
+                $product->reviews_count = $source['reviews_count'] ?? 0;
+            }
             $product->images = $source['thumbnail_url'];
         }
         return $products;
@@ -77,6 +85,49 @@ class SearchServiceResult
         ];
     }
 
+    public function getFilters(): array
+    {
+        $filters = [];
+        $categoriesFilters = $this->getCategoriesFilters();
+        if (count($categoriesFilters)) {
+            $filters[] = [
+                'name' => 'Kategoria',
+                'code' => 'category',
+                'slug' => 'kategoria',
+                'options' => $categoriesFilters
+            ];
+        }
+
+        $brandFilters = $this->getBrandFilters();
+        if (count($brandFilters)) {
+            $filters[] = [
+                'name' => 'Marka',
+                'code' => 'brand',
+                'slug' => 'brand',
+                'options' => $brandFilters
+            ];
+        }
+
+        foreach ($this->getAttributesFilters() as $attribute) {
+            $filters[] = [
+                'name' => $attribute->name,
+                'code' => $attribute->code,
+                'slug' => $attribute->slug,
+                'options' => $attribute->options->map(fn($option) => [
+                    'id' => $option->id,
+                    'value' => $option->value,
+                    'slug' => $option->slug,
+                    'count' => $option->count ?? 0,
+                    'color' => $option->color
+                ])
+                ->values()
+                ->toArray()
+            ];
+        }
+
+        return $filters;
+    }
+
     public function paginatedProducts(): LengthAwarePaginator
     {
         return new LengthAwarePaginator(
@@ -88,6 +139,7 @@ class SearchServiceResult
                 'path' => request()->url(),
                 'pageName' => 'strona',
                 'query' => request()->query(),
+                'onEachSide' => 0
             ]
         );
     }
@@ -107,19 +159,66 @@ class SearchServiceResult
         return $this->parseProducts($sortIds);
     }
 
-    public function getAttributesFilters(): AnonymousResourceCollection
+    protected function getBrandFilters()
     {
-       $attributeOptionsCount = [];
-        foreach ($this->searchResult['aggregations'] as $aggregation) {
+        $brandsCount = [];
+        foreach ($this->searchResult['aggregations']['brand']['filters']['count']['buckets'] ?? [] as $bucket) {
+            $brandsCount[$bucket['key']] = $bucket['doc_count'];
+        }
+
+        $brands = app(BrandRepository::class)->getAllByIds(array_keys($brandsCount));
+
+        return $brands->map(function (Brand $brand) use ($brandsCount) {
+            return [
+                'id' => $brand->id,
+                'slug' => $brand->slug,
+                'name' => $brand->name,
+                'value' => $brand->name,
+                'count' => $brandsCount[$brand->id] ?? 0
+            ];
+        })->toArray();
+    }
+
+    protected function getCategoriesFilters()
+    {
+        $categoriesCount = [];
+        foreach ($this->searchResult['aggregations']['category']['filters']['count']['buckets'] ?? [] as $bucket) {
+            $categoriesCount[$bucket['key']] = $bucket['doc_count'];
+        }
+
+        $ids = array_keys($categoriesCount);
+        $categories = app(CategoryRepository::class)->getAllByIds($ids);
+        $names = app(CategoryAttributeRepository::class)->getValues('name', $ids);
+
+        return $categories
+            ->map(function (Category $category) use ($categoriesCount, $names) {
+                return [
+                    'id' => $category->id,
+                    'slug' => $category->getFilterSlug($names[$category->id] ?? null),
+                    'name' => $names[$category->id] ?? null,
+                    'value' => $category->name,
+                    'count' => $categoriesCount[$category->id] ?? 0
+                ];
+            })
+            ->filter(fn($category) => ($category['slug'] ?? null) && ($category['name'] ?? null))
+            ->sort(fn($a, $b) => mb_strtolower($a['name']) > mb_strtolower($b['name']) ? 1 : -1)
+            ->values()
+            ->toArray();
+    }
+
+    protected function getAttributesFilters()
+    {
+        $attributeOptionsCount = [];
+        foreach ($this->searchResult['aggregations'] as $attrCode => $aggregation) {
             foreach ($aggregation['count']['buckets'] ?? $aggregation['filters']['count']['buckets'] ?? [] as $bucket) {
-                $attributeOptionsCount[$bucket['key']] = $bucket['doc_count'];
+                $attributeOptionsCount[$attrCode][$bucket['key']] = $bucket['doc_count'];
             }
         }
 
         $attributes = app(ProductAttributeRepository::class)->getFilterable();
         foreach ($attributes as $attribute) {
             foreach ($attribute->options as $option) {
-                $option->count = $attributeOptionsCount[$option->id] ?? 0;
+                $option->count = $attributeOptionsCount[$attribute->code][$option->id] ?? 0;
             }
 
             $attribute->options = $attribute
@@ -127,7 +226,7 @@ class SearchServiceResult
                 ->sortBy('value')
                 ->filter(fn($option) => $option->count > 0);
         }
-        $attributes = FilterResource::collection($attributes->filter(fn($attr) => $attr->options->sum('count') > 0));
-        return $attributes;
+
+        return $attributes->filter(fn($attr) => $attr->options->sum('count') > 0);
     }
 }

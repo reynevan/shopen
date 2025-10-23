@@ -13,28 +13,6 @@ const removeFilter = (key, value) => {
     emits('onRemoveFilter', key, value)
 }
 
-const getFilterDisplayName = (key, value) => {
-    if (key === 'price_min') return 'Od ' + value + ' zł'
-    if (key === 'price_max') return 'Do ' + value + ' zł'
-    const attribute = props.attributes.find(attr => attr.slug === key)
-    if (!attribute) return value
-
-    if (attribute.options) {
-        const option = attribute.options.find(opt => opt.slug === value.toString())
-        return option ? option.value : value
-    }
-
-    return value
-}
-
-const getAttributeName = (key) => {
-    if (key === 'price_min') return 'Cena od'
-    if (key === 'price_max') return 'Cena do'
-
-    const attribute = props.attributes.find(attr => attr.slug === key)
-    return attribute ? attribute.name : key
-}
-
 </script>
 
 <template>
@@ -45,24 +23,14 @@ const getAttributeName = (key) => {
                 <span>Wyczyść wszystkie filtry</span>
                 <span class="sm:pt-1"><IconX/></span>
             </button>
-            <template v-for="(values, key) in activeFilters" :key="key">
-                <div v-if="(Array.isArray(values) && values.length > 0) || (!Array.isArray(values) && values)"
-                     class="flex items-center" >
+            <template v-for="(filter, key) in activeFilters" :key="key">
+                <div class="flex items-center" >
                     <div class="flex flex-wrap gap-2">
-                        <template v-if="Array.isArray(values)">
-                            <ActiveFilter v-for="value in values"
-                                          :key="`${key}-${value}`"
-                                          :label="getFilterDisplayName(key, value)"
-                                          :value="value"
-                                          :attributeName="getAttributeName(key)"
-                                          @onClick="removeFilter(key, value)"/>
-                        </template>
-                        <template v-else >
-                            <ActiveFilter :label="getFilterDisplayName(key, values)"
-                                          :value="values"
-                                          :attributeName="getAttributeName(key)"
-                                          @onClick="removeFilter(key, values)"/>
-                        </template>
+                        <ActiveFilter v-for="option in filter.options"
+                                      :key="`${key}-${option.value}`"
+                                      :label="option.label"
+                                      :attributeName="filter.name"
+                                      @onClick="removeFilter(filter.slug, option.slug)"/>
                     </div>
                 </div>
             </template>
