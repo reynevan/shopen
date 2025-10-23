@@ -1,6 +1,7 @@
 <script setup>
     import IconChevron from "../../../icons/IconChevron.vue";
     import {onMounted, onUnmounted, ref} from "vue";
+    import Button from "../../ui/Button.vue";
 
     const props = defineProps({
         attribute: { type: Object },
@@ -53,10 +54,12 @@
             <div>
                 <slot/>
             </div>
-            <button v-if="activeFilterCount > 0"
+            <div v-if="activeFilterCount > 0" class="flex items-center justify-center sm:border-t sm:border-light sm:mt-4 pt-4">
+            <Button type="primary"
                     @click.prevent="emits('onClear')">
-                wyczyść
-            </button>
+                Wyczyść
+            </Button>
+            </div>
         </div>
     </fieldset>
 </template>

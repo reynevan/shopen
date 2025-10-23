@@ -233,10 +233,10 @@ onUnmounted(() => {
             </div>
             <div class="p-4 border-t border-light bg-body sticky bottom-0">
                 <div class="flex gap-4">
-                    <Button type="primary" full-width size="md" @click="clearAllFilters">
+                    <Button type="ghost" full-width size="lg" @click="clearAllFilters">
                         Wyczyść
                     </Button>
-                    <Button type="secondary" full-width size="md" @click="closeMobileFilters">
+                    <Button type="primary" full-width size="lg" @click="closeMobileFilters">
                         Pokaż wyniki ({{ products.meta.total }})
                     </Button>
                 </div>

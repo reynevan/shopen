@@ -4,6 +4,7 @@ import Slider from '@vueform/slider'
 import '@vueform/slider/themes/default.css'
 import Filter from "./Filter.vue";
 import {useProductFiltering} from "../../../../composables/useProductFiltering";
+import Checkbox from "../../input/Checkbox.vue";
 
 const props = defineProps({
     attributes: {
@@ -141,7 +142,7 @@ onUnmounted(() => {
 <template>
     <div class="filters-panel">
         <form method="get" data-ai="filters">
-            <div class="flex flex-col sm:flex-row sm:items-center flex-wrap gap-4 sm:gap-0 divide-y divide-light sm:divide-y-0">
+            <div class="flex flex-col sm:flex-row sm:items-center flex-wrap gap-4 sm:gap-0 divide-y divide-light sm:divide-y-0 px-4 sm:px-0">
                 <Filter :attribute="{slug: 'price', name: 'Cena'}"
                         :is-mobile="isMobile"
                         @onClear="clearAttributeFilter('price')"
@@ -175,7 +176,7 @@ onUnmounted(() => {
                         @onClear="clearAttributeFilter(attribute.slug)"
                         :active-filter-count="getActiveFilterCount(attribute.slug)"
                         :key="attribute.slug">
-                    <div :class="attribute.options?.length >= 8 ? 'grid grid-cols-2 grid-gap-4' : ''">
+                    <div :class="attribute.options?.length >= 8 ? 'sm:grid sm:grid-cols-2 sm:grid-gap-4' : ''">
                         <template v-for="option in attribute.options"
                                   :key="option.slug">
                             <label
@@ -184,13 +185,11 @@ onUnmounted(() => {
                                 :data-value="option.value"
                                 :data-count="option.count"
                                 class="flex items-center space-x-3 cursor-pointer hover:bg-accent p-2 transition-colors whitespace-nowrap">
-                                <input
+                                <Checkbox
                                     :id="`${attribute.slug}_${option.slug}`"
-                                    type="checkbox"
                                     :checked="isFilterActive(attribute.code, option.id)"
                                     @change="toggleFilter(attribute.slug, option.slug)"
-                                    class="w-4 h-4 text-black border-gray-300 rounded"
-                                >
+                                />
                                 <span v-if="option.color"
                                       class="w-6 h-6 inline-block rounded border"
                                       :style="{'background-color': option.color}"></span>

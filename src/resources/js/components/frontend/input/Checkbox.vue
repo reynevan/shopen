@@ -9,15 +9,17 @@ const props = defineProps({
     label: { type: String },
     value: { type: String },
 })
+const emits = defineEmits(["change"])
 </script>
 
 <template>
 
     <div class="inline-flex items-center">
-        <label class="flex items-center cursor-pointer relative" :for="id">
+        <label class="flex items-center cursor-pointer relative bg-white" :for="id">
             <input type="checkbox"
                    class="peer h-5 w-5 cursor-pointer transition-all appearance-none shadow hover:shadow-md border border-slate-300 checked:bg-slate-800 checked:border-slate-800"
                    :id="id"
+                   @change="emits('change')"
                    v-model="model"
                    :required="required"
                    :disabled="disabled"
