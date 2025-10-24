@@ -13,10 +13,9 @@ const auth = useAuthStore();
 
 <template>
 
-    <div
-        class="absolute top-[calc(100%-3px)] z-50 hidden group-hover:block bg-white py-2 shadow-lg border border-light rounded-b-lg rounded-r-lg">
+    <div class="absolute top-[calc(100%-3px)] z-50 hidden group-hover:block bg-white py-2 shadow-lg border border-light rounded-b-lg rounded-r-lg">
         <div v-if="!auth.isLoggedIn" class="flex flex-col px-4">
-            <Link :href="route('login')">
+            <Link :href="route('login')" title="zaloguj się">
                 <Button type="secondary" class="whitespace-nowrap" full-width :shadow="false">
                     Zaloguj się
                 </Button>
@@ -30,7 +29,7 @@ const auth = useAuthStore();
                 <div class="w-[60px] h-[1px] border-b border-light"></div>
             </div>
 
-            <Link :href="route('sign-up')">
+            <Link :href="route('sign-up')" title="Zarejestruj się">
                 <Button type="primary" class="whitespace-nowrap" full-width :shadow="false">
                     Załóż konto
                 </Button>
@@ -39,6 +38,7 @@ const auth = useAuthStore();
         <ul v-if="auth.isLoggedIn">
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                      title="Zamówienia"
                       :href="route('user.orders.index')">
                     <IconReceipt/>
                     Zamówienia
@@ -46,6 +46,7 @@ const auth = useAuthStore();
             </li>
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                      title="Dane do zamówień"
                       :href="route('user.addresses.index')">
                     <IconLocation/>
                     Dane do zamówień
@@ -53,6 +54,7 @@ const auth = useAuthStore();
             </li>
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                      title="Listy zakupowe"
                       :href="route('shopping-lists.index')">
                     <IconHeart/>
                     Listy zakupowe
@@ -60,6 +62,7 @@ const auth = useAuthStore();
             </li>
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                      title="Ustawienia konta"
                       :href="route('user.settings.index')">
                     <IconSettings/>
                     Ustawienia konta
@@ -67,6 +70,7 @@ const auth = useAuthStore();
             </li>
             <li class="mt-2 pt-2 border-t border-light">
                 <a class="flex items-center gap-2 py-2 px-4 hover:bg-accent transition-all cursor-pointer"
+                   title="Wyloguj się"
                    @click.prevent="auth.logout">
                     <IconLogout/>
                     Wyloguj się

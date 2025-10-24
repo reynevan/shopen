@@ -50,7 +50,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                                 v-if="product.images && product.images.length > 0"
                                 :urls="product.images[0]"
                                 :sizes="productSizes"
-                                :alt="product.name"
+                                :alt="product.attributes.name"
                                 loading="lazy"
                                 class="w-full h-full object-cover"
                             />
@@ -63,7 +63,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                                 <ProductImage
                                     :urls="product.images[1]"
                                     :sizes="productSizes"
-                                    :alt="product.name"
+                                    :alt="product.attributes.name"
                                     loading="lazy"
                                     class="w-full h-full object-cover"
                                 />

@@ -37,6 +37,8 @@ const handleAddToShoppingList = () => {
 
 <template>
     <button class="add-to-shopping-list-btn cursor-pointer"
+            :title="product.is_on_list ? 'Edytuj na listach' : 'Dodaj do listy'"
+            :aria-label="product.is_on_list ? 'Edytuj na listach' : 'Dodaj do listy'"
             @click.prevent="handleAddToShoppingList"
             :disabled="addToDefaultListForm.processing">
         <span v-if="addToDefaultListForm.processing">

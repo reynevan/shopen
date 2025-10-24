@@ -45,7 +45,7 @@ const { isScrollingDown } = useScrollDirection()
                     <div class="flex items-center sm:gap-2">
                         <div class="user-menu-btn group relative">
                             <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-light">
-                                <Link :href="route('user.orders.index')" class="flex items-center gap-2">
+                                <Link :href="route('login')" title="Zaloguj się" class="flex items-center gap-2">
                                     <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
                                     <IconProfile size="2xl"/>
                                 </Link>
@@ -72,16 +72,3 @@ const { isScrollingDown } = useScrollDirection()
         </div>
     </header>
 </template>
-<style >
-.user-menu-btn:hover::after {
-    height: 6px;
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 1px;
-    right: 1px;
-    background-color: var(--color-header);
-    z-index: 51;
-    opacity: 100%;
-}
-</style>
