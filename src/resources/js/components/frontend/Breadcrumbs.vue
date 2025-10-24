@@ -41,17 +41,16 @@ const breadcrumbSchema = computed(() => {
     </Head>
 
     <nav v-if="breadcrumbs && breadcrumbs.length" aria-label="breadcrumb">
-        <ol class="flex flex-wrap items-center text-sm text-neutral-500">
+        <ol class="flex flex-wrap items-center text-sm">
             <li v-for="(item, index) in breadcrumbs" :key="index" class="flex items-center">
                 <span v-if="index > 0" class="mx-2 select-none" aria-hidden="true">/</span>
                 <Link
                     v-if="item.url"
                     :href="item.url"
-                    class="hover:underline font-light hover:text-neutral-700"
-                >
+                    class="hover:text-black font-light">
                     {{ item.name }}
                 </Link>
-                <span v-else class="text-neutral-800">
+                <span v-else>
                     {{ item.name }}
                 </span>
             </li>

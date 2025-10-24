@@ -121,7 +121,7 @@ const resetSearch = () => {
                         @click="hideMobileView"
                         class="absolute left-2 sm:hidden"
                         v-show="mobileViewOpen"
-                    >
+                        title="Wstecz">
                         <IconChevron left size="4xl"/>
                     </button>
                     <input
@@ -146,6 +146,7 @@ const resetSearch = () => {
                         v-show="!mobileViewOpen"
                         @click="performSearch"
                         class="absolute right-2 text-gray-500 hover:text-blue-500"
+                        title="Szukaj"
                     >
                         <IconSearch size="2xl"/>
                     </button>
@@ -153,6 +154,7 @@ const resetSearch = () => {
                         v-show="mobileViewOpen"
                         @click="resetSearch"
                         class="absolute right-2"
+                        title="Wyczyść"
                     >
                         <IconX size="3xl"/>
                     </button>

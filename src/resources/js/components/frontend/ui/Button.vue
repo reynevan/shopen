@@ -59,7 +59,6 @@ const paddingXClasses = {
     <button
         class="button"
         :class="[
-          'inline-flex items-center justify-center duration-300 cursor-pointer transition-all',
           'disabled:cursor-not-allowed disabled:opacity-50',
           type,
           paddingXClasses[size],

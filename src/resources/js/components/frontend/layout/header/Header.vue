@@ -37,7 +37,7 @@ const { isScrollingDown } = useScrollDirection()
                     </div>
 
                     <div class="sm:hidden">
-                        <Link href="/">
+                        <Link href="/" title="Shopen - Strona główna">
                             <img src="/img/shopen-logo-mobile.png" alt="Shopen"/>
                         </Link>
                     </div>
@@ -53,15 +53,15 @@ const { isScrollingDown } = useScrollDirection()
                             <UserMenu/>
                         </div>
 
-                        <Button type="ghost" :shadow="false">
+                        <Button type="ghost" :shadow="false" title="Koszyk">
                             <MinicartButton/>
                         </Button>
 
-                        <Button type="ghost" :shadow="false">
-                            <Link :href="route('shopping-lists.index')" title="Listy zakupowe">
-                                <IconHeart size="2xl"/>
-                            </Link>
-                        </Button>
+                        <Link :href="route('shopping-lists.index')"
+                              class="button ghost inline-flex items-center justify-center duration-300 transition-all py-1 px-4"
+                              title="Listy zakupowe">
+                            <IconHeart size="2xl"/>
+                        </Link>
                     </div>
 
                 </div>
@@ -72,3 +72,16 @@ const { isScrollingDown } = useScrollDirection()
         </div>
     </header>
 </template>
+<style >
+.user-menu-btn:hover::after {
+    height: 6px;
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 1px;
+    right: 1px;
+    background-color: var(--color-header);
+    z-index: 51;
+    opacity: 100%;
+}
+</style>

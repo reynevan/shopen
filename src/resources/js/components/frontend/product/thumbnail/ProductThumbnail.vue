@@ -54,7 +54,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                                 :alt="product.attributes.name"
                                 :loading="index <= 2 ? 'eager' : 'lazy'"
                                 :fetch-priority="index <= 2 ? 'high' : null"
-                                class="w-full h-full object-cover"
+                                class="object-cover"
                             />
 
                             <!-- Obrazek na hover -->
