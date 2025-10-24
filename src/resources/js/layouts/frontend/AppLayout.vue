@@ -24,7 +24,9 @@ const cart = computed(() => page.props.cart);
             <Breadcrumbs/>
         </div>
         <BannersContainer :banners="page.props.banners?.page_top"/>
-        <slot/>
+        <main>
+            <slot/>
+        </main>
     </div>
     <Footer/>
     <Teleport to="body">

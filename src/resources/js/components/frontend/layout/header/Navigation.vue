@@ -46,7 +46,7 @@ const closeMenu = () => {
 </script>
 
 <template>
-    <div class="navigation bg-header sm:flex flex-col sm:flex-row justify-center">
+    <nav class="navigation bg-header sm:flex flex-col sm:flex-row justify-center">
         <div v-for="category in menuStore.menu?.categories" :key="category.id" class="group/parent"
              @mouseover="openMenu"
              @mouseleave="closeMenu">
@@ -97,7 +97,7 @@ const closeMenu = () => {
 
             </div>
         </div>
-    </div>
+    </nav>
     <Teleport to="body">
         <transition
             enter-active-class="transition-opacity duration-200"
