@@ -179,8 +179,9 @@ onUnmounted(() => {
                          :key="products.data.length"
                          ref="targetElement"
                          class="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
-                        <ProductThumbnail v-for="product in products.data"
+                        <ProductThumbnail v-for="(product, index) in products.data"
                                           :key="product.id"
+                                          :index="index"
                                           @onClick="trackProductSelect(product)"
                                           :product="product"/>
                     </div>
