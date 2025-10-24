@@ -27,8 +27,8 @@ const { isScrollingDown } = useScrollDirection()
                     <SearchBox/>
                 </div>
                 <div class="hidden sm:block">
-                    <Link href="/">
-                        <img src="/img/labizu.svg" alt="Shopen"/>
+                    <Link href="/" title="Shopen - Strona główna">
+                        <img src="/img/labizu.svg" alt="Shopen" width="140"/>
                     </Link>
                 </div>
                 <div class="flex justify-between items-center w-full sm:w-auto sm:gap-2 order-1 sm:order-2">

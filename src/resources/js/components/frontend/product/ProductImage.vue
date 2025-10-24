@@ -25,6 +25,9 @@ const props = defineProps({
     width: {
         type: Number,
         default: 250
+    },
+    fetchPriority: {
+        type: String
     }
 });
 
@@ -64,6 +67,7 @@ const heightForSizing = computed(() => Math.round(widthForSizing / props.aspectR
         :width="widthForSizing"
         :height="heightForSizing"
         class="w-full h-auto"
+        :fetchpriority="fetchPriority"
     />
     <div v-else class="w-full h-full bg-neutral-50 text-neutral-300 flex items-center justify-center"
          :style="{width: width+'px', height: width+'px'}">

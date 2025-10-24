@@ -11,7 +11,8 @@ import ProductIcons from "../ProductIcons.vue";
 
 const props = defineProps({
     product: {type: Object},
-    size: {type: String, default: 'md'}
+    size: {type: String, default: 'md'},
+    index: {type: Number, default: 0},
 })
 const imageWidth = props.size === 'sm' ? 150 : 250;
 const mobileImageWidth = props.size === 'sm' ? 150 : 350;
@@ -51,7 +52,8 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                                 :urls="product.images[0]"
                                 :sizes="productSizes"
                                 :alt="product.attributes.name"
-                                loading="lazy"
+                                :loading="index <= 2 ? 'eager' : 'lazy'"
+                                :fetch-priority="index <= 2 ? 'hight' : null"
                                 class="w-full h-full object-cover"
                             />
 

@@ -33,15 +33,16 @@ const emits = defineEmits(['onPaginate'])
                         :href="link.url + (to ?? '')"
                         prefetch
                         :class="[
-                        'pagination-item',
-                        link.previous ? 'pagination-item-prev' : '',
-                        link.next ? 'pagination-item-next' : '',
-                        link.active ? 'pagination-item-active'
-                            : link.url ? 'pagination-item-url' : 'pagination-item-no-url'
-                    ]"
+                            'pagination-item',
+                            link.previous ? 'pagination-item-prev' : '',
+                            link.next ? 'pagination-item-next' : '',
+                            link.active ? 'pagination-item-active'
+                                : link.url ? 'pagination-item-url' : 'pagination-item-no-url'
+                        ]"
                         :only="only"
                         :preserve-scroll="preserveScroll"
                         preserve-state
+                        :title="link.previous ? 'Poprzednia strona' : link.next ? 'Następna strona' : 'Strona ' + link.label"
                     >
                     <span v-if="link.previous">
                         <IconChevron left size="2xl"/>

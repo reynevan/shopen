@@ -6,6 +6,7 @@ import Toggle from "@shopen/components/frontend/input/Toggle.vue";
 
 // dane o stronie (np. ID GA z propsów Inertia)
 import {usePage} from "@inertiajs/vue3";
+
 const page = usePage();
 
 const showBanner = ref(true)
@@ -71,14 +72,22 @@ const toggleConsent = (type) => {
 const toggleCookieDetails = (type) => showDetails[type] = !showDetails[type]
 
 const acceptAll = () => {
-    cookieGroups.value.forEach(g => { if (!g.required) consents[g.id] = true })
+    cookieGroups.value.forEach(g => {
+        if (!g.required) consents[g.id] = true
+    })
     saveConsents()
     updateGoogleConsent()
     hideBanner()
 }
-const acceptSelected = () => { saveConsents(); updateGoogleConsent(); hideBanner() }
+const acceptSelected = () => {
+    saveConsents();
+    updateGoogleConsent();
+    hideBanner()
+}
 const rejectAll = () => {
-    cookieGroups.value.forEach(g => { if (!g.required) consents[g.id] = false })
+    cookieGroups.value.forEach(g => {
+        if (!g.required) consents[g.id] = false
+    })
     saveConsents()
     updateGoogleConsent()
     hideBanner()
@@ -97,16 +106,23 @@ const checkExistingConsent = () => {
     if (saved) {
         const parsed = JSON.parse(saved)
         if (parsed.version === '2.0') {
-            Object.keys(consents).forEach(k => { if (parsed[k] !== undefined) consents[k] = parsed[k] })
+            Object.keys(consents).forEach(k => {
+                if (parsed[k] !== undefined) consents[k] = parsed[k]
+            })
             showBanner.value = false
             updateGoogleConsent()
         }
     }
 }
-const hideBanner = () => { showBanner.value = false }
+const hideBanner = () => {
+    showBanner.value = false
+}
 
 // Globalny trigger
-const showConsentBanner = () => { showBanner.value = true; showAdvanced.value = true }
+const showConsentBanner = () => {
+    showBanner.value = true;
+    showAdvanced.value = true
+}
 onMounted(() => {
     checkExistingConsent()
     if (typeof window !== 'undefined') {
@@ -116,29 +132,28 @@ onMounted(() => {
 </script>
 
 <template>
-    <BaseModal v-if="showBanner" :show="showBanner" @onClose="showBanner = false">
-        <template #header v-if="showAdvanced">
+    <div v-if="showBanner && !showAdvanced" class="cookies-modal">
+        <div class="px-6 py-6 text-center max-w-xl">
+            <p class="mb-6">
+                Używamy plików cookie, aby zapewnić najlepsze doświadczenia.
+                Możesz zaakceptować wszystkie lub przejść do ustawień zaawansowanych.
+            </p>
+            <div class="flex justify-center gap-4">
+                <Button type="ghost" size="lg" @click="showAdvanced = true">
+                    Ustawienia zaawansowane
+                </Button>
+                <Button type="primary" size="lg" @click="acceptAll">
+                    Akceptuję wszystkie
+                </Button>
+            </div>
+        </div>
+    </div>
+    <BaseModal v-if="showBanner && showAdvanced" :show="showBanner" @onClose="showBanner = false">
+        <template #header>
             <h2 class="text-xl font-semibold">Ustawienia plików cookie</h2>
         </template>
         <template #default>
-            <!-- Tryb prosty -->
-            <div v-if="!showAdvanced" class="px-6 pt-6 text-center max-w-xl">
-                <p class="text-gray-700 mb-6">
-                    Używamy plików cookie, aby zapewnić najlepsze doświadczenia.
-                    Możesz zaakceptować wszystkie lub przejść do ustawień zaawansowanych.
-                </p>
-                <div class="flex justify-center gap-4">
-                    <Button type="ghost" @click="showAdvanced = true">
-                        Ustawienia zaawansowane
-                    </Button>
-                    <Button type="secondary" @click="acceptAll">
-                        Akceptuję wszystkie
-                    </Button>
-                </div>
-            </div>
-
-            <!-- Tryb zaawansowany -->
-            <div v-else>
+            <div>
                 <div class="p-6 space-y-4">
                     <div v-for="group in cookieGroups" :key="group.id" class="border rounded-lg">
                         <div class="flex justify-between gap-4 p-4 items-center">
@@ -150,7 +165,7 @@ onMounted(() => {
                                 </a>
                             </div>
                             <div class="flex items-center">
-                                <Toggle v-model="consents[group.id]" :disabled="group.required" />
+                                <Toggle v-model="consents[group.id]" :disabled="group.required"/>
                             </div>
                         </div>
                         <div v-if="showDetails[group.id]" class="px-4 py-4 border-t border-light space-y-4">
@@ -178,7 +193,7 @@ onMounted(() => {
                 </div>
             </div>
         </template>
-        <template #buttons v-if="showAdvanced">
+        <template #buttons>
             <div class="flex justify-between w-full">
                 <div class="space-x-3">
                     <Button type="secondary" @click="acceptAll">
