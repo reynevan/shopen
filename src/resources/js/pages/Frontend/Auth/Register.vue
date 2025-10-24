@@ -13,7 +13,7 @@ defineProps({
 </script>
 
 <template>
-    <main class="flex flex-col sm:flex-row ">
+    <div class="flex flex-col sm:flex-row ">
         <div class="w-full mb-12 sm:mb-2 sm:w-1/2 bg-body rounded shadow px-4 sm:px-8 pt-4 pb-12">
             <h1 class="text-2xl font-semibold my-2 py-2 text-center">Załóż konto</h1>
 
@@ -45,5 +45,5 @@ defineProps({
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 </template>

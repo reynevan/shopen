@@ -41,7 +41,7 @@ const removeItem = (item) => {
     <Head>
         <title>Koszyk</title>
     </Head>
-    <main class="container mx-auto px-4 py-8 max-w-7xl ">
+    <div class="container mx-auto px-4 py-8 max-w-7xl ">
 
         <h1 class="text-3xl font-semibold mb-6 sr-only">Koszyk</h1>
 
@@ -151,5 +151,5 @@ const removeItem = (item) => {
             <ProductsCarousel :products="crossSellProducts"/>
         </section>
 
-    </main>
+    </div>
 </template>

@@ -13,7 +13,7 @@ const showRegisterForm = ref(false)
 </script>
 
 <template>
-    <main class="flex flex-col gap-8 sm:flex-row items-start justify-center">
+    <div class="flex flex-col gap-8 sm:flex-row items-start justify-center">
         <div class="w-full sm:w-1/2 bg-body rounded shadow px-8 py-4 mb-6">
             <h1 class="page-title text-center">Logowanie</h1>
             <LoginForm :redirect-to="route('checkout.index')"/>
@@ -36,5 +36,5 @@ const showRegisterForm = ref(false)
                 <RegisterForm :redirect-to="route('checkout.index')"/>
             </div>
         </div>
-    </main>
+    </div>
 </template>

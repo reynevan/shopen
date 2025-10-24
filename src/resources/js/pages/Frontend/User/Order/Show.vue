@@ -34,7 +34,7 @@ const pay = () => {
 </script>
 
 <template>
-    <main class="py-10">
+    <div class="py-10">
         <!-- Status zamówienia - wyeksponowany jako najważniejsza informacja -->
         <div class="mb-6 rounded-r-lg p-4 border-l-4" :class="{
               'border-blue-500 bg-blue-50': order.status === 'new',
@@ -120,5 +120,5 @@ const pay = () => {
             <h3 class="text-lg font-semibold mb-4">Podsumowanie</h3>
             <OrderAmounts :order="order"/>
         </div>
-    </main>
+    </div>
 </template>

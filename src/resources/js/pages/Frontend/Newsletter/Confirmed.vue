@@ -8,7 +8,7 @@ defineOptions({layout: AppLayout})
 
 </script>
 <template>
-    <main>
+    <div>
         <div class="text-center">
             <!-- Icon -->
             <div class="flex justify-center mb-4 text-green-500">
@@ -27,5 +27,5 @@ defineOptions({layout: AppLayout})
                 </Button>
             </Link>
         </div>
-    </main>
+    </div>
 </template>

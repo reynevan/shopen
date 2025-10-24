@@ -75,7 +75,7 @@ const addAddress = (type, isDefault) => {
         </nav>
     </div>
 
-    <main>
+    <div>
         <!-- SHIPPING TAB -->
         <section
             id="tab-shipping"
@@ -199,7 +199,7 @@ const addAddress = (type, isDefault) => {
                 </div>
             </div>
         </section>
-    </main>
+    </div>
 
     <AddressModal
         :show="showAddressModal"

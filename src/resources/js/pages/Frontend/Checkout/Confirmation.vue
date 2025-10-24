@@ -19,7 +19,7 @@ trackPurchase(props.order)
     <Head>
         <title>Potwierdzenie złożenia zamówienia</title>
     </Head>
-    <main class="py-6 max-w-xl mx-auto text-center">
+    <div class="py-6 max-w-xl mx-auto text-center">
         <div class="mb-4">
             <div class="flex items-center justify-center pb-4 text-accent-hover">
                 <IconCheckCircle size="8xl"/>
@@ -54,5 +54,5 @@ trackPurchase(props.order)
                 <Button>Zaloguj się</Button>
             </Link>
         </div>
-    </main>
+    </div>
 </template>

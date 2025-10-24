@@ -45,7 +45,7 @@ const removeAccount = async () => {
 <template>
     <Head title="Ustawienia konta"/>
     <Heading title="Ustawienia konta"/>
-    <main>
+    <div>
         <section class="w-full lg:w-1/2 pb-6 mb-6 border-b border-light">
             <h2 class="text-2xl mb-4">Dane konta</h2>
             <form @submit.prevent="submit">
@@ -101,5 +101,5 @@ const removeAccount = async () => {
                 </Button>
             </div>
         </section>
-    </main>
+    </div>
 </template>

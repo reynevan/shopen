@@ -39,7 +39,7 @@ const createList = () => {
         </template>
     </Heading>
     <Head title="Moje listy zakupowe"/>
-    <main>
+    <div>
         <form v-if="creatingList" @submit.prevent="createList" class="mb-8 p-4 border-y rounded">
             <h3 class="text-lg mb-2">Stwórz nową listę</h3>
             <div class="flex gap-2">
@@ -60,5 +60,5 @@ const createList = () => {
             </div>
             <ShoppingListThumbnail v-for="list in lists" :key="list.id" :list="list"/>
         </div>
-    </main>
+    </div>
 </template>

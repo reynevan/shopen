@@ -14,7 +14,7 @@ defineProps(['orders'])
 <template>
     <Head title="Moje zamówienia"/>
     <Heading title="Zamówienia"/>
-    <main>
+    <div>
         <div v-if="!orders.data.length" class="flex items-center justify-between gap-6 mb-6">
             <div class="w-full sm:w-1/2">
                 <h2 class="text-xl">Nie masz jeszcze żadnych zamówień</h2>
@@ -32,5 +32,5 @@ defineProps(['orders'])
         </div>
 
         <Pagination :links="orders.meta.links" :only="['orders']"/>
-    </main>
+    </div>
 </template>

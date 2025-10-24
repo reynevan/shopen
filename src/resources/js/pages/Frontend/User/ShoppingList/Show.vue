@@ -53,7 +53,7 @@ const removeItem = (productId) => {
 <template>
     <Head :title="list.name + ' - Moje listy zakupowe'"/>
 
-    <main>
+    <div>
         <header class="flex items-center justify-between mb-6">
             <Link :href="route('shopping-lists.index')" rel="prev">
                 <Button type="primary" class="pl-2">
@@ -187,5 +187,5 @@ const removeItem = (productId) => {
 
         <p v-else class="text-gray-500 mt-8 text-center">Ta lista jest pusta.</p>
 
-    </main>
+    </div>
 </template>
