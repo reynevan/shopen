@@ -57,15 +57,12 @@ const updateItem = debounce((item, val) => {
             </div>
         </div>
         <div v-if="!items || items.length === 0" class="flex flex-col items-center px-6 ">
-            <div class="mt-10 text-neutral-200">
+            <div class="mt-10">
                 <IconCartEmpty size="8xl"/>
             </div>
-            <div class="mb-10 mt-4 text-neutral-400 text-xl">
+            <div class="mb-10 mt-4 empty-cart-label">
                 Koszyk jest pusty
             </div>
-            <Button type="ghost" @click="closeMinicart">
-                Wróć do sklepu
-            </Button>
         </div>
         <div class="overflow-y-auto grow divide-y divide-light">
             <div v-for="item in items"
@@ -128,6 +125,13 @@ const updateItem = debounce((item, val) => {
                 lub <a class="continue-shopping-link" @click.prevent="closeMinicart">
                 Kontynuuj zakupy →
             </a>
+            </div>
+        </div>
+        <div class="border-t pt-2 pb-6 px-6" v-if="!items || items.length === 0">
+            <div class="text-center mt-4">
+                <a class="continue-shopping-link" @click.prevent="closeMinicart">
+                    Kontynuuj zakupy →
+                </a>
             </div>
         </div>
     </div>
