@@ -39,166 +39,154 @@ const addAddress = (type, isDefault) => {
 <template>
     <Head title="Dane do zamówień"/>
     <Heading title="Dane do zamówień"/>
+    <div class="user-addresses">
+        <!-- Tabs -->
+        <div class="mb-6">
+            <nav role="tablist"
+                aria-label="Zakładki adresów"
+                class="flex items-stretch gap-2 border-b">
+                <button
+                    role="tab"
+                    :aria-selected="activeTab === 'shipping'"
+                    aria-controls="tab-shipping"
+                    class="tab-button w-1/2 sm:w-auto"
+                    :class="activeTab === 'shipping'
+                    ? 'active'
+                    : 'inactive'"
+                    @click="activeTab = 'shipping'"
+                >
+                    Adresy dostawy
+                </button>
 
-    <!-- Tabs -->
-    <div class="mb-6">
-        <nav
-            role="tablist"
-            aria-label="Zakładki adresów"
-            class="flex items-stretch gap-2 border-b"
-        >
-            <button
-                role="tab"
-                :aria-selected="activeTab === 'shipping'"
-                aria-controls="tab-shipping"
-                class="cursor-pointer w-1/2 sm:w-auto px-4 py-2 text-sm font-medium -mb-px rounded-t-md border transition-colors"
-                :class="activeTab === 'shipping'
-                    ? 'border-gray-300 border-b-white text-gray-900 bg-white'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'"
-                @click="activeTab = 'shipping'"
+                <button
+                    role="tab"
+                    :aria-selected="activeTab === 'billing'"
+                    aria-controls="tab-billing"
+                    class="tab-button w-1/2 sm:w-auto"
+                    :class="activeTab === 'billing'
+                    ? 'active'
+                    : 'inactive'"
+                    @click="activeTab = 'billing'"
+                >
+                    Adresy rozliczeniowe
+                </button>
+            </nav>
+        </div>
+
+        <div>
+            <!-- SHIPPING TAB -->
+            <section
+                id="tab-shipping"
+                role="tabpanel"
+                :aria-hidden="activeTab !== 'shipping'"
+                v-show="activeTab === 'shipping'"
             >
-                Adresy dostawy
-            </button>
-
-            <button
-                role="tab"
-                :aria-selected="activeTab === 'billing'"
-                aria-controls="tab-billing"
-                class="cursor-pointer w-1/2 sm:w-auto px-4 py-2 text-sm font-medium -mb-px rounded-t-md border transition-colors"
-                :class="activeTab === 'billing'
-                    ? 'border-gray-300 border-b-white text-gray-900 bg-white'
-                    : 'border-transparent text-gray-600 hover:text-gray-900'"
-                @click="activeTab = 'billing'"
-            >
-                Adresy rozliczeniowe
-            </button>
-        </nav>
-    </div>
-
-    <div>
-        <!-- SHIPPING TAB -->
-        <section
-            id="tab-shipping"
-            role="tabpanel"
-            :aria-hidden="activeTab !== 'shipping'"
-            v-show="activeTab === 'shipping'"
-        >
-            <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
-                <div class="w-full sm:w-1/2 flex flex-col">
-                    <h3 class="text-xl mb-2">Domyślny adres dostawy</h3>
-                    <div class="border rounded w-full h-full" v-if="defaultShippingAddress">
-                        <AddressThumbnail
-                            @onEdit="editAddress"
-                            :selectable="false"
-                            :address="defaultShippingAddress"
-                        />
-                    </div>
-                    <div
-                        v-else
-                        class="border rounded flex items-center justify-center h-full w-full sm:w-auto px-6 py-4"
-                    >
-                        <Button
-                            type="secondary"
-                            @click="() => addAddress('shipping', true)"
-                            class="max-w-[200px]"
-                        >
-                            <span>Dodaj adres</span>
-                            <IconPlus/>
-                        </Button>
-                    </div>
-                </div>
-
-                <div class="w-full sm:w-1/2 flex flex-col">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-xl mb-2">Dodatkowe adresy dostawy</h3>
-                        <Button type="secondary" size="sm" @click="() => addAddress('shipping', false)">
-                            <span>Dodaj adres</span>
-                            <IconPlus/>
-                        </Button>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-start border rounded">
-                        <div
-                            class="border-b border-light sm:border-0"
-                            v-for="address in shippingAddresses"
-                            :key="address.id"
-                        >
+                <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
+                    <div class="w-full sm:w-1/2 flex flex-col">
+                        <h3 class="address-section-label">Domyślny adres dostawy</h3>
+                        <div class="border rounded w-full h-full" v-if="defaultShippingAddress">
                             <AddressThumbnail
                                 @onEdit="editAddress"
-                                :selectable="true"
-                                :address="address"
+                                :selectable="false"
+                                :address="defaultShippingAddress"
                             />
                         </div>
-                        <div v-if="!shippingAddresses || !shippingAddresses.length"
-                             class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
-                            Nie masz jeszcze żadnych dodatkowych adresów
-                            <IconHomeAdd size="4xl"/>
+                        <div
+                            v-else
+                            class="border rounded flex items-center justify-center h-full w-full sm:w-auto px-6 py-4"
+                        >
+                            <Button type="ghost"
+                                @click="() => addAddress('shipping', true)"
+                                class="max-w-[200px]">
+                                <span>Dodaj adres</span>
+                                <IconPlus/>
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div class="w-full sm:w-1/2 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <h3 class="address-section-label">Dodatkowe adresy dostawy</h3>
+                            <Button type="ghost" size="sm" @click="() => addAddress('shipping', false)">
+                                <span>Dodaj adres</span>
+                                <IconPlus/>
+                            </Button>
+                        </div>
+                        <div class="flex flex-col items-stretch border rounded divide-y divide-light">
+                            <div v-for="address in shippingAddresses"
+                                :key="address.id">
+                                <AddressThumbnail
+                                    @onEdit="editAddress"
+                                    :selectable="true"
+                                    :address="address"
+                                />
+                            </div>
+                            <div v-if="!shippingAddresses || !shippingAddresses.length"
+                                 class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
+                                Nie masz jeszcze żadnych dodatkowych adresów
+                                <IconHomeAdd size="4xl"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- BILLING TAB -->
-        <section
-            id="tab-billing"
-            role="tabpanel"
-            :aria-hidden="activeTab !== 'billing'"
-            v-show="activeTab === 'billing'"
-        >
-            <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
-                <div class="w-full sm:w-1/2 flex flex-col">
-                    <h3 class="text-xl mb-2">Domyślny adres rozliczeniowy</h3>
-                    <div class="border rounded w-full h-full" v-if="defaultBillingAddress">
-                        <AddressThumbnail
-                            @onEdit="editAddress"
-                            :selectable="false"
-                            :address="defaultBillingAddress"
-                        />
-                    </div>
-                    <div
-                        v-else
-                        class="border rounded flex items-center justify-center h-full w-full sm:w-auto px-6 py-4"
-                    >
-                        <Button
-                            type="secondary"
-                            @click="() => addAddress('billing', true)"
-                            class="max-w-[200px]"
-                        >
-                            <span>Dodaj adres</span>
-                            <IconPlus/>
-                        </Button>
-                    </div>
-                </div>
-
-                <div class="w-full sm:w-1/2 flex flex-col">
-                    <div class="flex justify-between items-start">
-                        <h3 class="text-xl mb-2">Dodatkowe adresy rozliczeniowe</h3>
-                        <Button type="secondary" size="sm" @click="() => addAddress('billing', false)">
-                            <span>Dodaj adres</span>
-                            <IconPlus/>
-                        </Button>
-                    </div>
-                    <div class="flex flex-col sm:flex-row items-stretch sm:items-start border rounded">
-                        <div
-                            class="border-b border-light sm:border-0"
-                            v-for="address in billingAddresses"
-                            :key="address.id"
-                        >
+            <!-- BILLING TAB -->
+            <section
+                id="tab-billing"
+                role="tabpanel"
+                :aria-hidden="activeTab !== 'billing'"
+                v-show="activeTab === 'billing'"
+            >
+                <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
+                    <div class="w-full sm:w-1/2 flex flex-col">
+                        <h3 class="address-section-label">Domyślny adres rozliczeniowy</h3>
+                        <div v-if="defaultBillingAddress" class="border rounded w-full h-full">
                             <AddressThumbnail
                                 @onEdit="editAddress"
-                                :selectable="true"
-                                :address="address"
+                                :selectable="false"
+                                :address="defaultBillingAddress"
                             />
                         </div>
-                        <div v-if="!billingAddresses || !billingAddresses.length"
-                             class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
-                            Nie masz jeszcze żadnych dodatkowych adresów
-                            <IconHomeAdd size="4xl"/>
+                        <div v-else class="border rounded flex items-center justify-center h-full w-full sm:w-auto px-6 py-4">
+                            <Button
+                                type="ghost"
+                                @click="() => addAddress('billing', true)"
+                                class="max-w-[200px]">
+                                <span>Dodaj adres</span>
+                                <IconPlus/>
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div class="w-full sm:w-1/2 flex flex-col">
+                        <div class="flex justify-between items-start">
+                            <h3 class="address-section-label">Dodatkowe adresy rozliczeniowe</h3>
+                            <Button type="ghost" size="sm" @click="() => addAddress('billing', false)">
+                                <span>Dodaj adres</span>
+                                <IconPlus/>
+                            </Button>
+                        </div>
+                        <div class="flex flex-col items-stretch border rounded divide-y divide-light">
+                            <div v-for="address in billingAddresses"
+                                :key="address.id"
+                            >
+                                <AddressThumbnail
+                                    @onEdit="editAddress"
+                                    :selectable="true"
+                                    :address="address"
+                                />
+                            </div>
+                            <div v-if="!billingAddresses || !billingAddresses.length"
+                                 class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
+                                Nie masz jeszcze żadnych dodatkowych adresów
+                                <IconHomeAdd size="4xl"/>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
 
     <AddressModal

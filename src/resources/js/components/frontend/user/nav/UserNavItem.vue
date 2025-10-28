@@ -16,7 +16,15 @@ const props = defineProps({
 const page = usePage();
 
 const isActive = computed(() => {
-    return page.props.route === props.routeName;
+    const currentSegments = page.props.route.split('.');
+    const propsSegments = props.routeName.split('.');
+
+    if (currentSegments.length < 2 || propsSegments.length < 2) {
+        return false;
+    }
+
+    return currentSegments[0] === propsSegments[0] &&
+        currentSegments[1] === propsSegments[1];
 });
 
 </script>

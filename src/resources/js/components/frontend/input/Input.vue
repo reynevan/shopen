@@ -17,11 +17,6 @@ const props = defineProps({
     class: {
         type: String
     },
-    size: {
-        type: String,
-        default: 'md',
-        validator: v => ['sm', 'md', 'lg'].includes(v),
-    },
     disabled: {
         type: Boolean,
         default: false,
@@ -31,17 +26,9 @@ const props = defineProps({
     },
     min: {
         type: Number
-    }
-})
-
-const sizeClasses = computed(() => {
-    switch (props.size) {
-        case 'sm':
-            return 'py-1.5 text-xs'
-        case 'lg':
-            return 'py-3 sm:py-4 text-base'
-        default: // 'md'
-            return 'py-2.5 sm:py-3 text-sm'
+    },
+    autocomplete: {
+        type: String
     }
 })
 </script>
@@ -55,6 +42,7 @@ const sizeClasses = computed(() => {
         :disabled="disabled"
         :min="min"
         class="input"
-        :class="[baseClasses, sizeClasses, props.class, error ? 'border-red-400' : '']"
+        :autocomplete="autocomplete"
+        :class="[props.class, error ? 'border-red-400' : '']"
     />
 </template>

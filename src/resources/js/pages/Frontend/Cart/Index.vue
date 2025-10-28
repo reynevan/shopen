@@ -3,11 +3,10 @@ import {computed} from 'vue'
 import {Head, Link, usePage} from '@inertiajs/vue3'
 import CheckoutLayout from "@shopen/layouts/frontend/CheckoutLayout.vue";
 import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
-import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
 import {useCartStore} from "@shopen/stores/cart.js";
 import {useAuthStore} from "@shopen/stores/auth.js";
-import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarousel.vue";
+import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import ProductImage from "../../../components/frontend/product/ProductImage.vue";
@@ -41,7 +40,7 @@ const removeItem = (item) => {
     <Head>
         <title>Koszyk</title>
     </Head>
-    <div class="container mx-auto px-4 py-8 max-w-7xl ">
+    <div class="cart-index container mx-auto px-4 py-8 max-w-7xl ">
 
         <h1 class="text-3xl font-semibold mb-6 sr-only">Koszyk</h1>
 
@@ -56,8 +55,8 @@ const removeItem = (item) => {
         <div v-else class="flex flex-col lg:flex-row lg:items-start gap-8">
 
             <section class="w-full lg:flex-1" aria-labelledby="cart-items-heading">
-                <h2 id="cart-items-heading" class="text-2xl font-semibold mb-4">Koszyk</h2>
-                <ul class="bg-body divide-y divide-light px-4 py-4 rounded shadow">
+                <h2 id="cart-items-heading" class="cart-items-heading">Koszyk</h2>
+                <ul class="bg-body divide-y divide-light px-4 py-4 shadow">
                     <li v-for="item in cart.items" :key="item.id" class="flex flex-col md:flex-row items-center gap-4 py-4">
 
                         <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">
@@ -115,28 +114,28 @@ const removeItem = (item) => {
                 </ul>
             </section>
 
-            <aside class="w-full lg:w-80 mt-12 p-6 rounded shadow lg:sticky top-8 bg-body">
-                <h2 class="text-xl font-semibold border-b pb-3 mb-4">Podsumowanie</h2>
+            <aside class="w-full lg:w-80 mt-12 p-6 shadow lg:sticky top-8 bg-body">
+                <h2 class="cart-summary-title">Podsumowanie</h2>
                 <dl class="space-y-2 mb-8">
                     <div class="flex justify-between items-center">
-                        <dt class="text-gray-700">Wartość produktów:</dt>
+                        <dt class="cart-price-label">Wartość produktów:</dt>
                         <dd class="font-medium">{{ cart.subtotal }}</dd>
                     </div>
                     <div class="flex justify-between items-center">
-                        <dt class="text-gray-700">Wysyłka od:</dt>
+                        <dt class="cart-price-label">Wysyłka od:</dt>
                         <dd class="font-medium">{{ cart.shipping }}</dd>
                     </div>
                     <div class="border-t my-4"></div>
                     <div class="flex justify-between items-end">
-                        <dt class="text-lg font-semibold">Do zapłaty:</dt>
-                        <dd class="text-2xl font-bold text-primary">
+                        <dt class="total-price-label">Do zapłaty:</dt>
+                        <dd class="total-price-value">
                             {{ cart.total }}
                         </dd>
                     </div>
                 </dl>
                 <div>
                     <Link :href="route(auth.isLoggedIn ? 'checkout.index' : 'checkout.login')">
-                        <Button type="secondary" full-width>
+                        <Button type="primary" size="lg" full-width>
                             Przejdź do kasy
                         </Button>
                     </Link>

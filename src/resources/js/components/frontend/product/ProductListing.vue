@@ -125,13 +125,13 @@ onUnmounted(() => {
         <!-- Slot na bannery na górze strony -->
         <slot name="page-top-banners"></slot>
 
-        <div class="mb-4">
+        <div class="mb-4 px-4 sm:px-0">
             <slot name="header" :resultsCount="resultsCount"></slot>
         </div>
 
         <div>
             <!-- Filters  -->
-            <div class="hidden sm:block top-0 z-5 mb-4" ref="filtersPanel"
+            <div class="hidden sm:block top-0 z-5 mb-4 px-4 sm:px-0" ref="filtersPanel"
                  :class="[
                      isFiltersPanelSticky ? 'shadow-lg' : '',
                      isScrollingUp ? 'relative' : 'sticky'
@@ -178,7 +178,7 @@ onUnmounted(() => {
                     <div v-if="products.data.length > 0"
                          :key="products.data.length"
                          ref="targetElement"
-                         class="grid grid-cols-1 sm:grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
+                         class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
                         <ProductThumbnail v-for="(product, index) in products.data"
                                           :key="product.id"
                                           :index="index"
@@ -194,9 +194,9 @@ onUnmounted(() => {
 
             </div>
         </div>
-        <div>
+        <div class="px-4 sm:px-0">
             <div class="mb-6">
-                <Pagination :links="products.meta.links" :only="['products']"/>
+                <Pagination :links="products.links" :meta="products.meta" :only="['products']"/>
             </div>
 
             <slot name="after-products"></slot>

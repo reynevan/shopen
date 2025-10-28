@@ -21,6 +21,10 @@ const props = defineProps({
     disabled: {
         type: Boolean,
         default: false
+    },
+    label: {
+        type: Boolean,
+        default: false
     }
 })
 const addToCart = async () => {
@@ -38,10 +42,11 @@ const addToCart = async () => {
 
 <template>
     <Button @click="addToCart"
-            type="ghost"
+            type="primary"
+            title="Dodaj do koszyka"
             :disabled="cart.addingToCart[product.id] || disabled">
-        <div class="flex items-center gap-2">
-            <span class="thumbnail-add-to-cart-btn-label">Dodaj do koszyka</span>
+        <div class="flex items-center gap-2 py-1">
+            <span v-if="label" class="thumbnail-add-to-cart-btn-label">Dodaj do koszyka</span>
             <IconCartPlus sm v-if="!cart.addingToCart[product.id]"></IconCartPlus>
             <IconLoader sm v-if="cart.addingToCart[product.id]"></IconLoader>
         </div>

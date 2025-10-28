@@ -21,7 +21,7 @@ onMounted(() => {
 
 <template>
     <Teleport to="body">
-        <div class="fixed top-0 left-0 bottom-0 right-0 bg-black/80" v-show="geoWidget.opened">
+        <div class="fixed z-[1000] top-0 left-0 bottom-0 right-0 bg-black/80" v-show="geoWidget.opened">
             <div class="absolute top-2 right-2 cursor-pointer text-white" @click="geoWidget.close()">
                 <IconX size="2xl"/>
             </div>

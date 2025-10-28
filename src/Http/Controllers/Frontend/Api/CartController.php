@@ -16,7 +16,7 @@ class CartController extends Controller
     public function addItem(): RedirectResponse
     {
         $product = $this->productRepository->getById(request()->post('id'));
-        if (!$product) {
+        if (!$product || $product->isConfigurable()) {
             abort(404);
         }
         $price = $product->price;

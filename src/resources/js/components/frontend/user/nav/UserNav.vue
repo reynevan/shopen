@@ -2,7 +2,7 @@
 
 import IconReceipt from "@shopen/components/icons/IconReceipt.vue";
 import IconReceiptFull from "@shopen/components/icons/IconReceiptFull.vue";
-import UserNavItem from "./UserNavItem.vue";
+import UserNavItem from "@shopen/components/frontend/user/nav/UserNavItem.vue";
 import IconLocationFull from "@shopen/components/icons/IconLocationFull.vue";
 import IconLocation from "@shopen/components/icons/IconLocation.vue";
 import IconHeartFull from "@shopen/components/icons/IconHeartFull.vue";
@@ -32,7 +32,7 @@ import IconSettings from "@shopen/components/icons/IconSettings.vue";
                 </template>
             </UserNavItem>
 
-            <UserNavItem label="Listy zakupowe" route-name="shopping-lists.index">
+            <UserNavItem label="Listy zakupowe" route-name="user.shopping-lists.index">
                 <template #iconActive>
                     <IconHeartFull/>
                 </template>

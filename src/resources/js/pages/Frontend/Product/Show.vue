@@ -3,20 +3,20 @@ import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
 import Gallery from "@shopen/pages/Frontend/Product/components/Gallery/Gallery.vue";
 import AddToCartButton from "@shopen/components/frontend/product/AddToCartButton.vue";
 import VariantSelect from "@shopen/pages/Frontend/Product/components/VariantSelect.vue";
-import ProductAttributes from "@shopen/pages/Frontend/Product/components/ProductAttributes.vue";
 import BannersContainer from "@shopen/components/frontend/banner/BannersContainer.vue";
-import ProductPrice from "./components/ProductPrice.vue";
-import ProductReviews from "./components/ProductReviews.vue";
-import ReviewsInfo from "./components/ReviewsInfo.vue";
-import ProductsCarousel from "@shopen/components/frontend/product/ProductsCarousel.vue";
+import ProductPrice from "@shopen/pages/Frontend/Product/components/ProductPrice.vue";
+import ProductReviews from "@shopen/pages/Frontend/Product/components/ProductReviews.vue";
+import ReviewsInfo from "@shopen/pages/Frontend/Product/components/ReviewsInfo.vue";
+import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
 import ProductStructredData from "@shopen/components/frontend/product/ProductStructredData.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
-import AddToShoppingListButton from "../../../components/frontend/shoppingList/AddToShoppingListButton.vue";
-import ProductDescription from "./components/ProductDescription.vue";
-import ProductBrand from "./components/ProductBrand.vue";
+import AddToShoppingListButton from "@shopen./components/frontend/shoppingList/AddToShoppingListButton.vue";
+import ProductDescription from "@shopen/pages/Frontend/Product/components/ProductDescription.vue";
+import ProductBrand from "@shopen/pages/Frontend/Product/components/ProductBrand.vue";
 import {ref} from "vue";
 import {trackViewItem} from "../../../utils/ga4";
-import DetailsSection from "./components/DetailsSection.vue";
+import DetailsSection from "@shopen/pages/Frontend/Product/components/DetailsSection.vue";
+import ProductInfo from "@shopen/pages/Frontend/Product/components/ProductInfo.vue";
 
 defineOptions({layout: AppLayout})
 
@@ -44,26 +44,28 @@ trackViewItem(props.product, props.variants)
 </script>
 
 <template>
+    <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">
-        <BannersContainer :banners="banners.product_page_top"/>
-
-
-        <div class="flex flex-col sm:flex-row py-10">
+        <div class="flex flex-col sm:flex-row">
             <section class="mr-0 sm:mr-6">
                 <Gallery :images="images"/>
             </section>
-            <section>
+            <section class="section-main">
                 <div>
                     <AddToShoppingListButton :product="product"/>
                 </div>
-                <div class="text-3xl mb-2">
+                <div class="product-name mb-2">
                     {{ product.attributes.name }}
                 </div>
-                <ReviewsInfo :product="product"/>
+                <div v-if="reviewsEnabled">
+                    <ReviewsInfo :product="product"/>
+                </div>
 
                 <div class="mt-4 mb-4">
                     <ProductPrice :price="product.price"/>
                 </div>
+
+                <ProductInfo/>
 
                 <VariantSelect :variants="variants" :showError="showVariantsError"/>
 
@@ -92,24 +94,26 @@ trackViewItem(props.product, props.variants)
             <DetailsSection :product="product" :attributes="attributes" />
         </section>
 
-        <section v-if="relatedProducts && relatedProducts.length">
-            <h2 class="section-title">Zobacz też</h2>
-            <ProductsCarousel :products="relatedProducts"/>
+        <section class="related-products" v-if="relatedProducts && relatedProducts.length">
+            <div class="section-title-wrapper">
+                <h2 class="section-title">Zobacz też</h2>
+            </div>
+            <ProductsCarousel :products="relatedProducts" size="md"/>
         </section>
 
-        <section v-if="reviewsEnabled">
-            <h2 class="section-title">
-                Opinie
-            </h2>
+        <section class="reviews" v-if="reviewsEnabled">
             <ProductReviews :product="product" :reviews="reviews" :reviewSubmitted="reviewSubmitted" :sort="sort"/>
         </section>
 
-        <section v-if="recentlyViewedProducts && recentlyViewedProducts.length">
-            <h2 class="section-title">Ostatnio oglądane</h2>
+        <section class="recently-viewed" v-if="recentlyViewedProducts && recentlyViewedProducts.length">
+            <div class="section-title-wrapper">
+                <h2 class="section-title">Ostatnio oglądane</h2>
+            </div>
             <ProductsCarousel :products="recentlyViewedProducts"/>
         </section>
 
         <BannersContainer :banners="banners.product_page_bottom"/>
+
         <ProductStructredData :product="product"/>
     </div>
 </template>

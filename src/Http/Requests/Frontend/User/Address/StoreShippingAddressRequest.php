@@ -17,7 +17,7 @@ class StoreShippingAddressRequest extends FormRequest
         return [
             'first_name' => ['required'],
             'last_name' => ['required'],
-            'email' => ['email', 'nullable'],
+            'email' => ['email', Auth::check() ? 'nullable' : 'required'],
             'company' => ['nullable'],
             'address_line' => ['required'],
             'city' => ['required'],
@@ -26,6 +26,20 @@ class StoreShippingAddressRequest extends FormRequest
             'phone' => ['required'],
             'is_default' => ['boolean', 'nullable'],
             'type' => ['required', 'in:billing,shipping'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'Podaj imię.',
+            'last_name.required' => 'Podaj nazwisko.',
+            'address_line.required' => 'Podaj adres.',
+            'postal_code.required' => 'Podaj kod pocztowy.',
+            'city.required' => 'Podaj miasto.',
+            'phone.required' => 'Podaj numer telefonu.',
+            'email.email' => 'Nieprawidłowy email.',
+            'email.required' => 'Podaj email.',
         ];
     }
 }

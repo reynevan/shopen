@@ -17,13 +17,15 @@ const cart = computed(() => page.props.cart);
 </script>
 
 <template>
-    <Header/>
-    <div class="bg-checkout py-12">
-        <div class="container mx-auto px-4">
-            <slot/>
+    <div class="flex flex-col min-h-screen">
+        <Header :hide-on-scroll="false" :show-cart="false" />
+        <div class="bg-checkout py-12 grow">
+            <div class="container mx-auto px-4">
+                <slot/>
+            </div>
         </div>
-    </div>
     <Footer/>
+    </div>
     <Teleport to="body">
         <Cover/>
         <FlashMessage/>

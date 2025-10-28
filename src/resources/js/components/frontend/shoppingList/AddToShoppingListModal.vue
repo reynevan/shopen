@@ -48,7 +48,7 @@ const closeModal = () => {
 };
 
 const submit = () => {
-    form.put(route('shopping-lists.items.update'), {
+    form.put(route('user.shopping-lists.items.update'), {
         preserveState: true,
         preserveScroll: true,
         onSuccess: () => {
@@ -60,7 +60,7 @@ const submit = () => {
 
 const saveNewList = () => {
     newListForm.product_id = shoppingListStore.product.id;
-    newListForm.post(route('shopping-lists.store'), {
+    newListForm.post(route('user.shopping-lists.store'), {
         preserveScroll: true,
         preserveState: true,
         onSuccess: () => {

@@ -26,7 +26,7 @@ const addToDefaultListForm = useForm({
 const handleAddToShoppingList = () => {
     if (shoppingLists.value.length === 0) {
         trackAddToWishlist(props.product)
-        addToDefaultListForm.post(route('shopping-lists.items.store'), {
+        addToDefaultListForm.post(route('user.shopping-lists.items.store'), {
             preserveScroll: true
         });
     } else {
@@ -37,6 +37,7 @@ const handleAddToShoppingList = () => {
 
 <template>
     <button class="add-to-shopping-list-btn cursor-pointer"
+            :class="label ? '' : 'p-2'"
             :title="product.is_on_list ? 'Edytuj na listach' : 'Dodaj do listy'"
             :aria-label="product.is_on_list ? 'Edytuj na listach' : 'Dodaj do listy'"
             @click.prevent="handleAddToShoppingList"

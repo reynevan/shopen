@@ -105,7 +105,7 @@ const loadMoreReviews = async () => {
                 </div>
                 <Button v-if="auth.isLoggedIn" type="secondary" @click="openAddReviewModal">Dodaj pierwszą opinię</Button>
                 <Link v-else :href="route('login')">
-                    <span class="underline">Zaloguj sę, żeby dodać opinię</span>
+                    <span class="underline">Zaloguj się, żeby dodać opinię</span>
                 </Link>
             </div>
         </div>

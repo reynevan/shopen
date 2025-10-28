@@ -8,7 +8,7 @@ const checkout = useCheckoutStore();
 
 <template>
     <FormField label="Uwagi do zamówienia" label-for="order-notes">
-        <textarea id="order-notes" v-model="checkout.notes"></textarea>
+        <textarea id="order-notes" class="input" v-model="checkout.notes"></textarea>
     </FormField>
 </template>
 

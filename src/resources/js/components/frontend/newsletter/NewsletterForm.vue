@@ -1,7 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import {router, useForm} from '@inertiajs/vue3'
-
+import {Link} from "@inertiajs/vue3";
+import Checkbox from "../input/Checkbox.vue";
+import IconMail from "../../icons/IconMail.vue";
 
 const form = useForm({
     email: '',
@@ -38,46 +40,31 @@ const subscribe = () => {
 }
 </script>
 <template>
-    <form @submit.prevent="subscribe" class="w-full max-w-md mx-auto space-y-4">
+    <form @submit.prevent="subscribe" class="newsletter w-full max-w-md mx-auto space-y-4">
         <!-- Email -->
-        <div>
-            <label for="email" class="sr-only">Adres e-mail</label>
+        <div class="newsletter-input-wrapper">
+            <div class="mail-icon">
+                <IconMail/>
+            </div>
             <input
                 id="email"
                 v-model="form.email"
                 type="email"
                 placeholder="Twój adres e-mail"
-                class="w-full rounded-md border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 text-sm px-3 py-2 shadow-sm"
+                class="newsletter-input"
                 :class="{ 'border-red-500': errors.email }"
                 required
+                autocomplete="email"
             />
             <p v-if="errors.email" class="mt-1 text-sm text-red-600">
                 {{ errors.email }}
             </p>
         </div>
 
-        <!-- Privacy -->
-        <div class="flex items-start">
-            <input
-                v-model="form.privacy_accepted"
-                type="checkbox"
-                id="privacy"
-                class="h-4 w-4 text-indigo-600 border-gray-300 rounded"
-                required
-            />
-            <label for="privacy" class="ml-2 text-sm text-gray-700">
-                Akceptuję
-                <a href="/privacy-policy" target="_blank" class="text-indigo-600 hover:text-indigo-800">politykę prywatności</a>
-            </label>
-        </div>
-        <p v-if="errors.privacy_accepted" class="mt-1 text-sm text-red-600">
-            {{ errors.privacy_accepted }}
-        </p>
-
         <!-- Submit -->
         <button
             type="submit"
-            class="w-full inline-flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            class="newsletter-button"
             :disabled="processing"
         >
             <span v-if="processing">Zapisuję...</span>
@@ -88,9 +75,9 @@ const subscribe = () => {
         <div v-if="message" class="mt-4">
             <div
                 :class="[
-          'px-4 py-3 rounded-md text-sm font-medium',
-          success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-        ]"
+                  'px-4 py-3 rounded-md text-sm font-medium',
+                  success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                ]"
             >
                 {{ message }}
             </div>

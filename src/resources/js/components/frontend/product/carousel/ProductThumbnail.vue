@@ -2,23 +2,16 @@
 import {computed, defineProps} from 'vue';
 import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import {Link} from '@inertiajs/vue3'
-import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
 import PriceDisplay from "@shopen/components/frontend/ui/PriceDisplay.vue";
-import AddToCartButton from "@shopen/components/frontend/product/thumbnail/AddToCartButton.vue";
-import AddToShoppingListButton from "../../shoppingList/AddToShoppingListButton.vue";
-import ProductImage from "../ProductImage.vue";
-import ProductIcons from "../ProductIcons.vue";
+import ProductImage from "@shopen/components/frontend/product/ProductImage.vue";
+import ProductIcons from "@shopen/components/frontend/product/ProductIcons.vue";
 
 const props = defineProps({
-    product: {type: Object},
-    size: {type: String, default: 'md'},
-    index: {type: Number, default: 0},
+    product: {type: Object}
 })
-const imageWidth = props.size === 'sm' ? 150 : 250;
-const mobileImageWidth = props.size === 'sm' ? 150 : 350;
+const imageWidth = 250;
+const mobileImageWidth = 350;
 const productSizes = `(min-width: 640px) ${imageWidth}px, 90vw`;
-const widthClasses = `max-w-[${mobileImageWidth}px] sm:max-w-[${imageWidth}px]`
-const nameClass = props.size === 'sm' ? 'text-sm' : 'text-sm sm:text-md';
 
 const emits = defineEmits(['onClick'])
 
@@ -26,16 +19,15 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
 </script>
 
 <template>
-    <div class="product-thumbnail-wrapper relative flex justify-center w-full group"
+    <div class="carousel-product-wrapper relative flex justify-center w-full group"
          :class="[product.in_stock ? 'in-stock' : 'out-of-stock']">
         <Link :href="product.url"
               @click="emits('onClick')"
-              class="product-thumbnail relative flex flex-col justify-between w-full"
-              :class="[widthClasses, size === 'md' ? 'gap-2' : '']">
+              class="carousel-product-thumbnail relative flex flex-col justify-between w-full max-w-350 sm:max-w-250 gap-2">
             <div>
                 <div class="relative cursor-pointer overflow-hidden">
                     <div class="absolute top-2 left-2 z-1">
-                        <ProductIcons :product="product" :size="size"/>
+                        <ProductIcons :product="product"/>
                     </div>
                     <div class="group block relative w-full h-full">
                         <div class="relative w-full aspect-square">
@@ -50,21 +42,20 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             <ProductImage
                                 v-if="product.images && product.images.length > 0"
                                 :urls="product.images[0]"
-                                :sizes="productSizes"
+                                sizes="(min-width: 640px) 250px, 90vw"
                                 :alt="product.attributes.name"
-                                :loading="index <= 2 ? 'eager' : 'lazy'"
-                                :fetch-priority="index <= 2 ? 'high' : null"
+                                loading="lazy"
                                 class="object-cover"
                             />
 
                             <!-- Obrazek na hover -->
                             <div
                                 v-if="product.images && product.images.length > 1"
-                                class="thumbnail-image-2"
+                                class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                             >
                                 <ProductImage
                                     :urls="product.images[1]"
-                                    :sizes="productSizes"
+                                    sizes="(min-width: 640px) 250px, 90vw"
                                     :alt="product.attributes.name"
                                     loading="lazy"
                                     class="w-full h-full object-cover"
@@ -75,38 +66,27 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                     </div>
                 </div>
                 <div class="px-2 py-2">
-                    <div>
-                        <div class="mb-2" :class="nameClass">
-                            {{ product.attributes.name }}
-                        </div>
-                        <div v-if="size === 'md' && showReviews" class="flex items-center gap-2">
-                            <RatingDisplay :rating="product.rating" size="sm"/>
-                            <div class="product-rating-label">{{ product.rating }} ({{ product.reviews_count }})</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute top-1 right-1 flex flex-col items-center transition-all duration-500">
-                    <div :class="product.is_on_list ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 duration-500'"
-                         class="bg-white flex items-center justify-center">
-                        <AddToShoppingListButton :product="product" :label="false"/>
+                    <div class="mb-2 product-name">
+                        {{ product.attributes.name }}
                     </div>
                 </div>
             </div>
             <div class="px-2 pb-2">
                 <div class="info-label" v-if="!product.in_stock">
-                    <span v-if="size !== 'sm'">Chwilowo niedostępny</span>
-                    <span v-else>Niedostępny</span>
+                    <span>Niedostępny</span>
                 </div>
                 <div class="info-label" v-if="product.in_stock && product.free_shipping">
                     Darmowa dostawa
                 </div>
                 <div class="info-label flex items-center gap-2" v-if="product.price.omnibus_price">
-                     <PriceDisplay :price="product.price.omnibus_price" old size="sm"/>
+                    <PriceDisplay :price="product.price.omnibus_price" old size="sm"/>
                 </div>
                 <div class="flex justify-between items-start">
                     <div v-if="product.price">
                         <div class="price flex items-end">
-                            <PriceDisplay :price="product.price.final_price"/>
+                            <div>
+                                <PriceDisplay :price="product.price.final_price"/>
+                            </div>
                         </div>
                     </div>
                 </div>

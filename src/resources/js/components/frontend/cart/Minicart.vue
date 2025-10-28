@@ -129,9 +129,9 @@ const updateItem = debounce((item, val) => {
         </div>
         <div class="border-t pt-2 pb-6 px-6" v-if="!items || items.length === 0">
             <div class="text-center mt-4">
-                <a class="continue-shopping-link" @click.prevent="closeMinicart">
+                <span class="continue-shopping-link" @click.prevent="closeMinicart">
                     Kontynuuj zakupy →
-                </a>
+                </span>
             </div>
         </div>
     </div>

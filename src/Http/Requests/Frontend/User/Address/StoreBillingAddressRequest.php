@@ -27,4 +27,16 @@ class StoreBillingAddressRequest extends FormRequest
             'type' => ['required', 'in:billing'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'Podaj imię.',
+            'last_name.required' => 'Podaj nazwisko.',
+            'address_line.required' => 'Podaj adres.',
+            'postal_code.required' => 'Podaj kod pocztowy.',
+            'city.required' => 'Podaj miasto.',
+            'email.email' => 'Nieprawidłowy email.',
+        ];
+    }
 }

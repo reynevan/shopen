@@ -124,7 +124,7 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <div class="relative w-full sm:w-[500px] sm:h-[500px] mb-4 group">
+        <div class="relative w-full sm:w-[700px] sm:h-[700px] mb-4 group">
             <div v-if="previewIndex > 0" @click="prevImage"
                  class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 left-4">
                 <div
@@ -149,7 +149,7 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-        <div class="flex">
+        <div class="flex" v-if="images && images.length > 1">
             <template v-for="(image, i) in images">
                 <div v-if="i < (maxPreviewImages - 1 ) || i === (maxPreviewImages - 1) && images.length === maxPreviewImages"
                      @click="selectImage(i)"

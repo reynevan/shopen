@@ -74,7 +74,7 @@ Route::middleware(['web'])->group(function () {
 
     Route::get('/marka/{brand}', [BrandShowController::class, 'show'])->name('brands.show');
 
-    Route::prefix('listy-zakupowe')->name('shopping-lists.')->group(function () {
+    Route::prefix('listy-zakupowe')->name('user.shopping-lists.')->group(function () {
         Route::get('/', [ShoppingListIndexController::class, 'index'])->name('index');
         Route::get('/{shoppingList}', [ShoppingListShowController::class, 'show'])->name('show');
         Route::post('/', [ShoppingListIndexController::class, 'store'])->name('store');

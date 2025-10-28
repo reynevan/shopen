@@ -1,5 +1,5 @@
 <script setup>
-import ProductThumbnailImage from "../product/ProductThumbnailImage.vue";
+import ProductThumbnailImage from "@shopen/components/frontend/product/ProductThumbnailImage.vue";
 import { Link } from "@inertiajs/vue3";
 import { ref, computed } from "vue";
 
@@ -41,7 +41,7 @@ const remainingItemsCount = computed(() => {
         <div v-for="item in displayedItems" :key="item.id" class="flex items-center">
             <ProductThumbnailImage :product="item.product" size="sm" class="!w-10 !h-10 flex-shrink-0"/>
             <div class="ml-3 overflow-hidden">
-                <div class="text-sm font-medium text-gray-800 truncate">
+                <div class="text-sm truncate">
                     <Link :href="item.product.url" class="hover:underline">{{ item.product.name }}</Link>
                 </div>
                 <div class="text-xs text-gray-500">

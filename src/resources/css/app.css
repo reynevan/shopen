@@ -7,7 +7,6 @@
 @theme static {
     --color-body: #fff;
     --color-header: var(--color-body);
-    --color-footer: var(--color-body);
     --color-primary: #C6A15B;
     --color-secondary: #1e1e1e;
     --color-checkout: #fff1ee;
@@ -45,31 +44,6 @@
         @apply bg-body overflow-x-hidden;
     }
 
-    .form-field {
-        label {
-            @apply text-sm text-neutral-500 transition-colors;
-        }
-
-        &:focus-within {
-            input {
-                @apply border-accent-hover;
-            }
-
-            label {
-                @apply text-black;
-            }
-        }
-
-        &.has-error {
-            label {
-                @apply text-red-500;
-            }
-
-            input {
-                @apply border-red-500;
-            }
-        }
-    }
     .link-primary {
         @apply text-link-400 hover:text-link-600 transition-all underline;
     }
@@ -115,10 +89,6 @@
         }
     }
 
-    .footer {
-        @apply bg-footer;
-    }
-
     body {
 
         .nav-panel  {
@@ -155,11 +125,6 @@
     }
     .footer-container {
         @apply bg-white mt-10;
-    }
-
-
-    .order-thumbnail {
-        @apply p-4 bg-white border rounded-lg shadow-sm hover:shadow-lg transition-all duration-300;
     }
 
     .product-show {

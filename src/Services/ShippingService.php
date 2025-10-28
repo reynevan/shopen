@@ -20,7 +20,7 @@ class ShippingService
             if (!$method->isFreeShippingAvailable()) {
                 continue;
             }
-            if ($method->freeShippingThreshold() <= $product->price->final_price ?? 0) {
+            if ($method->freeShippingThreshold() <= $product->price?->final_price ?? 0) {
                 return true;
             }
         }

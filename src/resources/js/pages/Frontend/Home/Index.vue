@@ -1,7 +1,7 @@
 <script setup>
 
 import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
-import ProductsCarousel from "../../../components/frontend/product/ProductsCarousel.vue";
+import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
 import BrandsCarousel from "../../../components/frontend/brand/BrandsCarousel.vue";
 
 defineOptions({layout: AppLayout})

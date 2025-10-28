@@ -23,7 +23,7 @@ const props = defineProps({
     },
     confirmButtonType: {
         type: String,
-        default: 'secondary'
+        default: 'primary'
     }
 });
 
@@ -68,7 +68,7 @@ const handleCancel = () => handleAction('cancel');
         @onClose="handleCancel"
         class="max-w-md">
         <div class="text-center p-4">
-            <h2 class="text-xl font-bold mb-2 text-gray-800">
+            <h2 class="text-xl mb-2">
                 {{ props.title }}
             </h2>
             <p class="text-gray-600">
@@ -79,7 +79,7 @@ const handleCancel = () => handleAction('cancel');
         <template #buttons>
             <Button
                 @click="handleCancel"
-                type="primary">
+                type="ghost">
                 {{ props.cancelButtonText }}
             </Button>
             <Button

@@ -14,13 +14,15 @@ const cart = computed(() => page.props.cart);
 </script>
 
 <template>
-    <Header/>
-    <div class="bg-checkout py-12">
-        <div class="container mx-auto max-w-7xl sm:px-4">
-            <slot/>
+    <div class="flex flex-col h-screen">
+        <Header/>
+        <div class="bg-checkout py-12 grow">
+            <div class="container mx-auto max-w-7xl sm:px-4">
+                <slot/>
+            </div>
         </div>
+        <Footer/>
     </div>
-    <Footer/>
     <Teleport to="body">
         <Cover/>
         <FlashMessage/>

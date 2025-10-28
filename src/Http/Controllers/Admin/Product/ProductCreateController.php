@@ -64,6 +64,7 @@ readonly class ProductCreateController
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
             }
+
             $product->fill($data);
 
             $product->save();

@@ -28,4 +28,18 @@ class UpdateShippingAddressRequest extends FormRequest
             'type' => ['required', 'in:shipping'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'first_name.required' => 'Podaj imię.',
+            'last_name.required' => 'Podaj nazwisko.',
+            'address_line.required' => 'Podaj adres.',
+            'postal_code.required' => 'Podaj kod pocztowy.',
+            'city.required' => 'Podaj miasto.',
+            'phone.required' => 'Podaj numer telefonu.',
+            'email.email' => 'Nieprawidłowy email.',
+            'email.required' => 'Podaj email.',
+        ];
+    }
 }

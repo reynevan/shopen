@@ -5,6 +5,7 @@ import Heading from "../components/Heading.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import ShoppingListThumbnail from "./components/ShoppingListThumbnail.vue";
 import {ref} from "vue";
+import Input from "../../../../components/frontend/input/Input.vue";
 
 defineOptions({layout: UserPanelLayout})
 
@@ -22,7 +23,7 @@ const createList = () => {
     if (!form.name) {
         return;
     }
-    form.post(route('shopping-lists.store'), {
+    form.post(route('user.shopping-lists.store'), {
         onSuccess: () => {
             creatingList.value = false;
             form.reset();
@@ -43,9 +44,8 @@ const createList = () => {
         <form v-if="creatingList" @submit.prevent="createList" class="mb-8 p-4 border-y rounded">
             <h3 class="text-lg mb-2">Stwórz nową listę</h3>
             <div class="flex gap-2">
-                <input type="text" v-model="form.name" placeholder="Nazwa listy"
-                       class="border-gray-300 rounded-md shadow-sm">
-                <Button type="secondary" role="submit" :disabled="form.processing">
+                <Input v-model="form.name" placeholder="Nazwa listy"/>
+                <Button type="primary" role="submit" :disabled="form.processing">
                     Utwórz
                 </Button>
                 <Button type="ghost" role="button" :disabled="form.processing" @click="creatingList = false">

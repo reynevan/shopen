@@ -1,6 +1,4 @@
 <script setup>
-
-
 import {useCartStore} from "@shopen/stores/cart.js";
 import {ref} from "vue";
 import {useMiniCartStore} from "@shopen/stores/minicart.js";
@@ -41,6 +39,8 @@ const updateQty = (newQty) => {
         <AmountInput :value="qty" @onChange="updateQty" :min="1" size="lg"/>
         <Button @click="addToCart"
                 type="primary"
+                size="lg"
+                full-width
                 :disabled="cart.addingToCart[product.id]">
             <div class="flex items-center">
                 <IconCartPlus size="xl" v-if="!cart.addingToCart[product.id]"></IconCartPlus>

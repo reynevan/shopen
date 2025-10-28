@@ -79,7 +79,7 @@ export const trackAddToCart = (product, quantity = 1) => {
         value: (product.price.final_price_raw) * quantity,
         items: [{
             item_id: product.sku,
-            item_name: product.attributes.name,
+            item_name: product.name ?? product.attributes.name,
             item_brand: product.brand?.name || null,
             price: parseFloat(product.price.final_price_raw),
             quantity: quantity

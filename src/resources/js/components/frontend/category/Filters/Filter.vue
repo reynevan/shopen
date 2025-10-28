@@ -55,8 +55,7 @@
                 <slot/>
             </div>
             <div v-if="activeFilterCount > 0" class="flex items-center justify-center sm:border-t sm:border-light sm:mt-4 pt-4">
-            <Button type="primary"
-                    @click.prevent="emits('onClear')">
+            <Button type="primary" @click.prevent="emits('onClear')">
                 Wyczyść
             </Button>
             </div>

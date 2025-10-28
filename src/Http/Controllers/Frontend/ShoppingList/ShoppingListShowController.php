@@ -12,9 +12,7 @@ use Shopen\Http\Resources\ShoppingList\ShoppingListResource;
 class ShoppingListShowController
 {
     public function __construct(protected ShoppingListService $listService)
-    {
-        // Tutaj można dodać policy dla autoryzacji
-    }
+    {}
 
     public function show(ShoppingList $shoppingList)
     {

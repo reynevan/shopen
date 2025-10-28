@@ -23,8 +23,26 @@ Breadcrumbs::register('user.addresses.index', function (BreadcrumbsService $brea
     $breadcrumbs->add('Dane do zamówień', route('user.addresses.index'));
 });
 
-Breadcrumbs::register('shopping-lists.index', function (BreadcrumbsService $breadcrumbs) {
-    $breadcrumbs->add('Listy zakupowe', route('shopping-lists.index'));
+Breadcrumbs::register('user.orders.index', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Moje zamówienia', route('user.orders.index'));
+});
+
+Breadcrumbs::register('user.orders.show', function (BreadcrumbsService $breadcrumbs, $order) {
+    $breadcrumbs->add('Moje zamówienia', route('user.orders.index'));
+    $breadcrumbs->add('Zamówienie #' . $order->order_number, route('user.orders.show', $order));
+});
+
+Breadcrumbs::register('user.shopping-lists.index', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Listy zakupowe', route('user.shopping-lists.index'));
+});
+
+Breadcrumbs::register('user.settings.index', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Ustawienia konta', route('user.settings.index'));
+});
+
+Breadcrumbs::register('user.shopping-lists.show', function (BreadcrumbsService $breadcrumbs, $shoppingList) {
+    $breadcrumbs->add('Listy zakupowe', route('user.shopping-lists.index'));
+    $breadcrumbs->add($shoppingList->name, route('user.shopping-lists.show', $shoppingList->id));
 });
 
 Breadcrumbs::register('checkout.success', function (BreadcrumbsService $breadcrumbs, $order) {

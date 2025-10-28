@@ -66,7 +66,7 @@ const openNewAddressModal = () => {
                         />
                         <div v-if="(auth.isLoggedIn && addresses.length < maxAddresses) || (!auth.isLoggedIn && !addresses.length)"
                              class="flex items-center justify-center w-full sm:w-auto px-6 my-6">
-                            <Button type="secondary" @click="openNewAddressModal">
+                            <Button type="ghost" @click="openNewAddressModal">
                                 <span>Dodaj adres</span>
                                 <IconPlus/>
                             </Button>

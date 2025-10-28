@@ -55,7 +55,7 @@ const auth = useAuthStore();
             <li>
                 <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
                       title="Listy zakupowe"
-                      :href="route('shopping-lists.index')">
+                      :href="route('user.shopping-lists.index')">
                     <IconHeart/>
                     Listy zakupowe
                 </Link>

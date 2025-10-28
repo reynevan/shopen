@@ -7,8 +7,10 @@ import IconTrash from "@shopen/components/icons/IconTrash.vue";
 import IconEdit from "@shopen/components/icons/IconEdit.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconChevron from "@shopen/components/icons/IconChevron.vue";
-import AddToCartButton from "@shopen/pages/Frontend/User/ShoppingList/components/AddToCartButton.vue";
+import AddToCartButton from "@shopen/components/frontend/product/thumbnail/AddToCartButton.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
+import Input from "../../../../components/frontend/input/Input.vue";
+import {useConfirm} from "../../../../composables/useConfirm";
 
 defineOptions({layout: UserPanelLayout})
 
@@ -20,6 +22,8 @@ const form = useForm({
     name: '',
 });
 
+const {confirm} = useConfirm()
+
 const editingList = ref(false);
 const editForm = useForm({name: ''});
 
@@ -30,23 +34,28 @@ const startEditing = () => {
 };
 
 const updateList = () => {
-    editForm.put(route('shopping-lists.update', props.list.id), {
+    editForm.put(route('user.shopping-lists.update', props.list.id), {
         onSuccess: () => editingList.value = false,
     });
 };
 
-const removeList = () => {
-    if (!confirm('Na pewno chcesz usunąć tę listę?')) {
+const removeList = async () => {
+    const isConfirmed = await confirm({
+        title: 'Potwierdź usunięcie',
+        message: `Czy na pewno chcesz usunąc listę "${props.list.name}"?`,
+        confirmButtonText: 'Tak, usuń',
+        cancelButtonText: 'Nie, wróć'
+    });
+
+    if (!isConfirmed) {
         return;
     }
-    router.delete(route('shopping-lists.destroy', props.list.id))
+
+    router.delete(route('user.shopping-lists.destroy', props.list.id))
 }
 
 const removeItem = (productId) => {
-    if (!confirm('Na pewno chcesz usunąć ten produkt z listy?')) {
-        return;
-    }
-    router.delete(route('shopping-lists.items.destroy', [props.list.id, productId]))
+    router.delete(route('user.shopping-lists.items.destroy', [props.list.id, productId]))
 }
 </script>
 
@@ -55,8 +64,8 @@ const removeItem = (productId) => {
 
     <div>
         <header class="flex items-center justify-between mb-6">
-            <Link :href="route('shopping-lists.index')" rel="prev">
-                <Button type="primary" class="pl-2">
+            <Link :href="route('user.shopping-lists.index')" rel="prev">
+                <Button type="ghost" class="pl-2">
                     <IconChevron left size="xl"/>
                     Powrót
                 </Button>
@@ -64,7 +73,7 @@ const removeItem = (productId) => {
 
             <button
                 @click="removeList(list)"
-                class="cursor-pointer rounded flex items-center justify-start gap-2 px-4 py-2 text-sm text-red-700 hover:bg-red-50 transition-all"
+                class="cursor-pointer flex items-center justify-start gap-2 px-4 py-2 text-sm hover:text-red-700 transition-all"
                 title="Usuń całą listę zakupową"
                 aria-label="Usuń całą listę zakupową"
             >
@@ -81,7 +90,7 @@ const removeItem = (productId) => {
                     @click="startEditing(list)"
                     aria-label="Edytuj nazwę listy"
                     title="Edytuj nazwę listy"
-                    class="p-1"
+                    class="p-1 cursor-pointer hover:text-primary"
                 >
                     <IconEdit size="2xl"/>
                 </button>
@@ -90,21 +99,19 @@ const removeItem = (productId) => {
             <form v-if="editingList" @submit.prevent="updateList" class="flex items-center justify-between w-full">
                 <div class="flex-grow">
                     <label for="list-name-input" class="sr-only">Nowa nazwa listy</label>
-                    <input
+                    <Input
                         id="list-name-input"
-                        type="text"
                         v-model="editForm.name"
-                        class="w-full"
                         aria-label="Nowa nazwa listy"
                     />
                 </div>
-                <div class="ml-4 flex-shrink-0">
-                    <button type="submit" class="text-green-600 hover:text-green-900">
+                <div class="ml-4 flex-shrink-0 gap-2">
+                    <Button type="primary" role="submit">
                         Zapisz
-                    </button>
-                    <button type="button" @click="editingList = false" class="ml-2 text-gray-500 hover:text-gray-700">
+                    </Button>
+                    <Button type="ghost" @click="editingList = false">
                         Anuluj
-                    </button>
+                    </Button>
                 </div>
             </form>
         </div>
@@ -129,7 +136,7 @@ const removeItem = (productId) => {
                                 </Link>
                             </div>
                             <div class="pr-4">
-                                <Link :href="product.url" class="hover:underline font-medium">
+                                <Link :href="product.url" class="">
                                     {{ product.name }}
                                 </Link>
                             </div>
@@ -163,7 +170,7 @@ const removeItem = (productId) => {
 
                         <!-- Dodaj do koszyka / Niedostępny -->
                         <div class="lg:w-auto lg:py-2 lg:px-2">
-                            <AddToCartButton v-if="product.in_stock" :product="product"/>
+                            <AddToCartButton :product="product" v-if="product.in_stock"/>
                             <div v-else class="text-neutral-500 text-sm">
                                 Niedostępny
                             </div>

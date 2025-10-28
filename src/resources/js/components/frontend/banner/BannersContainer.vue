@@ -6,12 +6,14 @@ import { AutoPlay, Pagination  } from "@egjs/flicking-plugins";
 
 const props = defineProps(["banners"]);
 const flicking = useTemplateRef("flicking");
-const plugins = [
-    new AutoPlay({ duration: 4000, direction: "NEXT", stopOnHover: false }),
-    new Pagination({ type: 'bullet' })
-];
 const page = usePage();
 
+const plugins = [
+    new AutoPlay({ duration: 4000, direction: "NEXT", stopOnHover: false }),
+];
+if (props.banners?.length > 1) {
+    plugins.push(new Pagination({ type: 'bullet' }))
+}
 const options = {
     align: "prev",
     circularFallback: "bound",
@@ -94,7 +96,8 @@ const trackClick = (banner) => {
                 <div v-else class="block flicking-panel bg-gray-100 w-full flex justify-center items-center">
                     <!-- Desktop -->
                     <img
-                        class="hidden sm:block max-w-full h-auto block"
+                        class="max-w-full h-auto block"
+                        :class="banner.image_url_mobile ? 'hidden sm:block' : ''"
                         :src="banner.image_url_desktop"
                         :alt="banner.alt_text"
                         :loading="i > 0 ? 'lazy' : 'eager'"
@@ -102,7 +105,7 @@ const trackClick = (banner) => {
                         :height="banner.image_size_desktop?.height"
                     />
                     <!-- Mobile -->
-                    <img
+                    <img v-if="banner.image_url_mobile"
                         class="block sm:hidden max-w-full h-auto"
                         :src="banner.image_url_mobile"
                         :alt="banner.alt_text"

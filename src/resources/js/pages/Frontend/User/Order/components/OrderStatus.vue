@@ -13,7 +13,7 @@ const bgClass = {
 </script>
 
 <template>
-    <div class="px-2 py-1 rounded inline-block font-semibold" :class="bgClass">
+    <div class="order-status px-2 py-1 inline-block" :class="bgClass">
         {{ label }}
     </div>
 </template>

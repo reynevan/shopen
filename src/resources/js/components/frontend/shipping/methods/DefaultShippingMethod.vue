@@ -21,8 +21,8 @@ const selectMethod = () => {
 
 <template>
     <div
-         class="flex justify-between items-center px-4 py-2 mb-2 cursor-pointer rounded transition-colors hover:bg-accent/10 border w-full"
-         :class="[isSelected ? 'bg-accent/10': 'border-light']"
+         class="shipping-method flex justify-between items-center w-full"
+         :class="[isSelected ? 'selected': '']"
          @click="selectMethod">
         <div class="flex">
             <div class="pt-1 mr-2 text-neutral-700">
@@ -30,11 +30,11 @@ const selectMethod = () => {
                 <IconCircle v-else></IconCircle>
             </div>
             <div>
-                <div class="font-semibold">{{ method.name }}</div>
-                <div class="text-neutral-500" v-if="method.description">{{ method.description }}</div>
+                <div class="shipping-method-name">{{ method.name }}</div>
+                <div class="shipping-method-description" v-if="method.description">{{ method.description }}</div>
             </div>
         </div>
-        <div class="w-20 text-right">
+        <div class="w-20 text-right shipping-method-price">
             {{ method.price }}
         </div>
         <slot name="default"/>

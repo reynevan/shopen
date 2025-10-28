@@ -1,10 +1,16 @@
 <script setup>
 import Flicking from "@egjs/vue3-flicking";
 import {ref, useTemplateRef} from "vue";
-import IconChevron from "../../icons/IconChevron.vue";
-import ProductThumbnail from "@shopen/components/frontend/product/thumbnail/ProductThumbnail.vue";
+import IconChevron from "@shopen/components/icons/IconChevron.vue";
+import ProductThumbnail from "@shopen/components/frontend/product/carousel/ProductThumbnail.vue";
 
-defineProps(['products'])
+defineProps({
+    products: {type: Array},
+    size: {
+        type: String,
+        default: 'sm'
+    }
+})
 
 const flicking = useTemplateRef('flickingRef');
 const targetIndex = ref(0);
@@ -53,6 +59,11 @@ const handleNext = async () => {
     await flicking.value.moveTo(newTargetIndex);
     index.value = newTargetIndex;
 };
+
+const sizeClasses = {
+    sm: 'w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 2xl:w-1/7',
+    md: 'w-1/2 md:w-1/3 lg:w-1/4'
+}
 </script>
 
 <template>
@@ -73,8 +84,9 @@ const handleNext = async () => {
             class="overflow-hidden"
         >
             <div v-for="product in products" :key="product.id"
-                 class="flex items-stretch justify-center w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 2xl:w-1/7">
-                <ProductThumbnail :product="product" size="sm"/>
+                 :class="sizeClasses[size]"
+                 class="flex items-stretch justify-center">
+                <ProductThumbnail :product="product"/>
             </div>
         </Flicking>
 

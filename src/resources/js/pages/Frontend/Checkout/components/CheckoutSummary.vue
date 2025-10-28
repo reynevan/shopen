@@ -96,7 +96,7 @@ const isPlaceOrderEnabled = computed(() => {
             </div>
         </div>
         <div class="mt-2">
-            <Button type="secondary" full-width
+            <Button type="primary" size="lg" full-width
                     @click="placeOrder"
                     :disabled="checkout.orderLoading"
                     :loading="checkout.orderLoading"

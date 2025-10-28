@@ -18,17 +18,19 @@ const cart = computed(() => page.props.cart);
 </script>
 
 <template>
-    <Header/>
-    <div class="container mx-auto max-w-7xl px-4 py-6">
-        <div class="mb-6">
-            <Breadcrumbs/>
+    <div class="flex flex-col min-h-screen">
+        <Header/>
+        <div class="container mx-auto max-w-7xl sm:px-4 py-6 grow">
+            <div class="mb-6">
+                <Breadcrumbs/>
+            </div>
+            <BannersContainer :banners="page.props.banners?.page_top"/>
+            <main>
+                <slot/>
+            </main>
         </div>
-        <BannersContainer :banners="page.props.banners?.page_top"/>
-        <main>
-            <slot/>
-        </main>
+        <Footer/>
     </div>
-    <Footer/>
     <Teleport to="body">
         <Cover/>
         <Minicart :items="cart.items" :subtotal="cart.subtotal"/>

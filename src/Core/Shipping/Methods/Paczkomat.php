@@ -11,11 +11,6 @@ class Paczkomat extends AbstractShippingMethod implements ShippingMethodInterfac
         return 'paczkomaty';
     }
 
-    public function getComponent(): ?string
-    {
-        return 'PaczkomatyShippingMethod';
-    }
-
     public function jsonSerialize(): array
     {
         $data = parent::jsonSerialize();

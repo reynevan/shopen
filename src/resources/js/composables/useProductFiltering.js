@@ -8,7 +8,7 @@ export function useProductFiltering(props) {
         Object.entries(props.activeFilters).forEach(
             ([key, filter]) => {
                 if (key === 'price') {
-                    for (let i = 1; i < filter.options; i++) {
+                    for (let i = 0; i < filter.options.length; i++) {
                         filters[filter.options[i].slug] = filter.options[i].value
                     }
                 } else {

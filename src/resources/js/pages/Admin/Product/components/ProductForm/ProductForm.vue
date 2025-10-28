@@ -76,9 +76,9 @@ const form = useForm({
     uses_stock: props.product?.uses_stock ?? 0,
     stock_qty: props.product?.stock_qty ?? 0,
     brand_id: props.product?.brand_id,
-    is_virtual: props.product?.is_virtual,
-    is_voucher: props.product?.is_voucher,
-    is_new: props.product?.is_new,
+    is_virtual: props.product?.is_virtual ?? false,
+    is_voucher: props.product?.is_voucher ?? false,
+    is_new: props.product?.is_new ?? false,
     is_new_to: props.product?.is_new_to,
 })
 

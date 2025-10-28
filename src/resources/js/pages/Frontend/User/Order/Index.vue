@@ -1,10 +1,10 @@
 <script setup>
 
 import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
-import OrderThumbnail from "../../../../components/frontend/order/OrderThumbnail.vue";
-import Pagination from "../../../../components/frontend/ui/Pagination.vue";
+import OrderThumbnail from "@shopen/pages/Frontend/User/Order/components/OrderThumbnail.vue";
+import Pagination from "@shopen/components/frontend/ui/Pagination.vue";
 import Heading from "../components/Heading.vue";
-import IconReceipt from "../../../../components/icons/IconReceipt.vue";
+import IconReceipt from "@shopen/components/icons/IconReceipt.vue";
 import {Head} from "@inertiajs/vue3";
 
 defineOptions({layout: UserPanelLayout})

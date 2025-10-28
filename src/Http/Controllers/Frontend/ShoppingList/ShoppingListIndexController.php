@@ -49,6 +49,6 @@ class ShoppingListIndexController
     {
         // TODO: Dodać autoryzację (Policy)
         $shopping_list->delete();
-        return redirect()->route('shopping-lists.index')->with('success', 'Lista została usunięta.');
+        return redirect()->route('user.shopping-lists.index')->with('success', 'Lista została usunięta.');
     }
 }

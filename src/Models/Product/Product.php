@@ -91,7 +91,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getGalleryImageSize(): int
     {
-        return 500;
+        return 700;
     }
 
     protected static function newFactory()

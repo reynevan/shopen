@@ -18,11 +18,13 @@ class ShoppingListProductResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'sku' => $this->sku,
             'name' => $this->name,
             'url' => $this->getUrl(),
             'price' => ProductPriceResource::make($this->price),
             'image' => $this->getThumbnailUrl(),
             'in_stock' => $this->isInStock(),
+            'is_configurable' => $this->isConfigurable(),
         ];
     }
 

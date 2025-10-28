@@ -7,7 +7,7 @@ import CheckoutNotes from "@shopen/pages/Frontend/Checkout/components/CheckoutNo
 import CheckoutSummary from "@shopen/pages/Frontend/Checkout/components/CheckoutSummary.vue";
 import CheckoutShippingMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutShippingMethods.vue";
 import CheckoutPaymentMethods from "@shopen/pages/Frontend/Checkout/components/CheckoutPaymentMethods.vue";
-import GeoWidget from "../../../components/frontend/shipping/GeoWidget.vue";
+import GeoWidget from "@shopen/components/frontend/shipping/GeoWidget.vue";
 import {trackBeginCheckout} from "../../../utils/ga4";
 import {usePage} from "@inertiajs/vue3";
 
@@ -41,7 +41,7 @@ trackBeginCheckout(usePage().props?.cart?.items)
 </script>
 
 <template>
-    <div class="checkout flex flex-wrap xl:flex-no-wrap justify-center items-start max-w-5xl mx-auto">
+    <div class="checkout checkout-index flex flex-wrap xl:flex-no-wrap justify-center items-start max-w-5xl mx-auto">
 
         <div class="w-full xl:w-3/5 pr-4">
 

@@ -5,6 +5,7 @@ defineProps(['order'])
 <template>
     <div class="flex justify-end">
         <div class="w-full max-w-[350px]">
+            <h3 class="summary-label">Podsumowanie</h3>
             <div class="flex items-center justify-between mb-2 text-neutral-600">
                 <div>Wartość koszyka:</div>
                 <div>{{ order.subtotal }}</div>

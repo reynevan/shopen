@@ -10,6 +10,10 @@ const props = defineProps({
         type: String,
         default: 'md',
         validator: (value) => ['sm', 'md', 'lg'].includes(value)
+    },
+    old: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -35,8 +39,8 @@ const sizeClasses = computed(() => {
     const sizes = {
         sm: {
             whole: 'text-sm',
-            decimal: 'text-xs',
-            currency: 'text-xs'
+            decimal: 'text-sm',
+            currency: 'text-sm'
         },
         md: {
             whole: 'text-xl',
@@ -55,7 +59,7 @@ const sizeClasses = computed(() => {
 </script>
 
 <template>
-  <span class="price">
+  <span :class="old ? 'price-old' : 'price'">
     <span :class="sizeClasses.whole" class="price-whole">{{ splitPrice.whole }}</span><span v-if="splitPrice.decimal && splitPrice.decimal !== '00'">,<span :class="sizeClasses.decimal" class="price-decimal">{{ splitPrice.decimal }}</span></span>
     <span :class="sizeClasses.currency" class="price-currency">{{ splitPrice.currency }}</span>
   </span>

@@ -28,18 +28,15 @@ const props = defineProps({
 const sizeClasses = {
     sm: {
         btn: 'w-6 h-6 text-sm',
-        input: 'w-10 h-6 text-sm',
-        wrapper: 'rounded'
+        input: 'w-10 h-6 text-sm'
     },
     md: {
         btn: 'w-8 h-8 text-base',
-        input: 'w-14 h-8 text-base',
-        wrapper: 'rounded-md'
+        input: 'w-14 h-8 text-base'
     },
     lg: {
         btn: 'w-10 h-10 text-lg',
-        input: 'w-20 h-10 text-lg',
-        wrapper: 'rounded-lg'
+        input: 'w-20 h-10 text-lg'
     }
 };
 
@@ -63,7 +60,7 @@ const onInput = (event) => {
 </script>
 
 <template>
-    <div class="flex overflow-hidden" :class="cls.wrapper">
+    <div class="amount-input flex overflow-hidden">
         <button
             @click="dec"
             :disabled="disabled"

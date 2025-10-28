@@ -7,6 +7,7 @@ import FormField from "@shopen/components/frontend/form/FormField.vue";
 import {useAuthStore} from "@shopen/stores/auth.js";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {useConfirm} from "@shopen/composables/useConfirm.js";
+import Input from "@shopen/components/frontend/input/Input.vue";
 
 defineOptions({layout: UserPanelLayout})
 
@@ -33,8 +34,7 @@ const removeAccount = async () => {
         title: 'Potwierdź usunięcie',
         message: 'Czy na pewno chcesz usunąć konto?',
         confirmButtonText: 'Tak, usuń',
-        cancelButtonText: 'Anuluj',
-        confirmButtonType: 'danger'
+        cancelButtonText: 'Anuluj'
     });
     if (!isConfirmed) {
         return;
@@ -52,29 +52,29 @@ const removeAccount = async () => {
                 <div class="flex flex-col sm:flex-row gap-2 sm:gap-4">
                     <div class="w-full sm:w-1/2">
                         <FormField label="Imię" field="first_name" :error="form.errors.first_name">
-                            <input type="text" v-model="form.first_name">
+                            <Input v-model="form.first_name"/>
                         </FormField>
                     </div>
                     <div class="w-full sm:w-1/2">
                         <FormField label="Nazwisko" field="last_name" :error="form.errors.last_name">
-                            <input type="text" v-model="form.last_name">
+                            <Input v-model="form.last_name"/>
                         </FormField>
                     </div>
                 </div>
 
                 <FormField label="E-mail" field="email" :error="form.errors.email">
-                    <input type="email" v-model="form.email">
+                    <Input type="email" v-model="form.email"/>
                 </FormField>
 
                 <FormField label="Nowe hasło" field="new_password" :error="form.errors.new_password">
-                    <input id="new_password"
+                    <Input id="new_password"
                            v-model="form.new_password"
                            type="password"
                            name="new-password"/>
                 </FormField>
 
                 <FormField label="Aktuale hasło" field="password" :error="form.errors.password" required>
-                    <input id="password"
+                    <Input id="password"
                            v-model="form.password"
                            type="password"
                            name="password"
@@ -82,7 +82,7 @@ const removeAccount = async () => {
                 </FormField>
 
                 <div class="flex justify-center mt-4">
-                    <Button type="secondary" role="submit">
+                    <Button type="primary" role="submit">
                         Zapisz zmiany
                     </Button>
                 </div>

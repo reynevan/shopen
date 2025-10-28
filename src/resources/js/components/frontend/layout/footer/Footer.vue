@@ -1,52 +1,82 @@
 <script setup>
 
-import IconPhone from "../../../icons/IconPhone.vue";
-import IconMail from "../../../icons/IconMail.vue";
-import NewsletterForm from "../../newsletter/NewsletterForm.vue";
+import IconPhone from "@shopen/components/icons/IconPhone.vue";
+import IconMail from "@shopen/components/icons/IconMail.vue";
+import NewsletterForm from "@shopen/components/frontend/newsletter/NewsletterForm.vue";
+import {Link} from "@inertiajs/vue3";
+import Logo from "@shopen/components/frontend/ui/Logo.vue";
 </script>
 
 <template>
-    <footer class="footer py-10 px-6 border-t border-light ">
-        <div class="py-10 px-10">
-            <NewsletterForm/>
+    <footer class="footer">
+        <div class="footer-logo-wrapper flex items-center justify-center w-full">
+            <Logo width="150px"/>
         </div>
         <div class="flex flex-col sm:flex-row gap-4 justify-between mx-auto max-w-7xl px-4">
-            <div>
-                <div class="font-semibold text-xl">Promocje i inspiracje</div>
-                <div>Kategoria 1</div>
-                <div>Kategoria 2</div>
-                <div>Kategoria 3</div>
-            </div>
-            <div>
-                <div class="font-semibold text-xl">Shopen</div>
-                <div>O nas</div>
-                <div>Kontakt</div>
-                <div>Regulamin</div>
-                <div>Polityka prywatności</div>
-                <div>Polityka cookies</div>
-            </div>
-            <div>
-                <div class="font-semibold text-xl">Kontakt</div>
-                <div class="flex items-start gap-2 mb-2">
-                    <div class="mt-2">
-                        <IconPhone size="lg"/>
+            <div class="footer-col">
+                <div class="col-title">Promocje i inspiracje</div>
+                <div class="col-links">
+                    <div>
+                        <Link class="footer-link" href="/">Kategoria 1</Link>
                     </div>
                     <div>
-                        <a class="text-2xl" href="tel:0 700 880 717">0 700 880 717</a>
-                        <p class="text-sm flex justify-between">
-                            <span class="text-neutral-500">pon - pt </span>
-                            <span>8:00 - 16:00</span>
-                        </p>
-                        <p class="text-sm flex justify-between">
-                            <span class="text-neutral-500">sob </span>
-                            <span>8:00 - 16:00</span>
-                        </p>
+                        <Link class="footer-link" href="/">Kategoria 2</Link>
                     </div>
-
+                    <div>
+                        <Link class="footer-link" href="/">Kategoria 3</Link>
+                    </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <IconMail size="lg"/>
-                    <a href="mailto:kontakt@entrech.pl">kontakt@entrech.pl</a>
+            </div>
+            <div class="footer-col">
+                <div class="col-title">Shopen</div>
+                <div class="col-links">
+                    <div>
+                        <Link class="footer-link" href="/o-nas">O nas</Link>
+                    </div>
+                    <div>
+                        <Link class="footer-link" href="/kontakt">Kontakt</Link>
+                    </div>
+                    <div>
+                        <Link class="footer-link" href="/regulamin">Regulamin</Link>
+                    </div>
+                    <div>
+                        <Link class="footer-link" href="/polityka-prywatnosci">Polityka prywatności</Link>
+                    </div>
+                    <div>
+                        <Link class="footer-link" href="/polityka-cookies">Polityka cookies</Link>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-col">
+                <div class="col-title">Newsletter</div>
+                <NewsletterForm/>
+            </div>
+            <div class="footer-col">
+                <div class="col-title">Kontakt</div>
+                <div class="flex justify-center sm:block">
+                    <div>
+                        <div class="flex items-start gap-2 mb-2">
+                            <div class="mt-2">
+                                <IconPhone size="lg"/>
+                            </div>
+                            <div>
+                                <a class="text-2xl" href="tel:0 700 880 717">0 700 880 717</a>
+                                <p class="text-sm flex justify-between">
+                                    <span class="text-neutral-500">pon - pt </span>
+                                    <span>8:00 - 16:00</span>
+                                </p>
+                                <p class="text-sm flex justify-between">
+                                    <span class="text-neutral-500">sob </span>
+                                    <span>8:00 - 16:00</span>
+                                </p>
+                            </div>
+
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <IconMail size="lg"/>
+                            <a href="mailto:kontakt@entrech.pl">kontakt@entrech.pl</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

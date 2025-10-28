@@ -57,8 +57,8 @@ const edit = () => {
 
 <template>
     <div
-        class="pl-4 pr-12 sm:pr-24 py-4 rounded relative w-full flex flex-col justify-between border transition-all duration-300"
-        :class="[isSelected ? 'bg-accent/50' : 'border-light', selectable && !isSelected ? 'opacity-50 hover:opacity-100' : '']"
+        class="checkout-address-thumbnail"
+        :class="[isSelected ? 'selected' : 'border-light', selectable && !isSelected ? 'opacity-50 hover:opacity-100' : '']"
     >
         <div class="absolute right-1 top-2">
             <Button type="ghost" size="sm" title="Edytuj adres" @click="edit">
@@ -66,16 +66,17 @@ const edit = () => {
             </Button>
         </div>
         <div :class="[selectable ? 'cursor-pointer' : '']"
+             class="address"
              @click="selectAddress"
              :title="selectable ? (isSelected ? 'Wybrany adres' : 'Wybierz adres') : ''"
         >
             <div class="font-semibold">{{ address.first_name }} {{ address.last_name }}</div>
             <div class="font-semibold" v-if="address.company">{{ address.company }}</div>
-            <div class="" v-if="address.company_nip">NIP: {{ address.company_nip }}</div>
-            <div class="">{{ address.address_line }}</div>
-            <div class="">{{ address.postal_code }} {{ address.city }}</div>
-            <div class="" v-if="address.phone">tel. {{ address.phone }}</div>
-            <div class="" v-if="address.email">{{ address.email }}</div>
+            <div class="address-line" v-if="address.company_nip">NIP: {{ address.company_nip }}</div>
+            <div class="address-line">{{ address.address_line }}</div>
+            <div class="address-line">{{ address.postal_code }} {{ address.city }}</div>
+            <div class="address-line" v-if="address.phone">tel. {{ address.phone }}</div>
+            <div class="address-line" v-if="address.email">{{ address.email }}</div>
         </div>
     </div>
 </template>
