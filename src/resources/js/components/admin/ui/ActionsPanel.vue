@@ -3,7 +3,7 @@ import {Link, router, usePage} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import {computed} from "vue";
 
-defineProps({
+const props = defineProps({
     backRoute: {type: String}
 })
 
@@ -17,7 +17,7 @@ const goBack = () => {
     }
 }
 
-const hasHistory = computed(() => window.history.length > 1)
+const hasHistory = computed(() => (window.history.length > 1) || page.props.referer)
 
 const backLinkClass = 'text-2xl text-gray-600 hover:text-black transition-colors duration-300 cursor-pointer'
 </script>

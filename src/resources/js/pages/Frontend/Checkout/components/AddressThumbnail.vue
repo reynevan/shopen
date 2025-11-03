@@ -35,10 +35,14 @@ const selectAddress = () => {
     }
     if (props.address.type === 'shipping') {
         page.props.selectedShippingAddress = props.address.id;
-        page.props.errors.shippingAddress = null;
+        if (page.props.errors.shippingAddress) {
+            delete page.props.errors.shippingAddress;
+        }
     } else if (props.address.type === 'billing') {
         page.props.selectedBillingAddress = props.address.id;
-        page.props.errors.billingAddress = null;
+        if (page.props.errors.billingAddress) {
+            delete page.props.errors.billingAddress;
+        }
     }
     const routeName = props.address.type === 'shipping' ? 'checkout.select-shipping-address' : 'checkout.select-billing-address';
     router.put(route(routeName), {

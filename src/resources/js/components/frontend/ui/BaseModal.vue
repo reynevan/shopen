@@ -47,66 +47,48 @@ const props = defineProps({
 
 <template>
     <Teleport to="body">
-        <transition name="modal-transition">
-            <div v-if="show"
-                 @click="onCoverCLick"
-                 class="fixed inset-0 flex items-center justify-center z-100">
-                <div ref="cover" class="modal-backdrop absolute inset-0 bg-black/60"></div>
+        <Transition
+            enter-active-class="transition-all duration-300 ease-out"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition-all duration-300 ease-out"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+            <div v-if="show" @click="onCoverCLick" class="fixed inset-0 z-[100] flex items-center justify-center">
+                <!-- Backdrop -->
+                <div ref="cover"
+                     class="absolute inset-0 bg-black/60 transition-opacity duration-300 ease-out
+                    data-[enter-from]:opacity-0 data-[leave-to]:opacity-0">
+                </div>
+
+                <!-- Modal -->
                 <div :class="props.class"
-                     class="modal-content relative bg-white shadow-lg max-h-[100vh] flex flex-col">
-                    <div class="py-4 px-8 mb-4 border-b text-lg bg-white shadow relative flex-shrink-0" v-if="$slots.header">
-                        <slot name="header"/>
-                        <button v-if="closable" class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer" @click="emits('onClose')">
-                            <IconX md/>
+                     class="relative bg-white shadow-lg max-h-[100vh] flex flex-col
+                    transition-all duration-300 ease-out
+                    data-[enter-from]:opacity-0 data-[enter-from]:translate-y-5 data-[enter-from]:scale-95
+                    data-[leave-to]:opacity-0 data-[leave-to]:translate-y-5 data-[leave-to]:scale-95">
+                    <div v-if="$slots.header" class="py-4 px-8 mb-4 border-b text-lg bg-white shadow relative flex-shrink-0">
+                        <slot name="header" />
+                        <button v-if="closable"
+                                class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer"
+                                @click="emits('onClose')">
+                            <IconX md />
                         </button>
                     </div>
-                    <div class="overflow-y-auto flex-1 min-h-0 max-w-2xl" :class="size === 'sm' ? 'pb-2 px-4' : 'pb-8 px-8'">
-                        <slot/>
+
+                    <div class="overflow-y-auto flex-1 min-h-0 max-w-2xl"
+                         :class="size === 'sm' ? 'pb-2 px-4' : 'pb-8 px-8'">
+                        <slot />
                     </div>
-                    <div class="py-4 px-8 border-t text-lg flex-shrink-0" v-if="$slots.buttons">
+
+                    <div v-if="$slots.buttons" class="py-4 px-8 border-t text-lg flex-shrink-0">
                         <div class="flex items-center justify-center gap-6">
-                            <slot name="buttons"/>
+                            <slot name="buttons" />
                         </div>
                     </div>
                 </div>
             </div>
-        </transition>
+        </Transition>
     </Teleport>
 </template>
-
-<style>
-.modal-transition-enter-active,
-.modal-transition-leave-active {
-    transition: all 0.3s ease-out;
-}
-
-.modal-transition-enter-active .modal-backdrop,
-.modal-transition-leave-active .modal-backdrop {
-    transition: opacity 0.3s ease-out;
-}
-
-.modal-transition-enter-active .modal-content,
-.modal-transition-leave-active .modal-content {
-    transition: all 0.3s ease-out;
-}
-
-
-.modal-transition-enter-from .modal-backdrop {
-    opacity: 0;
-}
-
-.modal-transition-enter-from .modal-content {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-}
-
-
-.modal-transition-leave-to .modal-backdrop {
-    opacity: 0;
-}
-
-.modal-transition-leave-to .modal-content {
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-}
-</style>

@@ -46,7 +46,7 @@ trackViewItem(props.product, props.variants)
 <template>
     <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">
-        <div class="flex flex-col sm:flex-row">
+        <div class="flex flex-col sm:flex-row gap-6 sm:gap-4">
             <section class="mr-0 sm:mr-6">
                 <Gallery :images="images"/>
             </section>
@@ -109,7 +109,7 @@ trackViewItem(props.product, props.variants)
             <div class="section-title-wrapper">
                 <h2 class="section-title">Ostatnio oglądane</h2>
             </div>
-            <ProductsCarousel :products="recentlyViewedProducts"/>
+            <ProductsCarousel :products="recentlyViewedProducts" size="md"/>
         </section>
 
         <BannersContainer :banners="banners.product_page_bottom"/>

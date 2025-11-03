@@ -2,7 +2,7 @@
     <tbody>
     <tr>
         <td style="font-size: 18px;">
-            Witaj, @if($order->user && $order->user->first_name) {{ $order->user->first_name }}, @endif
+            Witaj @if($order->user && $order->user->first_name) {{ $order->user->first_name }}@endif,
         </td>
     </tr>
     </tbody>

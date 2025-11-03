@@ -16,11 +16,13 @@ use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Jobs\RecalculateProductPrice;
 use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductRepository;
+use Shopen\Services\VoucherService;
 
 class ProductsController
 {
     public function __construct(
-        private ProductRepository $productRepository
+        private ProductRepository $productRepository,
+        private VoucherService $voucherService
     )
     {}
 
@@ -37,18 +39,19 @@ class ProductsController
 
     public function storeVariant(StoreProductRequest $request): ProductResource
     {
-        $request->validated();
-
-        $data = request()->post();
+        $data = $request->validated();
 
         $this->validateVariant($data);
 
         DB::beginTransaction();
         try {
+            $parent = Product::query()->findOrFail($data['parent_id']);
 
             $price = $data['price'];
 
             $product = new Product();
+            $product->is_virtual = $parent->is_virtual;
+            $product->is_voucher = $parent->is_voucher;
 
             foreach ($data['attributes'] as $key => $value) {
                 $product->setCustomAttribute($key, $value);
@@ -57,11 +60,15 @@ class ProductsController
 
             $product->save();
 
-            $product->createUrlRewrite($data['url_key'] ?? null);
+            $product->createUrlRewrite($data['sku'] ?? null);
 
             $product->categories()->sync($data['category_ids'] ?? []);
 
             $product->setPrice($price);
+
+            if ($product->is_voucher) {
+                $this->voucherService->createPromoCodeForProduct($product, $data['price']['price']);
+            }
 
             RecalculateProductPrice::dispatch($product->id);
 
@@ -93,7 +100,7 @@ class ProductsController
             $product->fill(Arr::only($data, ['sku', 'ean', 'brand_id']));
             $product->save();
 
-            $product->createUrlRewrite($data['url_key'] ?? null);
+            $product->createUrlRewrite($data['sku'] ?? null);
 
             $product->setPrice($price);
 
@@ -115,11 +122,12 @@ class ProductsController
      */
     protected function validateVariant($data, ?Product $product = null): void
     {
-        $variantExists = Product::query()->tap(function (Builder $query) use ($data, $product) {
+        $variantExists = Product::query()
+            ->where('parent_id', $product?->parent_id ?? $data['parent_id'])
+            ->tap(function (Builder $query) use ($data, $product) {
 
             $parent = Product::query()->findOrFail($product?->parent_id ?? $data['parent_id']);
             $attributes = $parent->configurableAttributes;
-
             foreach ($attributes as $attribute) {
                 $query->filterByAttribute($attribute->code, $data['attributes'][$attribute->code]);
             }

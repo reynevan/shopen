@@ -74,7 +74,7 @@ trackBeginCheckout(usePage().props?.cart?.items)
             </div>
         </div>
 
-        <div class="w-full xl:w-2/5 sticky top-6 pl-4">
+        <div class="w-full xl:w-2/5 pl-4">
             <div class="bg-white px-4 py-6">
                 <CheckoutSummary :summary="summary" :promoCode="promoCode"/>
             </div>

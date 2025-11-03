@@ -28,8 +28,7 @@ class OrderStatusChanged extends Mailable
             with: [
                 'order' => $this->order,
                 'comment' => $this->comment,
-                'isGuestOrder' => $this->order->isGuestOrder(),
-                'logoPath' => public_path('img/mail-logo.png'),
+                'isGuestOrder' => $this->order->isGuestOrder()
             ],
         );
     }

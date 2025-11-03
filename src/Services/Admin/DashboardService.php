@@ -6,8 +6,10 @@ namespace Shopen\Services\Admin;
 
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Number;
+use Shopen\Enums\ContactMessage\Status;
 use Shopen\Enums\Order\OrderStatus;
 use Shopen\Http\Resources\Admin\Order\OrderResource;
+use Shopen\Models\ContactMessage\ContactMessage;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Product\Review\ProductReview;
 
@@ -19,8 +21,14 @@ class DashboardService
             'total_sale_amount' => $this->getTotalSaleAmount(),
             'orders_amount' => $this->getOrdersAmount(),
             'latestOrders' => $this->getLatestOrders(),
-            'pending_reviews_count' => $this->getPendingReviewsCount()
+            'pending_reviews_count' => $this->getPendingReviewsCount(),
+            'new_messages' => $this->getNewMessagesCount()
         ];
+    }
+
+    private function getNewMessagesCount(): int
+    {
+        return ContactMessage::query()->where('status', Status::NEW)->count();
     }
 
     private function getTotalSaleAmount()

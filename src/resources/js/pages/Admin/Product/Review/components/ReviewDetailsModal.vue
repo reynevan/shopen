@@ -2,7 +2,6 @@
 import BaseModal from "@shopen/components/admin/ui/BaseModal.vue";
 import ProductThumbnailImage from "@shopen/components/admin/product/ProductThumbnailImage.vue";
 import RatingDisplay from "./RatingDisplay.vue";
-import Button from "@shopen/components/admin/ui/Button.vue";
 import {ref} from "vue";
 import ActionButton from "../../../../../components/admin/ui/ActionButton.vue";
 

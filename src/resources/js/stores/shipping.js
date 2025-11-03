@@ -54,7 +54,7 @@ export const useShippingStore = defineStore('shipping', () => {
     function selectMethod(key, deliveryPoint = null) {
         trackAddShippingInfo(usePage().props?.cart?.items, key)
         if (page.props.errors.shipping_method) {
-            page.props.errors.shipping_method = null;
+            delete page.props.errors.shipping_method;
         }
         router.put(route('checkout.update-shipping-method'),
             {

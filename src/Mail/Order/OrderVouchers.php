@@ -34,8 +34,7 @@ class OrderVouchers extends Mailable
             with: [
                 'order' => $this->order,
                 'vouchers' => $this->vouchers,
-                'isGuestOrder' => $this->order->isGuestOrder(),
-                'logoPath' => public_path('img/mail-logo.png'),
+                'isGuestOrder' => $this->order->isGuestOrder()
             ],
         );
     }

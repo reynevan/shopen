@@ -84,16 +84,3 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
         </div>
     </header>
 </template>
-<style >
-.user-menu-btn:hover::after {
-    height: 6px;
-    content: '';
-    position: absolute;
-    bottom: -3px;
-    left: 1px;
-    right: 1px;
-    background-color: var(--color-header);
-    z-index: 51;
-    opacity: 100%;
-}
-</style>

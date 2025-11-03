@@ -51,7 +51,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             <!-- Obrazek na hover -->
                             <div
                                 v-if="product.images && product.images.length > 1"
-                                class="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                class="thumbnail-image-2"
                             >
                                 <ProductImage
                                     :urls="product.images[1]"

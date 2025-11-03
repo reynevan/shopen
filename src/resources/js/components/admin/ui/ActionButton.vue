@@ -50,7 +50,7 @@ const classAttr = {
     'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit'].indexOf(props.type) >= 0,
     'bg-transparent text-gray-700 hover:bg-blue-200 hover:text-blue-800': props.type === 'view',
     'bg-transparent text-gray-700 hover:bg-red-200 hover:text-red-800': props.type === 'remove',
-    'bg-transparent text-gray-700 hover:bg-green-200 hover:text-green-800': props.type === 'accept',
+    'bg-transparent text-gray-700 hover:bg-green-200 hover:text-green-800': ['accept', 'mail'].indexOf(props.type) >= 0,
     'bg-transparent text-gray-700 hover:bg-orange-200 hover:text-orange-800': props.type === 'cancel',
 }
 

@@ -26,6 +26,7 @@ use Shopen\Http\Controllers\Frontend\SearchController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListIndexController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListItemController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListShowController;
+use Shopen\Http\Controllers\Frontend\Static\ContactController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderCancelController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderPayController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
@@ -91,6 +92,9 @@ Route::middleware(['web'])->group(function () {
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
     Route::get('/newsletter/potwierdzenie-subskrypcji', [NewsletterController::class, 'confirmed'])->name('newsletter.confirmed');
+
+    Route::get('/kontakt', [ContactController::class, 'index'])->name('contact.index');
+    Route::post('/kontakt', [ContactController::class, 'submit'])->name('contact.submit');
 
     Route::post('/payu/notify', [PayuNotifyController::class, 'index'])->name('payu.notify');
 });

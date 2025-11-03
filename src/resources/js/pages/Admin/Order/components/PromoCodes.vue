@@ -21,7 +21,7 @@ const allSent = computed(() => !props.order.items.some(item => !item.promo_code_
 <template>
     <div class="divide-y divide-light">
         <template v-for="item in order.items" :key="item.id">
-            <div v-if="item.promo_code_coupons" class="flex items-center gap-2 py-2">
+            <div v-if="item.promo_code_coupons?.length" class="flex items-center gap-2 py-2">
                 <div>{{ item.product.promo_code.name }}</div>
                 <div v-for="coupon in item.promo_code_coupons" class="border text-sm px-2 bg-white">
                     {{ coupon.code }}

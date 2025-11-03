@@ -5,6 +5,7 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
 import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
 
 const props = defineProps({
     taxClasses: Object
@@ -75,12 +76,10 @@ const removeTaxClass = (taxClass) => {
 
 
         <TableColumn label="-" v-slot="data" width="100px">
-            <div class="flex gap-1">
-                <Link :href="route('admin.tax-classes.edit', data.row.id)" class="text-accent cursor-pointer">
-                    <ActionButton type="edit"/>
-                </Link>
+            <ActionButtons>
+                <ActionButton type="edit" :href="route('admin.tax-classes.edit', data.row.id)"/>
                 <ActionButton @click="removeTaxClass(data.row)" type="remove"/>
-            </div>
+            </ActionButtons>
         </TableColumn>
 
     </DataTable>

@@ -9,6 +9,9 @@ use Shopen\Http\Controllers\Admin\Brand\BrandCreateController;
 use Shopen\Http\Controllers\Admin\Brand\BrandEditController;
 use Shopen\Http\Controllers\Admin\Brand\BrandIndexController;
 use Shopen\Http\Controllers\Admin\Category\CategoryCreateController;
+use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageEditController;
+use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageIndexController;
+use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageShowController;
 use Shopen\Http\Controllers\Admin\Dashboard\DashboardIndexController;
 use Shopen\Http\Controllers\Admin\Product\ProductCreateController;
 use Shopen\Http\Controllers\Admin\Product\ProductsExportController;
@@ -110,6 +113,12 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/atrybuty/{attribute}', [AttributeEditController::class, 'edit'])->name('attributes.edit');
     Route::put('/atrybuty/{attribute}', [AttributeEditController::class, 'update'])->name('attributes.update');
     Route::delete('/atrybuty/{attribute}', [AttributeEditController::class, 'destroy'])->name('attributes.delete');
+
+    Route::get('/wiadomosci', [ContactMessageIndexController::class, 'index'])->name('contact-messages.index');
+    Route::get('/wiadomosci/{contactMessage}', [ContactMessageShowController::class, 'show'])->name('contact-messages.show');
+    Route::put('/wiadomosci/{contactMessage}', [ContactMessageEditController::class, 'update'])->name('contact-messages.update');
+    Route::post('/wiadomosci/{contactMessage}/respond', [ContactMessageEditController::class, 'respond'])->name('contact-messages.respond');
+    Route::delete('/wiadomosci/{contactMessage}', [ContactMessageEditController::class, 'destroy'])->name('contact-messages.delete');
 
     Route::get('/uzytkownicy', [UserIndexController::class, 'index'])->name('users.index');
     Route::get('/uzytkownicy/{user}', [UserEditController::class, 'edit'])->name('users.edit');

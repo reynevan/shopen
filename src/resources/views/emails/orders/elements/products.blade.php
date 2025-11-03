@@ -23,7 +23,7 @@
                                     {{-- Kolumna z danymi produktu --}}
                                     <td valign="top">
                                         {{-- Nazwa produktu --}}
-                                        <div style="font-size: 18px; font-weight: bold; color: #333333; margin-bottom: 8px;">
+                                        <div style="font-size: 16px; font-weight: 600; color: #333333; margin-bottom: 8px;">
                                             {{ $item->name }}
                                         </div>
 

@@ -19,11 +19,11 @@ const hasError = computed(() => {
 <template>
     <div>
         <div class="flex gap-2 mb-2" :class="hasError ? 'text-red-400' : ''">
-            <p>{{ variant.attribute.name }}</p>
+            <p class="variant-attribute">{{ variant.attribute.name }}</p>
             <p v-if="hasError"> - wybierz opcję</p>
         </div>
 
-        <div class="flex divide-x gap-2" v-if="variant.attribute.is_color">
+        <div class="variants-color" v-if="variant.attribute.is_color">
             <template v-for="product in variant.products" :id="product.id">
                 <div v-if="product.is_selected"
                      class="border border-strong w-10 h-10"
@@ -38,16 +38,14 @@ const hasError = computed(() => {
             </template>
         </div>
 
-        <div class="flex divide-x" v-if="!variant.attribute.is_color">
+        <div class="variants" v-if="!variant.attribute.is_color">
             <template v-for="product in variant.products" :id="product.id">
                 <div v-if="product.is_selected"
-                     class="cursor-default bg-neutral-50 font-semibold py-2 px-4 transition-all duration-300">
+                     class="variant selected">
                     {{ product.attribute_value }}
                 </div>
-                <Link v-if="!product.is_selected" :href="product.url">
-                    <div class="hover:bg-neutral-100 py-2 px-4 transition-all duration-300">
+                <Link v-if="!product.is_selected" :href="product.url" class="variant">
                         {{ product.attribute_value }}
-                    </div>
                 </Link>
             </template>
         </div>

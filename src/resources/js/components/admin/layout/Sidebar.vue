@@ -100,6 +100,15 @@ const auth = useAuthStore();
                 </Link>
             </li>
 
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.contact-messages.index')"
+                   class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase text-center">Wiadomości</div>
+
+                </Link>
+            </li>
+
         </ul>
         <ul class="menu-list border-t border-gray-600 pt-4 mt-4">
             <li class="mb-4 py-2 text-accent">

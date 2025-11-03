@@ -8,6 +8,8 @@ import FormField from "@shopen/components/frontend/form/FormField.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
 import {router, useForm} from '@inertiajs/vue3';
+import Input from "../../../../components/frontend/input/Input.vue";
+import Button from "../../../../components/frontend/ui/Button.vue";
 
 const props = defineProps(['promoCode']);
 
@@ -66,22 +68,22 @@ const submit = () => {
                 <FormField label-for="promocode">
                     <form @submit.prevent="submit">
                         <div class="flex items-stretch justify-between">
-                            <input type="text" class="w-full mr-2" id="promocode" v-model="form.code"/>
-                            <button
-                                class="button-secondary basis-[100px] grow-0 shrink-0 flex items-center justify-center"
-                                type="submit"
+                            <Input class="mr-2" id="promocode" v-model="form.code"/>
+                            <Button
+                                type="primary"
+                                role="submit"
                                 :disabled="loading">
                                 <span v-if="!loading">Aktywuj</span>
                                 <span v-if="loading">
                                     <IconLoader></IconLoader>
                                 </span>
-                            </button>
+                            </Button>
                         </div>
                     </form>
+                    <p v-if="form.errors.code" class="error-msg">
+                        {{ form.errors.code }}
+                    </p>
                 </FormField>
-                <p v-if="form.errors.code" class="error-msg">
-                    {{ form.errors.code }}
-                </p>
             </div>
         </div>
         <div v-else>

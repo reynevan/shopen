@@ -16,9 +16,6 @@ const message = computed(() => {
     if (flash.value?.error) {
         return flash.value.error;
     }
-    if (hasErrors.value) {
-        return 'Wystąpiły błędy w formularzu. Proszę sprawdzić wprowadzone dane.';
-    }
     return null;
 });
 
@@ -91,7 +88,7 @@ if (message.value) {
         leave-to-class="transform opacity-0 blur-xl">
         <div
             v-if="show && message"
-            class="fixed top-5 right-5 z-50 flex items-center justify-between max-w-sm w-full p-4 rounded-lg shadow-lg text-white"
+            class="fixed top-5 right-5 z-50 flex items-center justify-between max-w-sm w-full p-4 shadow text-white font-light"
             :class="{
                 'bg-emerald-500': type === 'success',
                 'bg-red-500': type === 'error',

@@ -45,9 +45,11 @@ const props = defineProps({
                      fullWidth ? 'w-full mx-10' : ''
                  ]"
                  class="modal-content relative bg-white rounded-lg max-h-[100vh] shadow-xl flex flex-col">
-                <div class="py-4 px-8 mb-4 border-b text-lg bg-white shadow relative flex-shrink-0" v-if="$slots.header">
-                    <slot name="header"/>
-                    <button v-if="closable" class="absolute right-2 top-2 px-2 py-2 hover:shadow cursor-pointer" @click="emits('onClose')">
+                <div class="py-4 pl-8 pr-4 mb-4 border-b text-lg bg-white shadow relative flex items-center gap-2" v-if="$slots.header">
+                    <div class="w-full">
+                        <slot name="header"/>
+                    </div>
+                    <button v-if="closable" class="px-2 py-1 hover:shadow cursor-pointer" @click="emits('onClose')">
                         <i class="bi bi-x-lg font-xl"></i>
                     </button>
                 </div>

@@ -108,4 +108,9 @@ class User extends Authenticatable
     {
         return $query->where('role', self::ROLE_USER);
     }
+
+    public function scopeAdmins($query)
+    {
+        return $query->where('role', self::ROLE_ADMIN);
+    }
 }

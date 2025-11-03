@@ -92,7 +92,7 @@ readonly class ProductCreateController
                 $variant->searchable();
             }
 
-            if ($product->is_voucher) {
+            if ($product->is_voucher && !$product->isConfigurable()) {
                 $this->voucherService->createPromoCodeForProduct($product, $data['price']['price']);
             }
 

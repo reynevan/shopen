@@ -81,8 +81,6 @@ class ShopenServiceProvider  extends ServiceProvider
             'lipiec' => 'lipca',
             'sierpień' => 'sierpnia',
             'wrzesień' => 'września',
-            //'październik' => 'października',
-            'listopad' => 'listopada',
             'grudzień' => 'grudnia'
         ];
 

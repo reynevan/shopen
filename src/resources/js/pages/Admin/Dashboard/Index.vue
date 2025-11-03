@@ -12,6 +12,7 @@ const props = defineProps({
     pending_reviews_count: {type: Number},
     total_sale_amount: {type: String},
     orders_amount: {type: Number},
+    new_messages: {type: Number}
 })
 
 </script>
@@ -79,23 +80,37 @@ const props = defineProps({
 
             <section class="w-1/2">
                 <h2 class="text-2xl mb-4">Oczekujące działania</h2>
-                <div v-if="pending_reviews_count > 0">
-                    <Link :href="route('admin.products.reviews.index', {status: 'pending'})"
-                          class="flex items-center justify-between border rounded pl-2 hover:bg-accent/50 transition-all duration-300">
-                        <div class="w-full flex items-center gap-2">
-                            <div class="text-xs px-2 py-1 bg-secondary text-white rounded">
-                                {{ pending_reviews_count }}
+                <div class="space-y-2">
+                    <div v-if="pending_reviews_count > 0">
+                        <Link :href="route('admin.products.reviews.index', {status: 'pending'})"
+                              class="flex items-center justify-between border rounded pl-2 hover:bg-accent/50 transition-all duration-300">
+                            <div class="w-full flex items-center gap-2">
+                                <div class="text-xs px-2 py-1 bg-secondary text-white rounded">
+                                    {{ pending_reviews_count }}
+                                </div>
+                                <div class="py-2">Opinie czekające na zatwierdzenie</div>
                             </div>
-                            <div class="py-2">Opinie czekajace na zatwierdzenie</div>
-                        </div>
 
-                        <div class="flex items-center justify-center h-full text-xl border-l px-4">
-                            <i class="bi bi-chevron-right"></i>
-                        </div>
-                    </Link>
-                </div>
-                <div v-else class="text-gray-500 text-lg">
-                    Brak oczekujących działań
+                            <div class="flex items-center justify-center h-full text-xl border-l px-4">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </Link>
+                    </div>
+                    <div v-if="new_messages > 0">
+                        <Link :href="route('admin.contact-messages.index')"
+                              class="flex items-center justify-between border rounded pl-2 hover:bg-accent/50 transition-all duration-300">
+                            <div class="w-full flex items-center gap-2">
+                                <div class="text-xs px-2 py-1 bg-secondary text-white rounded">
+                                    {{ new_messages }}
+                                </div>
+                                <div class="py-2">Nowe wiadomości</div>
+                            </div>
+
+                            <div class="flex items-center justify-center h-full text-xl border-l px-4">
+                                <i class="bi bi-chevron-right"></i>
+                            </div>
+                        </Link>
+                    </div>
                 </div>
             </section>
         </div>

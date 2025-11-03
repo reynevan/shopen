@@ -27,15 +27,15 @@ const props = defineProps({
 // mapowanie rozmiarów na klasy tailwindowe
 const sizeClasses = {
     sm: {
-        btn: 'w-6 h-6 text-sm',
+        btn: 'text-base',
         input: 'w-10 h-6 text-sm'
     },
     md: {
-        btn: 'w-8 h-8 text-base',
+        btn: 'text-xl',
         input: 'w-14 h-8 text-base'
     },
     lg: {
-        btn: 'w-10 h-10 text-lg',
+        btn: 'text-2xl',
         input: 'w-20 h-10 text-lg'
     }
 };
@@ -60,16 +60,15 @@ const onInput = (event) => {
 </script>
 
 <template>
-    <div class="amount-input flex overflow-hidden">
+    <div class="amount-input">
         <button
             @click="dec"
             :disabled="disabled"
             :class="[
-                disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
-                'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
+                disabled ? 'disabled' : 'enabled',
                 cls.btn
             ]">
-            <IconMinus />
+            <IconMinus/>
         </button>
 
         <input
@@ -86,11 +85,10 @@ const onInput = (event) => {
             @click="inc"
             :disabled="disabled"
             :class="[
-                disabled ? 'cursor-not-allowed opacity-60' : 'hover:bg-accent hover:text-primary-text',
-                'flex justify-center items-center border-none cursor-pointer transition-colors duration-300',
+                disabled ? 'disabled' : 'enabled',
                 cls.btn
             ]">
-            <IconPlus />
+            <IconPlus/>
         </button>
     </div>
 </template>

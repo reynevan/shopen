@@ -1,5 +1,4 @@
 <script setup>
-import ProductDescription from "./ProductDescription.vue";
 import ProductAttributes from "./ProductAttributes.vue";
 
 defineProps({
@@ -8,27 +7,25 @@ defineProps({
 })
 
 
-const buttonClass = 'cursor-pointer text-lg tracking-wider w-full sm:w-auto';
-
 </script>
 
 <template>
 
     <div>
-        <div class="flex divide-x divide-x-light gap-6 mb-6 mt-6 w-full flex-wrap sm:flex-nowrap">
-            <div class="w-full">
-                <div :class="buttonClass">
+        <div class="flex sm:divide-x sm:divide-x-light mb-6 mt-6 w-full flex-wrap sm:flex-nowrap">
+            <div class="w-full pr-4">
+                <div class="details-section-title">
                     Opis
                 </div>
                 <div>
                     <div class="product-description prose max-w-none" v-html="product.attributes.description ?? ''"></div>
                 </div>
             </div>
-            <div class="w-full">
-                <div :class="buttonClass">
+            <div class="w-full mt-6 sm:mt-0 sm:pl-4">
+                <div class="details-section-title">
                     Szczegóły
                 </div>
-                <div class="w-full lg:w-1/3 xl:w-1/2">
+                <div class="w-full2">
                     <ProductAttributes :product="product" :attributes="attributes"/>
                 </div>
             </div>

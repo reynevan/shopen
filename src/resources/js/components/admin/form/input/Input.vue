@@ -34,7 +34,6 @@ const props = defineProps({
     }
 })
 
-const baseClasses = 'block w-full px-4 border border-gray-200 rounded-lg outline-none focus:ring-0 focus:ring-offset-0 focus:border-border-strong disabled:opacity-50 disabled:pointer-events-none transition-colors duration-500'
 
 const sizeClasses = computed(() => {
     switch (props.size) {
@@ -56,6 +55,7 @@ const sizeClasses = computed(() => {
         :required="!!props.required"
         :disabled="disabled"
         :min="min"
-        :class="[baseClasses, sizeClasses, props.class, error ? 'border-red-400' : '']"
+        class="input"
+        :class="[sizeClasses, props.class, error ? 'border-red-400' : '']"
     />
 </template>
