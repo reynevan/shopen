@@ -5,8 +5,10 @@ namespace Shopen\Http\Controllers\Frontend\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
+use Throwable;
 
 class OAuthController
 {
@@ -27,7 +29,8 @@ class OAuthController
             ]);
 
             Auth::login($user);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
+            Log::error($e->getMessage());
             return back()->with('error', 'Nie udało się zalogować.');
         }
         return redirect('/');

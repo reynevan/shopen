@@ -21,12 +21,12 @@ return new class extends Migration
             $table->string('role')->default(User::ROLE_USER);
 
             $table->string('google_id')->nullable();
-            $table->string('google_token')->nullable();
-            $table->string('google_refresh_token')->nullable();
+            $table->string('google_token', 1024)->nullable();
+            $table->string('google_refresh_token', 1024)->nullable();
 
             $table->string('facebook_id')->nullable();
-            $table->string('facebook_token')->nullable();
-            $table->string('facebook_refresh_token')->nullable();
+            $table->string('facebook_token', 1024)->nullable();
+            $table->string('facebook_refresh_token', 1024)->nullable();
 
             $table->rememberToken();
             $table->timestamps();
