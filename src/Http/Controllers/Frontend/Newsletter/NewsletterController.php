@@ -12,7 +12,7 @@ class NewsletterController
         private NewsletterServiceInterface $newsletterService
     ) {}
 
-    public function subscribe(NewsletterSubscribeRequest $request): JsonResponse
+    public function subscribe(NewsletterSubscribeRequest $request)
     {
         $email = $request->validated('email');
         $attributes = $request->validated('attributes', []);
@@ -20,16 +20,10 @@ class NewsletterController
         $success = $this->newsletterService->subscribe($email, $attributes);
 
         if ($success) {
-            return response()->json([
-                'success' => true,
-                'message' => 'Dziękujemy za subskrypcję! Sprawdź swoją skrzynkę e-mail i potwierdź subskrypcję klikając w link.'
-            ]);
+            return back()->with('success', 'Dziękujemy za subskrypcję! Sprawdź swoją skrzynkę e-mail i potwierdź subskrypcję klikając w link.');
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Wystąpił błąd podczas zapisywania na newsletter. Spróbuj ponownie.'
-        ], 422);
+        return back()->with('error', 'Wystąpił błąd podczas zapisywania na newsletter. Spróbuj ponownie.');
     }
 
     public function unsubscribe(NewsletterSubscribeRequest $request): JsonResponse

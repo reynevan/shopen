@@ -20,6 +20,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    autofocus: {
+        type: Boolean,
+        default: false,
+    },
     error: {
         type: String,
     },
@@ -42,6 +46,7 @@ const props = defineProps({
         :min="min"
         class="input"
         :autocomplete="autocomplete"
+        :autofocus="autofocus"
         :class="[props.class, error ? 'border-red-400' : '']"
     />
 </template>

@@ -22,7 +22,6 @@ class SearchController
         $productsSearchResult = $this
             ->searchService
             ->setSearchQuery(request()->query('q'))
-            ->setPage(1)
             ->setLimit(8)
             ->searchProducts();
 

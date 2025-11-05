@@ -54,32 +54,28 @@ const hasResponses = computed(() => (props.message?.responses?.length || 0) > 0)
     </ActionsPanel>
     <section class="max-w-4xl mx-auto">
 
-        <div class="flex flex-col sm:flex-row gap-4">
-            <Panel width="w-1/2">
-                <template #header>
-                    Nadawca
-                </template>
-                <div class="px-4 py-3 space-y-1.5">
-                    <div class="text-sm font-medium text-neutral-900">{{ message.name }}</div>
-                    <div class="text-sm text-neutral-600">{{ message.email }}</div>
+        <Panel>
+            <template #header>
+                Szczegóły
+            </template>
+            <div class="flex gap-4 divide-x divide-light">
+                <div class="pr-2">
+                    <div class="text-xs uppercase text-neutral-500">Nadawca</div>
+                    <div class="text-sm"><i class="bi bi-person"></i> {{ message.name }}</div>
+                    <div class="text-sm"><i class="bi bi-envelope-at"></i> {{ message.email }}</div>
                 </div>
-            </Panel>
-            <Panel width="w-1/2">
-                <template #header>
-                    Szczegóły
-                </template>
-                <div class="px-4 py-3 space-y-1.5">
-                    <div class="text-xs uppercase text-neutral-500">Data utworzenia</div>
-                    <div class="text-sm text-neutral-900">{{ message.created_at }}</div>
+                <div class="pl-2">
+                    <div class="text-xs uppercase text-neutral-500">Data wysłania</div>
+                    <div class="text-sm"><i class="bi bi-calendar-event"></i> {{ message.created_at }}</div>
                 </div>
-            </Panel>
-        </div>
+            </div>
+        </Panel>
 
         <Panel>
             <template #header>
                 Temat
             </template>
-            <div class="text-base font-medium text-neutral-900 leading-relaxed">
+            <div class="text-base leading-relaxed">
                 {{ message.subject }}
             </div>
         </Panel>
@@ -107,7 +103,12 @@ const hasResponses = computed(() => (props.message?.responses?.length || 0) > 0)
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                         <div class="flex items-center gap-2">
                             <div>
-                                <div class="text-sm font-medium text-neutral-900">{{ response.user?.email }}</div>
+                                <div class="flex gap-2 divide-x divide-light">
+                                    <div class="text-sm pr-2" v-if="response.user?.first_name && response.user?.last_name">
+                                        {{ response.user?.first_name }} {{ response.user?.last_name }}
+                                    </div>
+                                    <div class="text-sm font-medium" v-if="response.user?.email">{{ response.user?.email }}</div>
+                                </div>
                                 <div class="text-xs text-neutral-500">Udzielono odpowiedzi</div>
                             </div>
                         </div>

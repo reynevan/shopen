@@ -104,7 +104,7 @@
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="border-collapse:separate; mso-table-lspace:0; mso-table-rspace:0; margin:0 auto;">
         <tr>
             <td align="center" style="background-color:#1e1e1e;">
-                <a href="{{ route('admin.contact-messages.index') }}"
+                <a href="{{ route('admin.contact-messages.show', $contactMessage->id) }}"
                    target="_blank"
                    style="display:inline-block; padding:12px 32px; font-family:Arial, sans-serif; font-size:16px; line-height:24px; color:#ffffff; text-decoration:none; font-weight:bold;">
                     Odpowiedz klientowi

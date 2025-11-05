@@ -8,8 +8,13 @@ import {useAuthStore} from "@shopen/stores/auth.js";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {useConfirm} from "@shopen/composables/useConfirm.js";
 import Input from "@shopen/components/frontend/input/Input.vue";
+import Checkbox from "../../../../components/frontend/input/Checkbox.vue";
 
 defineOptions({layout: UserPanelLayout})
+
+const props = defineProps({
+    newsletter_active: {type: Boolean},
+})
 
 const auth = useAuthStore();
 
@@ -19,6 +24,7 @@ const form = useForm({
     email: auth.user.email,
     password: '',
     new_password: '',
+    newsletter_active: props.newsletter_active,
 });
 
 const submit = () => {
@@ -66,6 +72,12 @@ const removeAccount = async () => {
                     <Input type="email" v-model="form.email"/>
                 </FormField>
 
+                <FormField field="newsletter_active">
+                    <Checkbox id="newsletter_active"
+                              v-model="form.newsletter_active"
+                              label="Zapisz do newslettera"/>
+                </FormField>
+
                 <FormField label="Nowe hasło" field="new_password" :error="form.errors.new_password">
                     <Input id="new_password"
                            v-model="form.new_password"
@@ -82,7 +94,7 @@ const removeAccount = async () => {
                 </FormField>
 
                 <div class="flex justify-center mt-4">
-                    <Button type="primary" role="submit">
+                    <Button type="primary" role="submit" size="lg">
                         Zapisz zmiany
                     </Button>
                 </div>
@@ -91,12 +103,12 @@ const removeAccount = async () => {
         </section>
         <section class="w-full lg:w-1/2">
             <h2 class="text-2xl mb-4">Usuwanie konta</h2>
-            <p class="mb-4">
+            <p class="mb-4 font-light">
                 Usunięcie konta spowoduje trwałe usunięcie Twoich danych oraz historii zamówień. Tej operacji nie można
                 cofnąć.
             </p>
             <div class="flex justify-center mt-4">
-                <Button type="primary" @click="removeAccount">
+                <Button type="primary" @click="removeAccount" size="lg">
                     Usuń konto
                 </Button>
             </div>

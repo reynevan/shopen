@@ -19,7 +19,8 @@ class UpdateSettingsRequest extends FormRequest
             'last_name' => ['required'],
             'email' => ['email', 'unique:users,email,' . Auth::id()],
             'new_password' => ['nullable', 'min:8'],
-            'password' => ['required', 'current_password']
+            'password' => ['required', 'current_password'],
+            'newsletter_active' => ['boolean'],
         ];
     }
 

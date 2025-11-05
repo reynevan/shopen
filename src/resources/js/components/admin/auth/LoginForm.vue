@@ -2,12 +2,13 @@
 import {useForm, Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
+import Input from "@shopen/components/admin/form/input/Input.vue";
 
 
 const form = useForm({
     email: '',
     password: '',
-    remember: false
+    remember: true
 });
 
 const submit = () => {
@@ -19,26 +20,17 @@ const submit = () => {
     <form @submit.prevent="submit">
 
         <FormField label="Email" field="email" :error="form.errors.email">
-            <input type="text" v-model="form.email" required autofocus>
+            <Input type="text" v-model="form.email" required autofocus/>
         </FormField>
 
         <FormField label="Hasło" field="password" :error="form.errors.password">
-            <input id="password"
+            <Input id="password"
                    v-model="form.password"
                    type="password"
                    name="password"
+                   class="input"
                    required autocomplete="current-password"/>
         </FormField>
-
-        <div class="block form-field">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                       v-model="form.remember"
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                       name="remember">
-                <span class="ms-2 text-sm text-gray-600">Zapamiętaj mnie</span>
-            </label>
-        </div>
 
         <div class="mt-4">
             <div>

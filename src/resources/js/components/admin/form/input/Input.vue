@@ -31,6 +31,10 @@ const props = defineProps({
     },
     min: {
         type: Number
+    },
+    autofocus: {
+        type: Boolean,
+        default: false,
     }
 })
 
@@ -54,6 +58,7 @@ const sizeClasses = computed(() => {
         v-model="model"
         :required="!!props.required"
         :disabled="disabled"
+        :autofocus="autofocus"
         :min="min"
         class="input"
         :class="[sizeClasses, props.class, error ? 'border-red-400' : '']"

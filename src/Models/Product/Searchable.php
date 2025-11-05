@@ -2,6 +2,7 @@
 
 namespace Shopen\Models\Product;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
 use Shopen\Models\Order\OrderItem;
 use Shopen\Repositories\Product\ProductAttributeRepository;
@@ -40,8 +41,16 @@ trait Searchable
     protected function getPopularity()
     {
         $orderItemsCount =  OrderItem::query()
-            ->where('product_id', $this->id)
-            ->where('created_at', '>', Carbon::now()->subDays(config('shopen.product.popularity_days')))
+            ->tap(function (Builder $query) {
+                if ($this->isConfigurable()) {
+                    $query->whereHas('product', function (Builder $query) {
+                        $query->where('parent_id', $this->id);
+                    });
+                } else {
+                    $query->where('product_id', $this->id);
+                }
+            })
+            ->where('created_at', '>', Carbon::now()->subDays(config('shopen.product.popularity_days', 365)))
             ->count();
 
         return $orderItemsCount + $this->reviews_count;

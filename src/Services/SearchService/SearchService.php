@@ -185,6 +185,8 @@ class SearchService
             $params['body']['sort'][] = $sorter->build();
         }
 
+        $params['body']['sort'][] = ['_score' => 'desc'];
+
         $this->addSearchFilter($params);
 
         $result = $this->client->search($params)->asArray();

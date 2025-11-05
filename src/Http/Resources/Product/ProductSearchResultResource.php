@@ -23,7 +23,7 @@ class ProductSearchResultResource extends JsonResource
             'id' => $this->id,
             'sku' => $this->sku,
             'brand' => BrandResource::make($this->whenLoaded('brand')),
-            'price' => ProductPriceResource::make($this->whenLoaded('price')),
+            'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
             'images' => $this->images,

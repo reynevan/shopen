@@ -56,7 +56,7 @@ const createList = () => {
 
         <div class="space-y-6">
             <div v-if="!lists.length && !creatingList">
-                <p>Nie masz jeszcze żadnych list zakupowych.</p>
+                <p class="font-light">Nie masz jeszcze żadnych list zakupowych.</p>
             </div>
             <ShoppingListThumbnail v-for="list in lists" :key="list.id" :list="list"/>
         </div>

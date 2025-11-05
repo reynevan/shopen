@@ -75,7 +75,9 @@ readonly class ProductEditController
 
             $product->categories()->sync($data['category_ids'] ?? []);
 
-            $product->setPrice($price);
+            if (!$product->isConfigurable()) {
+                $product->setPrice($price);
+            }
 
             $product->relatedProducts()->sync($data['related_products_ids'] ?? []);
             $product->crossSells()->sync($data['cross_sell_ids'] ?? []);

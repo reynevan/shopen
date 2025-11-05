@@ -131,7 +131,7 @@ const resetSearch = () => {
                         @blur="handleBlur"
                         type="text"
                         placeholder="Szukaj produktów i kategorii..."
-                        class="w-full border-none shadow-none px-4 py-2 pr-10 transition-colors hidden sm:block"
+                        class="input pr-10 hidden sm:block "
                     />
                     <input
                         @click="showMobileView"

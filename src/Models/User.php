@@ -12,6 +12,7 @@ use Shopen\Models\Order\Order;
 use Shopen\Models\Product\Review\ProductReview;
 use Shopen\Database\Factories\UserFactory;
 use Shopen\Models\ShoppingList\ShoppingList;
+use Shopen\Notifications\ResetPassword;
 
 class User extends Authenticatable
 {
@@ -44,6 +45,11 @@ class User extends Authenticatable
     protected static function newFactory()
     {
         return UserFactory::new();
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPassword($token));
     }
 
     public function isAdmin()

@@ -61,6 +61,7 @@ const paddingXClasses = {
         :class="[
           'disabled:cursor-not-allowed disabled:opacity-50',
           type,
+          'size-' + size,
           paddingXClasses[size],
           sizeClasses[size],
           fullWidth && 'w-full',

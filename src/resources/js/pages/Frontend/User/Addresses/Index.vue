@@ -3,7 +3,7 @@ import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
 import Heading from "@shopen/pages/Frontend/User/components/Heading.vue";
 import AddressThumbnail from "@shopen/pages/Frontend/User/components/AddressThumbnail.vue";
 import IconPlus from "@shopen/components/icons/IconPlus.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import AddressModal from "@shopen/pages/Frontend/User/components/AddressModal.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {Head} from "@inertiajs/vue3";
@@ -11,7 +11,7 @@ import IconHomeAdd from "../../../../components/icons/IconHomeAdd.vue";
 
 defineOptions({layout: UserPanelLayout});
 
-defineProps([
+const props = defineProps([
     "defaultShippingAddress",
     "defaultBillingAddress",
     "shippingAddresses",
@@ -34,6 +34,10 @@ const addAddress = (type, isDefault) => {
     };
     showAddressModal.value = true;
 };
+
+const hasShippingAddresses = computed(() => props.defaultShippingAddress || props.shippingAddresses?.length);
+
+const hasBillingAddresses = computed(() => props.defaultBillingAddress || props.billingAddresses?.length);
 </script>
 
 <template>
@@ -82,9 +86,9 @@ const addAddress = (type, isDefault) => {
                 v-show="activeTab === 'shipping'"
             >
                 <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
-                    <div class="w-full sm:w-1/2 flex flex-col">
-                        <h3 class="address-section-label">Domyślny adres dostawy</h3>
-                        <div class="border rounded w-full h-full" v-if="defaultShippingAddress">
+                    <div class="w-full flex flex-col">
+                        <h3 v-if="hasShippingAddresses" class="address-section-label">Domyślny adres dostawy</h3>
+                        <div v-if="defaultShippingAddress" class="border rounded w-full h-full">
                             <AddressThumbnail
                                 @onEdit="editAddress"
                                 :selectable="false"
@@ -97,14 +101,14 @@ const addAddress = (type, isDefault) => {
                         >
                             <Button type="ghost"
                                 @click="() => addAddress('shipping', true)"
-                                class="max-w-[200px]">
+                                class="max-w-[200px] min-h-[100px]">
                                 <span>Dodaj adres</span>
                                 <IconPlus/>
                             </Button>
                         </div>
                     </div>
 
-                    <div class="w-full sm:w-1/2 flex flex-col">
+                    <div v-if="hasShippingAddresses" class="w-full flex flex-col">
                         <div class="flex justify-between items-start">
                             <h3 class="address-section-label">Dodatkowe adresy dostawy</h3>
                             <Button type="ghost" size="sm" @click="() => addAddress('shipping', false)">
@@ -122,7 +126,7 @@ const addAddress = (type, isDefault) => {
                                 />
                             </div>
                             <div v-if="!shippingAddresses || !shippingAddresses.length"
-                                 class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
+                                 class="empty-addresses-label flex items-center justify-center w-full sm:w-auto px-8 my-6 gap-2">
                                 Nie masz jeszcze żadnych dodatkowych adresów
                                 <IconHomeAdd size="4xl"/>
                             </div>
@@ -139,8 +143,8 @@ const addAddress = (type, isDefault) => {
                 v-show="activeTab === 'billing'"
             >
                 <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
-                    <div class="w-full sm:w-1/2 flex flex-col">
-                        <h3 class="address-section-label">Domyślny adres rozliczeniowy</h3>
+                    <div class="w-full flex flex-col">
+                        <h3 v-if="hasBillingAddresses" class="address-section-label">Domyślny adres rozliczeniowy</h3>
                         <div v-if="defaultBillingAddress" class="border rounded w-full h-full">
                             <AddressThumbnail
                                 @onEdit="editAddress"
@@ -152,14 +156,14 @@ const addAddress = (type, isDefault) => {
                             <Button
                                 type="ghost"
                                 @click="() => addAddress('billing', true)"
-                                class="max-w-[200px]">
+                                class="max-w-[200px] min-h-[100px]">
                                 <span>Dodaj adres</span>
                                 <IconPlus/>
                             </Button>
                         </div>
                     </div>
 
-                    <div class="w-full sm:w-1/2 flex flex-col">
+                    <div v-if="hasBillingAddresses" class="w-full flex flex-col">
                         <div class="flex justify-between items-start">
                             <h3 class="address-section-label">Dodatkowe adresy rozliczeniowe</h3>
                             <Button type="ghost" size="sm" @click="() => addAddress('billing', false)">
@@ -178,7 +182,7 @@ const addAddress = (type, isDefault) => {
                                 />
                             </div>
                             <div v-if="!billingAddresses || !billingAddresses.length"
-                                 class="flex items-center justify-center w-full sm:w-auto px-8 my-6 text-neutral-400 gap-2">
+                                 class="empty-addresses-label  flex items-center justify-center w-full sm:w-auto px-8 my-6 gap-2">
                                 Nie masz jeszcze żadnych dodatkowych adresów
                                 <IconHomeAdd size="4xl"/>
                             </div>

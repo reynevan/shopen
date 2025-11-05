@@ -17,13 +17,13 @@ class ContactMessageIndexController
 
     public function index(): Response
     {
-        $messages = $this->contactMessageRepository->getPaginated(request('sort', 'id'), request('dir', 'desc'), request('q'));
+        $messages = $this->contactMessageRepository->getPaginated(request('sort', 'id'), request('dir', 'desc'), request('status'));
 
         return Inertia::render('Admin/ContactMessage/Index', [
             'messages' => ContactMessageResource::collection($messages),
             'sort' => request('sort', 'id'),
             'dir' => request('dir', 'desc'),
-            'q' => request('q')
+            'status' => request('status'),
         ]);
     }
 }

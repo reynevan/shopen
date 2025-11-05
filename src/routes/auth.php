@@ -5,14 +5,14 @@ use Laravel\Socialite\Facades\Socialite;
 use Shopen\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use Shopen\Http\Controllers\Admin\Auth\EmailVerificationNotificationController;
 use Shopen\Http\Controllers\Admin\Auth\EmailVerificationPromptController;
-use Shopen\Http\Controllers\Admin\Auth\NewPasswordController;
 use Shopen\Http\Controllers\Admin\Auth\PasswordController;
-use Shopen\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use Shopen\Http\Controllers\Admin\Auth\VerifyEmailController;
 
 use Shopen\Http\Controllers\Frontend\Auth\LoginController;
 use Shopen\Http\Controllers\Frontend\Auth\OAuthController;
+use Shopen\Http\Controllers\Frontend\Auth\PasswordResetLinkController;
 use Shopen\Http\Controllers\Frontend\Auth\RegisterController;
+use Shopen\Http\Controllers\Frontend\Auth\NewPasswordController;
 
 Route::middleware(['guest', 'web'])->group(function () {
 
@@ -24,17 +24,15 @@ Route::middleware(['guest', 'web'])->group(function () {
 
     Route::post('rejestracja', [RegisterController::class, 'store']);
 
-    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
-        ->name('password.request');
+    Route::get('odzyskiwanie-hasla', [PasswordResetLinkController::class, 'create'])->name('password.remind');
 
-    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+    Route::post('odzyskiwanie-hasla', [PasswordResetLinkController::class, 'store'])
+        ->middleware(['throttle:5,1'])
         ->name('password.email');
 
-    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
-        ->name('password.reset');
+    Route::get('resetowanie-hasla/{token}', [NewPasswordController::class, 'create'])->name('password.reset');
 
-    Route::post('reset-password', [NewPasswordController::class, 'store'])
-        ->name('password.store');
+    Route::post('reset-password', [NewPasswordController::class, 'store'])->name('password.store');
 
     Route::get('/oauth/redirect/google', function () {
         return Socialite::driver('google')->redirect();
@@ -59,8 +57,7 @@ Route::middleware(['auth', 'web'])->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
+    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])->name('password.confirm');
 
     Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
 

@@ -2,6 +2,8 @@
 import {usePage, useForm} from "@inertiajs/vue3";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
+import Input from "../input/Input.vue";
+import Checkbox from "../input/Checkbox.vue";
 
 const props = defineProps({
     redirectTo: {
@@ -42,19 +44,19 @@ const submit = () => {
     <form @submit.prevent="submit">
 
         <FormField label="Imię" field="first_name" :error="form.errors.first_name" required>
-            <input type="text" v-model="form.first_name" required>
+            <Input v-model="form.first_name" required/>
         </FormField>
 
         <FormField label="Nazwisko" field="last_name" :error="form.errors.last_name" required>
-            <input type="text" v-model="form.last_name" required>
+            <Input type="text" v-model="form.last_name" required/>
         </FormField>
 
         <FormField label="E-mail" field="email" :error="form.errors.email" required>
-            <input type="email" v-model="form.email" required>
+            <Input type="email" v-model="form.email" required/>
         </FormField>
 
         <FormField label="Hasło" field="password" :error="form.errors.password" required>
-            <input id="password"
+            <Input id="password"
                    v-model="form.password"
                    type="password"
                    name="password"
@@ -63,25 +65,21 @@ const submit = () => {
 
         <div class="block form-field">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                       v-model="form.termsAccepted"
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                       name="remember">
-                <span class="ms-2 text-sm text-gray-600">Akceptuję regulamin sklepu</span>
+                <Checkbox id="remember_me"
+                          required
+                          v-model="form.termsAccepted"
+                          label="Akceptuję regulamin sklepu"
+                          name="remember"/>
             </label>
         </div>
 
         <div class="mt-4">
 
             <div class="flex justify-center mt-4">
-                <Button type="secondary" role="submit" full-width>
+                <Button type="primary" size="lg" role="submit" full-width>
                     Załóż konto
                 </Button>
             </div>
         </div>
     </form>
 </template>
-
-<style scoped>
-
-</style>

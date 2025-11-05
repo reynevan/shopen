@@ -78,7 +78,6 @@ const removeItem = (productId) => {
                 aria-label="Usuń całą listę zakupową"
             >
                 <IconTrash/>
-                <!-- Ukryj tekst na małych ekranach, zostawiając ikonę -->
                 <span class="hidden sm:inline">Usuń listę</span>
             </button>
         </header>
@@ -192,7 +191,7 @@ const removeItem = (productId) => {
             </div>
         </div>
 
-        <p v-else class="text-gray-500 mt-8 text-center">Ta lista jest pusta.</p>
+        <p v-else class="font-light mt-8 text-center">Ta lista jest pusta.</p>
 
     </div>
 </template>

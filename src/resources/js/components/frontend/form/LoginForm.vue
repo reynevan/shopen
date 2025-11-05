@@ -3,6 +3,8 @@ import {useForm, Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
 import {trackLogin} from "../../../utils/ga4";
+import Input from "../input/Input.vue";
+import Checkbox from "../input/Checkbox.vue";
 
 const props = defineProps({
     redirectTo: {
@@ -32,11 +34,11 @@ const submit = () => {
     <form @submit.prevent="submit">
 
         <FormField label="Email" field="email" :error="form.errors.email">
-            <input type="text" v-model="form.email" required autofocus>
+            <Input v-model="form.email" required autofocus/>
         </FormField>
 
         <FormField label="Hasło" field="password" :error="form.errors.password">
-            <input id="password"
+            <Input id="password"
                    v-model="form.password"
                    type="password"
                    name="password"
@@ -45,31 +47,26 @@ const submit = () => {
 
         <div class="block form-field">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox"
-                       v-model="form.remember"
-                       class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
-                       name="remember">
-                <span class="ms-2 text-sm text-gray-600">Zapamiętaj mnie</span>
+                <Checkbox id="remember_me"
+                          v-model="form.remember"
+                          label="Zapamiętaj mnie"
+                          name="remember"/>
             </label>
         </div>
 
         <div class="mt-4">
             <div>
                 <Link class="link-primary text-sm"
-                      href="route('password.request')">
+                      :href="route('password.remind')">
                     Nie pamiętasz hasła?
                 </Link>
             </div>
 
             <div class="flex justify-center mt-4">
-                <Button type="secondary" role="submit" full-width>
+                <Button type="primary" size="lg" role="submit" full-width>
                     Zaloguj się
                 </Button>
             </div>
         </div>
     </form>
 </template>
-
-<style scoped>
-
-</style>

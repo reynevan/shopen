@@ -58,7 +58,7 @@
                     <ShoppingListProductThumbnail :product="product"/>
                 </div>
             </ul>
-            <p v-else class="text-gray-500">Nie masz jeszcze żadnych produktów na tej liście</p>
+            <p v-else class="font-light">Nie masz jeszcze żadnych produktów na tej liście</p>
         </Link>
     </div>
 </template>

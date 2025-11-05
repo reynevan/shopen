@@ -15,10 +15,7 @@ class NewsletterSubscribeRequest extends FormRequest
     {
         return [
             'email' => ['required', 'email:rfc,dns', 'max:255'],
-            'attributes' => ['sometimes', 'array'],
-            'attributes.FNAME' => ['sometimes', 'string', 'max:50'],
-            'attributes.LNAME' => ['sometimes', 'string', 'max:50'],
-            'privacy_accepted' => ['required', 'accepted'],
+           // 'privacy_accepted' => ['required', 'accepted'],
         ];
     }
 

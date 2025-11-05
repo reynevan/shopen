@@ -5,12 +5,15 @@ import {Head, Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
 import {trackPurchase} from "../../../utils/ga4";
+import {useAuthStore} from "../../../stores/auth";
 
 defineOptions({layout: AppLayout})
 
 const props = defineProps({
     order: {type: Object}
 })
+
+const auth = useAuthStore()
 
 trackPurchase(props.order)
 </script>
@@ -33,7 +36,7 @@ trackPurchase(props.order)
                 <Button type="secondary">Kontynuuj zakupy</Button>
             </Link>
         </div>
-        <div v-if="!order.user_id" class="my-6 py-6 border-t border-light">
+        <div v-if="!auth.isLoggedIn" class="my-6 py-6 border-t border-light">
             <h2 class="text-xl mb-2">Chcesz śledzić swoje zamówienie? Załóż konto!</h2>
 
             <p class="mb-2">Twoje dane zostaną automatycznie powiązane z tym zamówieniem.</p>

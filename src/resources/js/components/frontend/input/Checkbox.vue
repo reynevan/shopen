@@ -14,10 +14,10 @@ const emits = defineEmits(["change"])
 
 <template>
 
-    <div class="inline-flex items-center">
+    <div class="checkbox inline-flex items-center">
         <label class="flex items-center cursor-pointer relative bg-white" :for="id">
             <input type="checkbox"
-                   class="peer h-5 w-5 cursor-pointer transition-all appearance-none shadow hover:shadow-md border border-slate-300 checked:bg-slate-800 checked:border-slate-800"
+                   class="checkbox-input peer cursor-pointer transition-all appearance-none"
                    :id="id"
                    @change="emits('change')"
                    v-model="model"
@@ -25,10 +25,10 @@ const emits = defineEmits(["change"])
                    :disabled="disabled"
                    :value="value" />
             <span class="absolute text-white opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            <IconCheck/>
+                <IconCheck/>
             </span>
         </label>
-        <label v-if="label" class="cursor-pointer ml-2 text-slate-600 text-sm" :for="id">
+        <label v-if="label" class="checkbox-label cursor-pointer ml-2" :for="id">
             {{ label }}
         </label>
     </div>

@@ -45,7 +45,7 @@ class LoginRequest extends FormRequest
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Nieprawidłowy email lub hasło',
             ]);
         }
         $user = Auth::guard('admin')->user();
@@ -54,7 +54,7 @@ class LoginRequest extends FormRequest
         if (!$user->isAdmin()) {
             Auth::guard('admin')->logout();
             throw ValidationException::withMessages([
-                'email' => 'Brak uprawnień administratora.',
+                'email' => 'Nieprawidłowy email lub hasło',
             ]);
         }
         RateLimiter::clear($this->throttleKey());
