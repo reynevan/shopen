@@ -75,7 +75,7 @@
         </tr>
     </table>
 
-    @includeFirst(['emails.elements.contact', 'shopen::emails.elements.contact')
+    @includeFirst(['emails.elements.contact', 'shopen::emails.elements.contact'])
 
     <!-- Spacer końcowy -->
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; mso-table-lspace:0; mso-table-rspace:0;">
