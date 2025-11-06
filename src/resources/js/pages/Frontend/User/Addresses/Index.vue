@@ -8,6 +8,7 @@ import AddressModal from "@shopen/pages/Frontend/User/components/AddressModal.vu
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {Head} from "@inertiajs/vue3";
 import IconHomeAdd from "../../../../components/icons/IconHomeAdd.vue";
+import IconHomeCheck from "../../../../components/icons/IconHomeCheck.vue";
 
 defineOptions({layout: UserPanelLayout});
 
@@ -85,9 +86,12 @@ const hasBillingAddresses = computed(() => props.defaultBillingAddress || props.
                 :aria-hidden="activeTab !== 'shipping'"
                 v-show="activeTab === 'shipping'"
             >
-                <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
+                <div class="flex flex-col sm:flex-row items-start gap-6 mb-6">
                     <div class="w-full flex flex-col">
-                        <h3 v-if="hasShippingAddresses" class="address-section-label">Domyślny adres dostawy</h3>
+                        <h3 v-if="hasShippingAddresses" class="address-section-label flex gap-2">
+                            <IconHomeCheck size="lg"/>
+                            Domyślny adres dostawy
+                        </h3>
                         <div v-if="defaultShippingAddress" class="border rounded w-full h-full">
                             <AddressThumbnail
                                 @onEdit="editAddress"
@@ -110,7 +114,10 @@ const hasBillingAddresses = computed(() => props.defaultBillingAddress || props.
 
                     <div v-if="hasShippingAddresses" class="w-full flex flex-col">
                         <div class="flex justify-between items-start">
-                            <h3 class="address-section-label">Dodatkowe adresy dostawy</h3>
+                            <h3 class="address-section-label flex gap-2">
+                                <IconHomeAdd size="lg"/>
+                                Dodatkowe adresy dostawy
+                            </h3>
                             <Button type="ghost" size="sm" @click="() => addAddress('shipping', false)">
                                 <span>Dodaj adres</span>
                                 <IconPlus/>
@@ -142,9 +149,12 @@ const hasBillingAddresses = computed(() => props.defaultBillingAddress || props.
                 :aria-hidden="activeTab !== 'billing'"
                 v-show="activeTab === 'billing'"
             >
-                <div class="flex flex-col sm:flex-row items-stretch gap-6 mb-6">
+                <div class="flex flex-col sm:flex-row items-start gap-6 mb-6">
                     <div class="w-full flex flex-col">
-                        <h3 v-if="hasBillingAddresses" class="address-section-label">Domyślny adres rozliczeniowy</h3>
+                        <h3 v-if="hasBillingAddresses" class="address-section-label flex gap-2">
+                            <IconHomeCheck size="lg"/>
+                            Domyślny adres rozliczeniowy
+                        </h3>
                         <div v-if="defaultBillingAddress" class="border rounded w-full h-full">
                             <AddressThumbnail
                                 @onEdit="editAddress"
@@ -165,7 +175,10 @@ const hasBillingAddresses = computed(() => props.defaultBillingAddress || props.
 
                     <div v-if="hasBillingAddresses" class="w-full flex flex-col">
                         <div class="flex justify-between items-start">
-                            <h3 class="address-section-label">Dodatkowe adresy rozliczeniowe</h3>
+                            <h3 class="address-section-label flex gap-2">
+                                <IconHomeAdd size="lg"/>
+                                Dodatkowe adresy rozliczeniowe
+                            </h3>
                             <Button type="ghost" size="sm" @click="() => addAddress('billing', false)">
                                 <span>Dodaj adres</span>
                                 <IconPlus/>

@@ -25,7 +25,7 @@ const submit = () => {
 
 <template>
     <form @submit.prevent="submit">
-        <div class="flex gap-4">
+        <div class="flex flex-col sm:flex-row sm:gap-4">
             <div class="w-full">
                 <FormField label="Imię" required :error="form.errors.name">
                     <Input required v-model="form.name"/>

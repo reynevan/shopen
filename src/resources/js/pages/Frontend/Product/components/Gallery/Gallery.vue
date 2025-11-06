@@ -124,7 +124,7 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <div class="relative w-full sm:w-[700px] sm:h-[700px] mb-4 group">
+        <div class="relative w-full sm:max-w-[700px] sm:max-h-[700px] mb-4 group">
             <div v-if="previewIndex > 0" @click="prevImage"
                  class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 left-4">
                 <div

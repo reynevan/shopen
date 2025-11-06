@@ -12,6 +12,7 @@ use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\Product\StoreProductRequest;
+use Shopen\Http\Resources\Admin\Product\ProductDuplicateResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Jobs\RecalculateProductPrice;
@@ -40,6 +41,23 @@ readonly class ProductCreateController
     {
         return Inertia::render('Admin/Product/Create', [
             'product' => ProductResource::make(new Product()),
+            'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
+            'categories' => fn () => $this->categoryRepository->getArray(),
+            'ceneo_categories' => fn () => $this->ceneoService->getCategories(),
+            'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
+        ]);
+    }
+
+    public function duplicate(Product $product): Response
+    {
+        $this->customAttributesService->preloadCategoryAttributes(['name']);
+        $this->customAttributesService->loadAllAttributes($product);
+
+        $product->load(['price', 'configurableAttributes']);
+
+
+        return Inertia::render('Admin/Product/Create', [
+            'product' => ProductDuplicateResource::make($product),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
             'categories' => fn () => $this->categoryRepository->getArray(),
             'ceneo_categories' => fn () => $this->ceneoService->getCategories(),

@@ -4,7 +4,7 @@ import Button from "@shopen/components/admin/ui/Button.vue";
 import Gallery from "@shopen/pages/Admin/Product/components/ProductForm/Gallery/Gallery.vue";
 import AttributeInput from "@shopen/components/admin/form/input/AttributeInput.vue";
 import {ref} from "vue";
-import {useForm, usePage} from "@inertiajs/vue3";
+import {router, useForm, usePage} from "@inertiajs/vue3";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import GeneralSection from "@shopen/pages/Admin/Product/components/ProductForm/FormSections/GeneralSection.vue";
 import RelatedProductsSection from "@shopen/pages/Admin/Product/components/ProductForm/FormSections/RelatedProductsSection.vue";
@@ -57,7 +57,7 @@ props.attributes.forEach((attr) => {
     defaultAttributesValues[attr.code] = null;
 })
 const form = useForm({
-    attributes: props.product.id ? props.product.attributes : defaultAttributesValues,
+    attributes: props.product.attributes ? props.product.attributes : defaultAttributesValues,
     type: props.product?.type ?? 'simple',
     visible_individually: props.product?.visible_individually ?? true,
     parent_id: props.parent?.id,
@@ -138,12 +138,19 @@ if (props.product.is_configurable && props.product.id) {
     })
 }
 
+const duplicate = () => {
+    if (props.product.id) {
+        router.visit(route('admin.products.duplicate', props.product.id))
+    }
+}
+
 </script>
 
 <template>
     <ActionsPanel back-route="admin.products.index">
         <template #title>
             <PageTitle>{{ product.id ? product.attributes.name : 'Nowy produkt' }}</PageTitle></template>
+        <Button v-if="product.id" @click="duplicate">Skopiuj</Button>
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <div v-if="Object.keys(page.props.errors).length > 0"

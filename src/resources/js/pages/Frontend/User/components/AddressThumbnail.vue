@@ -1,10 +1,10 @@
 <script setup>
 
-import IconCheckCircle from "@shopen/components/icons/IconCheckCircle.vue";
 import {router, usePage} from "@inertiajs/vue3";
 import IconEdit from "../../../../components/icons/IconEdit.vue";
 import IconTrash from "../../../../components/icons/IconTrash.vue";
 import {useConfirm} from "@shopen/composables/useConfirm.js";
+import IconHomeCheck from "../../../../components/icons/IconHomeCheck.vue";
 
 const props = defineProps({
     address: {
@@ -80,7 +80,7 @@ const remove = async () => {
             <button v-if="selectable"
                     class="default-address-button"
                     @click="selectAddress">
-                <IconCheckCircle/>
+                <IconHomeCheck/>
                 Ustaw jako domyślny
             </button>
         </div>

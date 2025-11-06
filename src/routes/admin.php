@@ -64,6 +64,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/produkty', [ProductsIndexController::class, 'index'])->name('products.index');
     Route::get('/api/produkty', [ApiProductsController::class, 'index'])->name('api.products.index');
     Route::get('/produkty/nowy', [ProductCreateController::class, 'create'])->name('products.create');
+    Route::get('/produkty/nowy/{product}', [ProductCreateController::class, 'duplicate'])->name('products.duplicate');
     Route::post('/produkty', [ProductCreateController::class, 'store'])->name('products.store');
     Route::post('/api/produkty', [ApiProductsController::class, 'storeVariant'])->name('products.store-variant');
     Route::get('/produkty/{product}', [ProductEditController::class, 'edit'])->name('products.edit');

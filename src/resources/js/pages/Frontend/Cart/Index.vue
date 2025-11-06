@@ -51,98 +51,98 @@ const removeItem = (item) => {
                 Wróć do sklepu
             </Link>
         </div>
+        <div v-else>
+            <h2 id="cart-items-heading" class="cart-items-heading">Koszyk</h2>
+            <div class="flex flex-col lg:flex-row lg:items-start gap-8">
 
-        <div v-else class="flex flex-col lg:flex-row lg:items-start gap-8">
+                <section class="w-full lg:flex-1 order-2 sm:order-1" aria-labelledby="cart-items-heading">
+                    <ul class="bg-body divide-y divide-light px-4 py-4 shadow">
+                        <li v-for="item in cart.items" :key="item.id" class="flex flex-col md:flex-row items-center gap-4 py-4">
 
-            <section class="w-full lg:flex-1" aria-labelledby="cart-items-heading">
-                <h2 id="cart-items-heading" class="cart-items-heading">Koszyk</h2>
-                <ul class="bg-body divide-y divide-light px-4 py-4 shadow">
-                    <li v-for="item in cart.items" :key="item.id" class="flex flex-col md:flex-row items-center gap-4 py-4">
-
-                        <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">
-                            <Link :href="item.product.url">
-                                <div class="w-[100px]">
-                                    <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
-                                                  :width="100"/>
-                                </div>
-                            </Link>
-                        </div>
-
-                        <div class="flex-1 w-full flex flex-col md:flex-row md:justify-between gap-4">
-                            <div class="flex-1">
-                                <Link :href="item.product.url" class="text-lg hover:underline">
-                                    {{ item.product.name }}
+                            <div class="flex-shrink-0 w-24 h-24 bg-no-image-bg flex items-center justify-center overflow-hidden">
+                                <Link :href="item.product.url">
+                                    <div class="w-[100px]">
+                                        <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
+                                                      :width="100"/>
+                                    </div>
                                 </Link>
-                                <div v-if="item.product.attributes" class="text-sm text-gray-600 mt-1">
-                                    <div v-for="attribute in item.product.attributes" :key="attribute.name">
-                                        <span>{{ attribute.name }}</span>: <span class="font-medium">{{
-                                            attribute.value
-                                        }}</span>
+                            </div>
+
+                            <div class="flex-1 w-full flex flex-col md:flex-row md:justify-between gap-4">
+                                <div class="flex-1">
+                                    <Link :href="item.product.url" class="text-lg hover:underline">
+                                        {{ item.product.name }}
+                                    </Link>
+                                    <div v-if="item.product.attributes" class="text-sm text-gray-600 mt-1">
+                                        <div v-for="attribute in item.product.attributes" :key="attribute.name">
+                                            <span>{{ attribute.name }}</span>: <span class="font-medium">{{
+                                                attribute.value
+                                            }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="md:hidden mt-2 text-sm">
+                                        Cena: <span class="font-semibold">{{ item.price }}</span>
                                     </div>
                                 </div>
-                                <div class="md:hidden mt-2 text-sm">
-                                    Cena: <span class="font-semibold">{{ item.price }}</span>
+
+                                <div class="hidden md:flex items-center justify-end w-28">
+                                    <span class="text-right">{{ item.price }}</span>
+                                </div>
+
+                                <div class="flex items-center justify-between md:justify-center w-full md:w-32">
+                                    <span class="md:hidden font-medium">Ilość:</span>
+                                    <AmountInput :value="item.quantity" :disabled="item.loading"
+                                                 @onChange="(val) => onQtyChange(item, val)"/>
+                                </div>
+
+                                <div class="flex items-center justify-between md:justify-end w-full md:w-24">
+                                    <span class="md:hidden font-medium">Kwota:</span>
+                                    <div class="text-lg font-semibold text-right min-w-[80px]">
+                                        <IconLoader v-if="item.loading" class="mx-auto"/>
+                                        <span v-else>{{ item.total_final_price }}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="hidden md:flex items-center justify-end w-28">
-                                <span class="text-right">{{ item.price }}</span>
+                            <div class="w-full md:w-auto flex justify-end md:justify-center pt-2 md:pt-0">
+                                <button @click="removeItem(item)" class="text-gray-500 hover:text-red-600 transition-colors"
+                                        aria-label="Usuń produkt z koszyka">
+                                    <IconX lg/>
+                                </button>
                             </div>
+                        </li>
+                    </ul>
+                </section>
 
-                            <div class="flex items-center justify-between md:justify-center w-full md:w-32">
-                                <span class="md:hidden font-medium">Ilość:</span>
-                                <AmountInput :value="item.quantity" :disabled="item.loading"
-                                             @onChange="(val) => onQtyChange(item, val)"/>
-                            </div>
-
-                            <div class="flex items-center justify-between md:justify-end w-full md:w-24">
-                                <span class="md:hidden font-medium">Kwota:</span>
-                                <div class="text-lg font-semibold text-right min-w-[80px]">
-                                    <IconLoader v-if="item.loading" class="mx-auto"/>
-                                    <span v-else>{{ item.total_final_price }}</span>
-                                </div>
-                            </div>
+                <aside class="w-full order-1 sm:order-2 lg:w-80 p-6 shadow bg-body">
+                    <h2 class="cart-summary-title">Podsumowanie</h2>
+                    <dl class="space-y-2 mb-8">
+                        <div class="flex justify-between items-center">
+                            <dt class="cart-price-label">Wartość produktów:</dt>
+                            <dd class="font-medium">{{ cart.subtotal }}</dd>
                         </div>
-
-                        <div class="w-full md:w-auto flex justify-end md:justify-center pt-2 md:pt-0">
-                            <button @click="removeItem(item)" class="text-gray-500 hover:text-red-600 transition-colors"
-                                    aria-label="Usuń produkt z koszyka">
-                                <IconX lg/>
-                            </button>
+                        <div class="flex justify-between items-center">
+                            <dt class="cart-price-label">Wysyłka od:</dt>
+                            <dd class="font-medium">{{ cart.shipping }}</dd>
                         </div>
-                    </li>
-                </ul>
-            </section>
-
-            <aside class="w-full lg:w-80 mt-12 p-6 shadow lg:sticky top-8 bg-body">
-                <h2 class="cart-summary-title">Podsumowanie</h2>
-                <dl class="space-y-2 mb-8">
-                    <div class="flex justify-between items-center">
-                        <dt class="cart-price-label">Wartość produktów:</dt>
-                        <dd class="font-medium">{{ cart.subtotal }}</dd>
+                        <div class="border-t my-4"></div>
+                        <div class="flex justify-between items-end">
+                            <dt class="total-price-label">Do zapłaty:</dt>
+                            <dd class="total-price-value">
+                                {{ cart.total }}
+                            </dd>
+                        </div>
+                    </dl>
+                    <div>
+                        <Link :href="route(auth.isLoggedIn ? 'checkout.index' : 'checkout.login')">
+                            <Button type="primary" size="lg" full-width>
+                                Przejdź do kasy
+                            </Button>
+                        </Link>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <dt class="cart-price-label">Wysyłka od:</dt>
-                        <dd class="font-medium">{{ cart.shipping }}</dd>
-                    </div>
-                    <div class="border-t my-4"></div>
-                    <div class="flex justify-between items-end">
-                        <dt class="total-price-label">Do zapłaty:</dt>
-                        <dd class="total-price-value">
-                            {{ cart.total }}
-                        </dd>
-                    </div>
-                </dl>
-                <div>
-                    <Link :href="route(auth.isLoggedIn ? 'checkout.index' : 'checkout.login')">
-                        <Button type="primary" size="lg" full-width>
-                            Przejdź do kasy
-                        </Button>
-                    </Link>
-                </div>
-            </aside>
+                </aside>
+            </div>
         </div>
-
         <!-- Sekcja Cross-Sell -->
         <section v-if="crossSellProducts && crossSellProducts.length" class="mt-16"
                  aria-labelledby="cross-sell-heading">
