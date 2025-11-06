@@ -40,7 +40,7 @@ class SearchController
             'products' => ProductResource::collection($products),
             'banners' => [],
             'filters' => fn() => [
-                'attributes' => $searchResult->getAttributesFilters(),
+                'attributes' => $searchResult->getFilters(),
                 'priceRange' => $searchResult->getPriceFilters()
             ],
             'activeFilters' => fn() => $this->getActiveFilters('slug', 'slug'),

@@ -71,7 +71,7 @@ class BreadcrumbsService
         $this->breadcrumbs = [];
     }
 
-    public function add(string $name, ?string $url): void
+    public function add(string $name, ?string $url = null): void
     {
         $this->breadcrumbs[] = ['name' => $name, 'url' => $url];
     }

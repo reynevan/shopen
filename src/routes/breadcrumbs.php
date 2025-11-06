@@ -48,3 +48,11 @@ Breadcrumbs::register('user.shopping-lists.show', function (BreadcrumbsService $
 Breadcrumbs::register('checkout.success', function (BreadcrumbsService $breadcrumbs, $order) {
     $breadcrumbs->remove();
 });
+
+Breadcrumbs::register('contact.index', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Kontakt', route('contact.index'));
+});
+
+Breadcrumbs::register('search.index', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Wyniki wyszukiwania', route('search.index'));
+});

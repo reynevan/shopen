@@ -54,7 +54,7 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                         </Link>
                     </div>
 
-                    <div class="flex items-center sm:gap-2">
+                    <div class="flex items-center sm:gap-2 pr-2 sm:pr-0">
                         <div class="user-menu-btn group relative">
                             <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-light">
                                 <Link :href="auth.isLoggedIn ? route('user.orders.index') : route('login')" :title="auth.isLoggedIn ? 'Moje konto' : 'Zaloguj się'" class="flex items-center gap-2">
