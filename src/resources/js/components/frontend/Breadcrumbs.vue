@@ -53,10 +53,10 @@ router.on('navigate', () => {
     </Head>
 
     <nav v-if="breadcrumbs && breadcrumbs.length > 1" aria-label="breadcrumb" class="breadcrumbs">
-        <ol class="flex flex-wrap items-center text-sm">
+        <ol class="flex items-center text-sm min-w-0">
 
             <!-- 1) PIERWSZY -->
-            <li class="flex items-center" v-if="breadcrumbs[0]">
+            <li class="flex items-center flex-shrink-0" v-if="breadcrumbs[0]">
                 <Link
                     prefetch
                     :href="breadcrumbs[0].url"
@@ -70,7 +70,7 @@ router.on('navigate', () => {
             </li>
 
             <!-- separator po pierwszym -->
-            <li v-if="breadcrumbs.length > 1" class="flex items-center">
+            <li v-if="breadcrumbs.length > 1" class="flex items-center flex-shrink-0">
                 <span class="breadcrumb-separator mx-1 select-none pt-0.5" aria-hidden="true">
                   <IconChevron right size="lg" />
                 </span>
@@ -79,7 +79,7 @@ router.on('navigate', () => {
             <!-- 2) '...' — tylko na mobile i tylko gdy nie rozwinięte i są elementy pośrednie -->
             <li
                 v-if="breadcrumbs.length > 2 && !showAllMobile"
-                class="flex items-center sm:hidden"
+                class="flex items-center flex-shrink-0 sm:hidden"
             >
                 <button
                     type="button"
@@ -100,9 +100,9 @@ router.on('navigate', () => {
                 v-for="(item, index) in breadcrumbs.slice(1, breadcrumbs.length - 1)"
                 :key="`mid-${index}`"
                 :id="index === 0 ? 'bc-middle' : undefined"
-                class="items-center"
+                class="items-center flex-shrink-0"
                 :class="['sm:flex', showAllMobile ? 'flex' : 'hidden']"
-                >
+            >
                 <Link
                     prefetch
                     v-if="item.url"
@@ -119,8 +119,8 @@ router.on('navigate', () => {
             </li>
 
             <!-- 4) OSTATNI -->
-            <li v-if="breadcrumbs.length > 1" class="flex items-center">
-                <span class="breadcrumb-element last-element">
+            <li v-if="breadcrumbs.length > 1" class="flex items-center min-w-0 flex-1">
+                <span class="breadcrumb-element last-element truncate">
                   {{ breadcrumbs[breadcrumbs.length - 1].name }}
                 </span>
             </li>
