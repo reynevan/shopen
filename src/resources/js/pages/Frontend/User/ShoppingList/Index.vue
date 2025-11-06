@@ -4,7 +4,7 @@ import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
 import Heading from "../components/Heading.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import ShoppingListThumbnail from "./components/ShoppingListThumbnail.vue";
-import {ref} from "vue";
+import {nextTick, ref} from "vue";
 import Input from "../../../../components/frontend/input/Input.vue";
 
 defineOptions({layout: UserPanelLayout})
@@ -17,7 +17,17 @@ const form = useForm({
     name: '',
 });
 
+const nameInput = ref(null)
+
 const creatingList = ref(false);
+
+const showCreateForm = async () => {
+    creatingList.value = true
+    if (nameInput.value) {
+        await nextTick();
+        nameInput.value.focus();
+    }
+}
 
 const createList = () => {
     if (!form.name) {
@@ -36,15 +46,15 @@ const createList = () => {
 <template>
     <Heading title="Listy zakupowe">
         <template #action>
-            <Button @click="creatingList = true">Dodaj listę</Button>
+            <Button @click="showCreateForm">Dodaj listę</Button>
         </template>
     </Heading>
     <Head title="Moje listy zakupowe"/>
     <div>
-        <form v-if="creatingList" @submit.prevent="createList" class="mb-8 p-4 border-y rounded">
+        <form v-show="creatingList" @submit.prevent="createList" class="mb-8 p-4 border-y rounded">
             <h3 class="text-lg mb-2">Stwórz nową listę</h3>
             <div class="flex gap-2">
-                <Input v-model="form.name" placeholder="Nazwa listy"/>
+                <Input ref="nameInput" id="new-list-name" v-model="form.name" placeholder="Nazwa listy"/>
                 <Button type="primary" role="submit" :disabled="form.processing">
                     Utwórz
                 </Button>

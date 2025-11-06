@@ -1,5 +1,7 @@
 <script setup>
 
+import {ref} from "vue";
+
 const model = defineModel()
 const props = defineProps({
     required: {
@@ -34,10 +36,16 @@ const props = defineProps({
         type: String
     }
 })
+
+const el = ref(null);
+defineExpose({
+    focus: () => el.value?.focus(),
+});
 </script>
 
 <template>
     <input
+        ref="el"
         :type="type"
         :id="props.id"
         v-model="model"

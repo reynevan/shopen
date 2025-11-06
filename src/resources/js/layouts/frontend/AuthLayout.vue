@@ -4,6 +4,7 @@ import Cover from "@shopen/components/frontend/Cover.vue";
 import Header from "@shopen/components/frontend/layout/header/Header.vue";
 import FlashMessage from "@shopen/components/frontend/ui/FlashMessage.vue";
 import Footer from "@shopen/components/frontend/layout/footer/Footer.vue";
+import Minicart from "@shopen/components/frontend/cart/Minicart.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
 import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
@@ -25,6 +26,7 @@ const cart = computed(() => page.props.cart);
     </div>
     <Teleport to="body">
         <Cover/>
+        <Minicart :items="cart.items" :subtotal="cart.subtotal"/>
         <FlashMessage/>
         <CookiesModal/>
     </Teleport>

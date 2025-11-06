@@ -104,6 +104,10 @@ const hideMobileView = () => {
 }
 
 const resetSearch = () => {
+    if (!searchQuery.value) {
+        bodyScrollLock.unlock()
+        mobileViewOpen.value = false
+    }
     searchQuery.value = ''
     searchResults.value = {products: [], categories: []}
     showResults.value = false
@@ -113,7 +117,7 @@ const resetSearch = () => {
 <template>
     <div class="relative w-full h-full">
         <Teleport to="body" :disabled="!mobileViewOpen">
-            <div class="border border-light rounded z-50 bg-header"
+            <div class="sm:border border-light rounded z-50 bg-header"
                  :class="mobileViewOpen ? 'fixed top-0 left-0 bottom-0 right-0 z-100' : 'relative'">
                 <!-- input -->
                 <div class="relative flex items-center">
@@ -131,21 +135,29 @@ const resetSearch = () => {
                         @blur="handleBlur"
                         type="text"
                         placeholder="Szukaj produktów i kategorii..."
-                        class="input pr-10 hidden sm:block "
+                        class="input pr-10 hidden sm:block"
                     />
                     <input
                         @click="showMobileView"
                         v-model="searchQuery"
+                        v-show="mobileViewOpen"
                         @input="handleInput"
                         type="text"
                         placeholder="Szukaj produktów i kategorii..."
-                        class="w-full border-none shadow-none pr-10 transition-colors sm:hidden"
-                        :class="mobileViewOpen ? 'text-lg pl-16 py-6' : 'pl-4 py-2'"
+                        class="w-full border-none shadow-none pr-10 transition-colors sm:hidden text-lg pl-16 py-6"
                     />
+                    <button
+                        @click="showMobileView"
+                        v-show="!mobileViewOpen"
+                        class="block sm:hidden p-2"
+                        title="Szukaj"
+                    >
+                        <IconSearch size="2xl"/>
+                    </button>
                     <button
                         v-show="!mobileViewOpen"
                         @click="performSearch"
-                        class="absolute right-2 text-gray-500 hover:text-blue-500"
+                        class="hidden sm:block absolute right-2 text-gray-500 hover:text-blue-500"
                         title="Szukaj"
                     >
                         <IconSearch size="2xl"/>
@@ -162,7 +174,7 @@ const resetSearch = () => {
 
                 <!-- wyniki -->
                 <div v-if="(showResults && hasResults) || mobileViewOpen"
-                     class="search-box-results w-full sm:max-h-96 overflow-y-auto px-6 py-6 sm:mt-6">
+                     class="search-box-results w-full sm:max-h-96 overflow-y-auto px-6 py-6">
                     <div v-if="showResults" class="flex flex-col sm:flex-row">
                         <!-- Kategorie -->
                         <div class="pr-4 w-full sm:w-[300px] order-2 sm:order-1">

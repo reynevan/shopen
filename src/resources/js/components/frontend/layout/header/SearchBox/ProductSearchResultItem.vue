@@ -11,9 +11,7 @@ const emits = defineEmits(['select'])
 </script>
 
 <template>
-    <div
-        @mousedown="emits('select', product)"
-        class="flex items-center p-3 cursor-pointer hover:bg-accent/30 transition-all">
+    <div @mousedown="emits('select', product)" class="product-search-result-product flex items-center cursor-pointer">
         <div class="flex-shrink-0 mr-3">
             <ProductImage :urls="product.images ? product.images[0] : []" sizes="75px"
                    :alt="product.name"

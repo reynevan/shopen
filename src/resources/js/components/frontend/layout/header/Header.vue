@@ -33,15 +33,15 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
 <template>
     <header class="header w-full mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 z-10 sticky transition-all duration-300"
             :class="isScrollingDown ? '-top-full' : 'top-0'">
-        <div class="mx-auto container px-4">
+        <div class="mx-auto container">
             <div class="flex flex-col sm:gap-4 sm:flex-row justify-between items-center">
-                <div class="flex items-center w-full order-2 sm:order-1 h-auto sm:h-[42px]">
-                    <SearchBox/>
-                </div>
                 <div class="hidden sm:block">
                     <Link href="/" title="Shopen - Strona główna">
                         <Logo width="140px"/>
                     </Link>
+                </div>
+                <div class="hidden sm:flex items-center w-full  h-auto sm:h-[42px]">
+                    <SearchBox/>
                 </div>
                 <div class="flex justify-between items-center w-full sm:w-auto sm:gap-2 order-1 sm:order-2">
                     <div class="sm:hidden">
@@ -50,7 +50,7 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
 
                     <div class="sm:hidden">
                         <Link href="/" title="Shopen - Strona główna">
-                            <Logo width="200px"/>
+                            <Logo width="120px"/>
                         </Link>
                     </div>
 
@@ -65,15 +65,19 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                             <UserMenu/>
                         </div>
 
-                        <Button v-if="showCart" type="ghost" :shadow="false" title="Koszyk">
+                        <div v-if="showCart">
                             <MinicartButton/>
-                        </Button>
+                        </div>
 
                         <Link :href="route('user.shopping-lists.index')"
-                              class="button ghost inline-flex items-center justify-center duration-300 transition-all py-1 px-4"
+                              class="button ghost inline-flex items-center justify-center duration-300 transition-all p-2"
                               title="Listy zakupowe">
                             <IconHeart size="2xl"/>
                         </Link>
+
+                        <div class="block sm:hidden">
+                            <SearchBox/>
+                        </div>
                     </div>
 
                 </div>

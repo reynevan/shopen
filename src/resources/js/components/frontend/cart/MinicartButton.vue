@@ -22,10 +22,10 @@ const openMinicart = () => {
 
 <template>
     <div @click="openMinicart" class="cursor-pointer relative" title="Koszyk">
-        <div>
+        <div class="p-2">
             <IconCart size="2xl"/>
         </div>
-        <div class="bg-secondary text-xs text-white rounded px-1 inline-flex items-center justify-center absolute right-0 top-[-5px]" v-if="itemsCount">
+        <div class="bg-secondary text-xs text-white rounded px-1 inline-flex items-center justify-center absolute right-0 top-0" v-if="itemsCount">
             {{ itemsCount }}
         </div>
     </div>
