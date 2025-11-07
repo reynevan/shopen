@@ -145,7 +145,7 @@ onUnmounted(() => {
             <div class="flex flex-col sm:flex-row sm:items-center flex-wrap gap-4 sm:gap-0 divide-y divide-light sm:divide-y-0 px-4 sm:px-0">
                 <Filter :attribute="{slug: 'price', name: 'Cena'}"
                         :is-mobile="isMobile"
-                        @onClear="clearAttributeFilter('price')"
+                        @onClear="clearPriceFilter()"
                         :active-filter-count="priceFiltersCount">
                     <div class="flex items-center justify-between text-sm text-gray-600">
                         <span>{{ priceSliderValue[0] }} zł</span>
