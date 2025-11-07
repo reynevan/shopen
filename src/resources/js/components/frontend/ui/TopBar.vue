@@ -53,7 +53,7 @@ onUnmounted(() => {
                 color: topBarStore.slides[nextSlideIndex]?.color,
                 'background-color': topBarStore.slides[nextSlideIndex]?.background_color
             }"
-            class="absolute inset-0 flex items-center justify-center w-full px-4 transition-opacity duration-700 ease-in-out z-0"
+            class="absolute inset-0 flex items-center justify-center w-full px-4 transition-opacity duration-700 ease-in-out z-0 whitespace-pre"
             :class="isTransitioning ? 'opacity-100' : 'opacity-0'"
             v-html="topBarStore.slides[nextSlideIndex]?.content"
         ></div>
