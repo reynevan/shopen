@@ -22,7 +22,7 @@ const nextSlide = () => {
 
 onMounted(() => {
     if (topBarStore.slides.length > 1) {
-        intervalId = setInterval(nextSlide, 2000); // 5 sekund na slide
+        intervalId = setInterval(nextSlide, 5000);
     }
 });
 
@@ -43,7 +43,7 @@ onUnmounted(() => {
                 color: topBarStore.slides[currentSlideIndex]?.color,
                 'background-color': topBarStore.slides[currentSlideIndex]?.background_color
             }"
-            class="absolute inset-0 flex items-center justify-center w-full px-4 transition-opacity duration-700 ease-in-out z-10"
+            class="absolute inset-0 flex items-center justify-center w-full px-4 transition-opacity duration-700 ease-in-out z-10 whitespace-pre"
             :class="isTransitioning ? 'opacity-0' : 'opacity-100'"
             v-html="topBarStore.slides[currentSlideIndex]?.content"
         ></div>

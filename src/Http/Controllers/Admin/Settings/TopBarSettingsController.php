@@ -7,11 +7,12 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Models\TextSlide\TextSlide;
+use Shopen\Services\TextSlidesService;
 
 class TopBarSettingsController
 {
     public function __construct(
-
+        private TextSlidesService $textSlideService,
     )
     {
 
@@ -39,6 +40,8 @@ class TopBarSettingsController
             $slide->fill($slideData);
             $slide->save();
         }
+        $this->textSlideService->clearCache();
+
         return back()->with('success', 'Zmiany zostały zapisane');
     }
 }
