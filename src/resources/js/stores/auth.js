@@ -12,10 +12,14 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = () => {
         router.post('/logout');
     }
+    const logoutAdmin = () => {
+        router.post('/admin/logout');
+    }
 
     return {
         user,
         isLoggedIn,
-        logout
+        logout,
+        logoutAdmin
     }
 })

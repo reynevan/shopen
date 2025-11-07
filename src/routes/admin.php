@@ -46,6 +46,7 @@ use Shopen\Http\Controllers\Frontend\Api\BannerTrackController;
 Route::middleware(['web'])->prefix('/admin')->name('admin.')->group(function () {
     Route::get('logowanie', [LoginController::class, 'create'])->name('login');
     Route::post('logowanie', [LoginController::class, 'store']);
+    Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 });
 
 Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->group(function () {
