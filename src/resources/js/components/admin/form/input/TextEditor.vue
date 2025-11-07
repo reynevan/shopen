@@ -3,12 +3,15 @@
 import {ref, onMounted, shallowRef} from "vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import editorCssUrl from '@resources/css/app.css?url'
+import ActionButtons from "../../ui/ActionButtons.vue";
+import ActionButton from "../../ui/ActionButton.vue";
 
 const EditorComponent = shallowRef(null);
 const model = defineModel();
 
 const props = defineProps({
-    id: {type: String}
+    id: {type: String},
+    rows: {type: Number, default: 10},
 })
 
 const image_upload_handler = (blobInfo, progress) => {
@@ -98,12 +101,9 @@ onMounted(async () => {
 
 <template>
     <div class="w-full">
-        <div class="mb-2">
-            <Button size="sm" type="primary" @click="toggleEdit">Edytuj</Button>
+        <div v-if="!editing">
+            <textarea :id="id ?? 'uuid'" :rows="rows" class="input" v-model="model"></textarea>
         </div>
-        <div v-if="!editing"
-             class="border border-light w-full px-4 py-2 rounded overflow-y-auto prose prose-sm max-w-none"
-             v-html="model"></div>
         <div v-if="EditorComponent && editing">
             <component
                 v-model="model"
@@ -111,6 +111,16 @@ onMounted(async () => {
                 :init="init"
                 :is="EditorComponent"
                 />
+        </div>
+        <div class="mt-2">
+            <ActionButtons>
+                <ActionButton type="edit" @click="editing = false" :disabled="!editing">
+                    Tryb tekstowy
+                </ActionButton>
+                <ActionButton type="code" @click="editing = true" :disabled="editing">
+                    Tryb HTML
+                </ActionButton>
+            </ActionButtons>
         </div>
     </div>
 </template>

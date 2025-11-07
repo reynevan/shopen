@@ -8,6 +8,7 @@ import Minicart from "@shopen/components/frontend/cart/Minicart.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
 import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
+import TopBar from "@shopen/components/frontend/ui/TopBar.vue";
 
 const page = usePage();
 const cart = computed(() => page.props.cart);
@@ -15,6 +16,7 @@ const cart = computed(() => page.props.cart);
 </script>
 
 <template>
+    <TopBar/>
     <div class="flex flex-col h-screen">
         <Header/>
         <div class="bg-checkout py-12 grow">

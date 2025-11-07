@@ -9,11 +9,13 @@ use Inertia\Inertia;
 use Inertia\Middleware;
 use Shopen\Core\Context;
 use Shopen\Facades\Breadcrumbs;
+use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Http\Resources\Cart\CartItemResource;
 use Shopen\Services\BreadcrumbsService;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
+use Shopen\Services\TextSlidesService;
 use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
@@ -103,6 +105,9 @@ class HandleInertiaRequests extends Middleware
                 ->orderBy('name')
                 ->get();
             $data['gtag_id'] = fn() => config('services.gtm.id');
+            $data['textSlides'] = $request->inertia() ?
+                Inertia::lazy(fn () => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
+                : fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll());
         }
         return $data;
     }

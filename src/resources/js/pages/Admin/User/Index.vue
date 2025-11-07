@@ -13,7 +13,6 @@ defineProps({
 });
 </script>
 <template>
-    <Head title="Klienci"/>
     <ActionsPanel>
         <template #title>
             <PageTitle>Klienci</PageTitle>

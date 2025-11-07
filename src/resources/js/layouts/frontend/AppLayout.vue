@@ -11,6 +11,8 @@ import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
 import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
 import BannersContainer from "../../components/frontend/banner/BannersContainer.vue";
+import TopBar from "@shopen/components/frontend/ui/TopBar.vue";
+
 
 const page = usePage();
 const cart = computed(() => page.props.cart);
@@ -18,6 +20,7 @@ const cart = computed(() => page.props.cart);
 </script>
 
 <template>
+    <TopBar/>
     <div class="flex flex-col min-h-screen">
         <Header/>
         <div class="container mx-auto max-w-7xl sm:px-4 py-6 grow">

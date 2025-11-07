@@ -7,7 +7,7 @@ const props = defineProps({
     type: {
         type: String,
         default: 'view',
-        validator: (value) => ['view', 'edit', 'accept', 'cancel', 'remove', 'next', 'prev', 'up', 'down', 'mail'].includes(value)
+        validator: (value) => ['view', 'edit', 'accept', 'cancel', 'remove', 'next', 'prev', 'up', 'down', 'mail', 'code'].includes(value)
     },
     size: {
         type: String,
@@ -47,7 +47,7 @@ const tagSpecificAttrs = computed(() => {
 });
 
 const classAttr = {
-    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit'].indexOf(props.type) >= 0,
+    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit', 'code'].indexOf(props.type) >= 0,
     'bg-transparent text-gray-700 hover:bg-blue-200 hover:text-blue-800': props.type === 'view',
     'bg-transparent text-gray-700 hover:bg-red-200 hover:text-red-800': props.type === 'remove',
     'bg-transparent text-gray-700 hover:bg-green-200 hover:text-green-800': ['accept', 'mail'].indexOf(props.type) >= 0,
@@ -67,6 +67,7 @@ const iClass = {
     'bi bi-chevron-down': props.type === 'down',
     'bi bi-plus-lg': props.type === 'add',
     'bi bi-send': props.type === 'mail',
+    'bi bi-code': props.type === 'code',
 }
 
 const sizeClasses = {

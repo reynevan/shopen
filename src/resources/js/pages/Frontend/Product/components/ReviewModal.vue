@@ -93,14 +93,14 @@ watch(() => props.review, (newReview) => {
                         <div class="mb-2">
                             <label>Co sądzisz o tym produkcie? <span class="text-neutral-500">(opcjonalnie)</span></label>
                         </div>
-                        <textarea v-model="form.comment" maxlength="1000" rows="4"></textarea>
+                        <textarea class="input" v-model="form.comment" maxlength="1000" rows="4"></textarea>
                         <div class="text-right text-sm text-neutral-600">
                             {{ reviewLength }}/1000
                         </div>
                         <div v-if="form.errors.comment">{{ form.errors.comment }}</div>
                     </div>
                     <div class="flex items-center gap-6">
-                        <Button type="primary" role="submit" :disabled="form.processing">Wyślij opinię</Button>
+                        <Button type="primary" role="submit" size="lg" full-width :disabled="form.processing">Wyślij opinię</Button>
                     </div>
                 </form>
             </div>

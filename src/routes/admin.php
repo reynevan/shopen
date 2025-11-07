@@ -35,6 +35,7 @@ use Shopen\Http\Controllers\Admin\Product\ProductsIndexController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeCreateController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeEditController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodesIndexController;
+use Shopen\Http\Controllers\Admin\Settings\TopBarSettingsController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassCreateController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassEditController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassIndexController;
@@ -137,6 +138,11 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'edit'])->name('tax-classes.edit');
     Route::put('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'update'])->name('tax-classes.update');
     Route::delete('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'destroy'])->name('tax-classes.delete');
+
+    Route::prefix('/ustawienia')->name('settings.')->group(function () {
+        Route::get('/belka', [TopBarSettingsController::class, 'index'])->name('top-bar.index');
+        Route::put('/belka', [TopBarSettingsController::class, 'update'])->name('top-bar.update');
+    });
 
     Route::post('/api/upload-image', [UploadController::class, 'uploadImage']);
 

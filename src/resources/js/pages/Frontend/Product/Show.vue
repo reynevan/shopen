@@ -46,11 +46,11 @@ trackViewItem(props.product, props.variants)
 <template>
     <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">
-        <div class="flex flex-col sm:flex-row gap-6 sm:gap-4">
-            <section class="mr-0 sm:mr-6">
+        <div class="flex flex-col md:flex-row gap-6 sm:gap-4">
+            <section class="mr-0 sm:mr-6 w-full">
                 <Gallery :images="images"/>
             </section>
-            <section class="section-main">
+            <section class="section-main w-full">
                 <div>
                     <AddToShoppingListButton :product="product"/>
                 </div>

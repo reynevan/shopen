@@ -6,6 +6,6 @@
 
 <template>
     <div>
-        <div class="prose max-w-none" v-html="description"></div>
+        <div class="prose max-w-none whitespace-break-spaces" v-html="description"></div>
     </div>
 </template>
