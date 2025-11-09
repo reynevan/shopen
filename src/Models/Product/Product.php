@@ -78,7 +78,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getThumbnailSizes(): array
     {
-        return [100, 150, 250];
+        return [100, 150, 180, 250];
     }
 
     protected function getGalleryPreviewSize(): int
@@ -179,15 +179,26 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $images;
     }
 
+    protected function getThumbnailsResponsiveSizes(): array
+    {
+        $sizes = [];
+        foreach ($this->getThumbnailSizes() as $size) {
+            $sizes[] = $size;
+            $sizes[] = $size * 2;
+        }
+        sort($sizes);
+        return $sizes;
+    }
+
     public function getThumbnails($max = 2)
     {
         $thumbnails = [];
         $mediaItems = $this->getMedia('default', ['thumbnail' => true])->slice(0, $max);
+
         foreach ($mediaItems as $mediaItem) {
             $media = [];
-            foreach ($this->getThumbnailSizes() as $size) {
+            foreach ($this->getThumbnailsResponsiveSizes() as $size) {
                 $media[$size . 'w'] = $mediaItem->getFullUrl('thumbnail-' . $size);
-                $media[($size * 2) . 'w'] = $mediaItem->getFullUrl('thumbnail-' . ($size * 2));
             }
             $thumbnails[] = $media;
         }
