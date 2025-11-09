@@ -78,7 +78,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getThumbnailSizes(): array
     {
-        return [100, 150, 250, 350];
+        return [100, 150, 250];
     }
 
     protected function getGalleryPreviewSize(): int

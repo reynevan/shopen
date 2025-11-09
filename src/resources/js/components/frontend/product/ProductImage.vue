@@ -48,7 +48,7 @@ const computedSrcset = computed(() => {
 });
 
 const fallbackSrc = computed(() => {
-    return props.urls?.w300 || Object.values(props.urls)[0] || '';
+    return props.urls['w' + props.width] || Object.values(props.urls)[0] || '';
 });
 
 const widthForSizing = props.width;
@@ -64,8 +64,7 @@ const heightForSizing = computed(() => Math.round(widthForSizing / props.aspectR
         :sizes="sizes"
         :alt="alt"
         :loading="loading"
-        :width="widthForSizing"
-        :height="heightForSizing"
+        height="auto"
         class="w-full h-auto"
         :fetchpriority="fetchPriority"
     />
