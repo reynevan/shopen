@@ -42,6 +42,8 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     const ENTITY_TYPE = 'product';
 
+    const IMAGE_QUALITY = 80;
+
     protected $fillable = [
         'sku',
         'ean',
@@ -107,14 +109,14 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             $this
                 ->addMediaConversion('thumbnail-' . $size)
                 ->fit(Fit::Crop, $size, $size)
-                ->quality(100)
+                ->quality(self::IMAGE_QUALITY)
                 ->format('webp')
                 ->nonQueued();
 
             $this
                 ->addMediaConversion('thumbnail-' . ($size * 2))
                 ->fit(Fit::Crop, ($size * 2), ($size * 2))
-                ->quality(100)
+                ->quality(self::IMAGE_QUALITY)
                 ->format('webp')
                 ->nonQueued();
         }
@@ -122,7 +124,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         $this
             ->addMediaConversion('thumbnail-mail')
             ->fit(Fit::Crop, 65, 65)
-            ->quality(100)
+            ->quality(self::IMAGE_QUALITY)
             ->format('jpg')
             ->nonQueued();
 
@@ -130,13 +132,13 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         $this
             ->addMediaConversion('gallery-preview-' . $this->getGalleryPreviewSize())
             ->fit(Fit::Crop, $this->getGalleryPreviewSize(), $this->getGalleryPreviewSize())
-            ->quality(100)
+            ->quality(self::IMAGE_QUALITY)
             ->format('webp')
             ->nonQueued();
         $this
             ->addMediaConversion('gallery-preview-' . ($this->getGalleryPreviewSize() * 2))
             ->fit(Fit::Crop, $this->getGalleryPreviewSize() * 2, $this->getGalleryPreviewSize() * 2)
-            ->quality(100)
+            ->quality(self::IMAGE_QUALITY)
             ->format('webp')
             ->nonQueued();
 
