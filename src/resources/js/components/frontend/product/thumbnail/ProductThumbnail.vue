@@ -16,7 +16,7 @@ const props = defineProps({
 })
 const imageWidth = props.size === 'sm' ? 150 : 250;
 const mobileImageWidth = props.size === 'sm' ? 150 : 350;
-const productSizes = `(min-width: 640px) ${imageWidth}px, 90vw`;
+const productSizes = `(min-width: 1280px) ${imageWidth}px, (min-width: 640px) 33vw, 50vw`;
 const widthClasses = `max-w-[${mobileImageWidth}px] sm:max-w-[${imageWidth}px]`
 const nameClass = props.size === 'sm' ? 'text-sm' : 'text-sm sm:text-md';
 
