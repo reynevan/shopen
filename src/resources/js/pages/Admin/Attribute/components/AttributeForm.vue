@@ -27,6 +27,7 @@ const form = useForm({
     is_system: props.attribute?.is_system,
     is_required: props.attribute?.is_required,
     is_visible_in_details: props.attribute?.is_visible_in_details,
+    is_used_on_product_page: props.attribute?.is_used_on_product_page,
     is_used_in_list: props.attribute?.is_used_in_list,
     is_color: props.attribute?.is_color,
     options: props.attribute?.options ?? [],
@@ -121,13 +122,18 @@ const addOption = () => {
             </FormField>
 
             <FormField
-                label="Użyj w wyszukiwaniu" label-for="is_searchable">
+                label="Używany w wyszukiwaniu" label-for="is_searchable">
                 <Toggle v-model="form.is_searchable" id="is_searchable"/>
             </FormField>
 
             <FormField
-                label="Widoczny na stronie produktu" label-for="is_visible_in_details">
+                label="Widoczny szczegółach produktu" label-for="is_visible_in_details">
                 <Toggle v-model="form.is_visible_in_details" id="is_visible_in_details"/>
+            </FormField>
+
+            <FormField
+                label="Używany na stronie produktu" label-for="is_used_on_product_page">
+                <Toggle v-model="form.is_used_on_product_page" id="is_used_on_product_page"/>
             </FormField>
 
             <FormField

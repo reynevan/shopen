@@ -27,6 +27,7 @@ class AttributeResource extends JsonResource
             'is_system' => $this->is_system,
             'is_required' => $this->is_required,
             'is_visible_in_details' => $this->is_visible_in_details,
+            'is_used_on_product_page' => $this->is_used_on_product_page,
             'is_used_in_list' => $this->is_used_in_list,
             'is_color' => $this->is_color,
             'sort_order' => $this->sort_order,
