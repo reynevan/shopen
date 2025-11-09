@@ -28,6 +28,9 @@ class BreadcrumbsService
 
     public function generate(): array
     {
+        if (!config('app.debug') && Cache::has($this->request->path())) {
+            return Cache::get($this->request->path());
+        }
         $this->breadcrumbs = [];
         $this->add('Strona główna', route('home'));
 
@@ -55,16 +58,22 @@ class BreadcrumbsService
             return $this->breadcrumbs;
         }
 
+        $saveInCache = false;
         switch ($urlRewrite->entity_type) {
             case 'category':
                 $this->generateForCategory($urlRewrite->entity);
+                $saveInCache = true;
                 break;
             case 'product':
                 $this->generateForProduct($urlRewrite->entity);
                 break;
         }
 
-        return $this->finalize();
+        $breadcrumbs = $this->finalize();
+        if ($saveInCache) {
+            Cache::put($this->request->path(), $breadcrumbs, self::CACHE_TTL);
+        }
+        return $breadcrumbs;
     }
 
     public function remove()
