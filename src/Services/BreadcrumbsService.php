@@ -4,6 +4,7 @@ namespace Shopen\Services;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
@@ -11,6 +12,8 @@ use Shopen\Models\UrlRewrite;
 
 class BreadcrumbsService
 {
+    const CACHE_TTL = 60 * 60;
+
     protected array $breadcrumbs = [];
 
     protected array $registeredRoutes = [];
@@ -46,9 +49,7 @@ class BreadcrumbsService
             return $this->breadcrumbs;
         }
 
-        $urlRewrite = UrlRewrite::with('entity')
-            ->where('request_path', $path)
-            ->first();
+        $urlRewrite = app(UrlService::class)->getRewrite($path);
 
         if (!$urlRewrite || !$urlRewrite->entity) {
             return $this->breadcrumbs;
@@ -86,38 +87,53 @@ class BreadcrumbsService
 
     protected function generateForCategory(Category $category): void
     {
-        $categoryPath = [];
-        $current = $category;
-        while ($current) {
-            array_unshift($categoryPath, [
-                'name' => $current->getCustomAttribute('name'),
-                'url' => $this->getCategoryUrl($current),
-            ]);
-            $current = $current->parent;
-        }
+        $cacheKey = 'breadcrumbs.category.' . $category->id;
+        $categoryPath = Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($category) {
+            $path = [];
+            $current = $category;
+            while ($current) {
+                array_unshift($path, [
+                    'name' => $current->getCustomAttribute('name'),
+                    'url' => $this->getCategoryUrl($current),
+                ]);
+                $current = $current->parent;
+            }
+            return $path;
+        });
+
         $this->breadcrumbs = array_merge($this->breadcrumbs, $categoryPath);
     }
 
     protected function generateForProduct(Product $product): void
     {
-        $refererUrl = $this->request->header('referer');
+        $lastUrl = session('last_category_page');
         $refererRewrite = null;
+        $categoryGenerated = false;
 
-        if ($refererUrl) {
-            $refererPath = ltrim(parse_url($refererUrl, PHP_URL_PATH), '/');
+        if ($lastUrl) {
+            $refererPath = ltrim(parse_url($lastUrl, PHP_URL_PATH), '/');
             $refererRewrite = UrlRewrite::query()
                 ->with('entity')
                 ->where('request_path', $refererPath)
                 ->where('entity_type', 'category')
                 ->first();
         }
-
         if ($refererRewrite && $refererRewrite->entity) {
-            $this->generateForCategory($refererRewrite->entity);
-        } else {
-            // Logika fallback...
+            $isProductCategory = $product->categories()->where('categories.id', $refererRewrite->entity_id)->exists();
+            if ($isProductCategory) {
+                $this->generateForCategory($refererRewrite->entity);
+                $categoryGenerated = true;
+            }
         }
-
+        if (!$categoryGenerated) {
+            $category = $product->categories()
+                ->where('is_canonical', true)
+                ->orderBy('level', 'desc')
+                ->first();
+            if ($category) {
+                $this->generateForCategory($category);
+            }
+        }
         $this->add($product->getCustomAttribute('name'), $this->getProductUrl($product));
     }
 

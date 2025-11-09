@@ -17,6 +17,7 @@ class UpdateCategoryRequest extends FormRequest
     {
         return [
             'is_active' => 'required|boolean',
+            'is_canonical' => 'boolean',
             'attributes' => 'required|array',
             'remove_image_menu' => 'nullable|boolean',
             'parent_id' => 'nullable|integer|exists:categories,id',

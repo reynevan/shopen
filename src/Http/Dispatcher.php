@@ -10,6 +10,7 @@ use Shopen\Http\Controllers\Frontend\Product\ProductShowController;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Models\UrlRewrite;
+use Shopen\Services\UrlService;
 
 class Dispatcher
 {
@@ -23,20 +24,20 @@ class Dispatcher
         $parts = explode('/', $url);
         $domain = array_shift($parts);
         $requestPath = implode('/', $parts);
-        $urlRewrite = UrlRewrite::query()->where('request_path', $requestPath)->first();
+        $urlRewrite = app(UrlService::class)->getRewrite($requestPath);
         if (!$urlRewrite) {
             abort(404);
         }
         $this->container = Container::getInstance();
         if ($urlRewrite->entity_type === 'product') {
             $controller = $this->container->make(ProductShowController::class);
-            $product = Product::query()->where('id', $urlRewrite->entity_id)->first();
+            $product = $urlRewrite->entity;
             $parameters = $this->getParameters([$product], $controller, 'index');
             return $controller->index(...$parameters);
         }
         if ($urlRewrite->entity_type === 'category') {
             $controller = $this->container->make(CategoryShowController::class);
-            $category = Category::query()->where('is_active', true)->where('id', $urlRewrite->entity_id)->first();
+            $category = $urlRewrite->entity;
             $parameters = $this->getParameters([$category], $controller, 'index');
             return $controller->index(...$parameters);
         }

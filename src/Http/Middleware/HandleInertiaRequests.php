@@ -2,6 +2,7 @@
 
 namespace Shopen\Http\Middleware;
 
+use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Number;
@@ -11,12 +12,10 @@ use Shopen\Core\Context;
 use Shopen\Facades\Breadcrumbs;
 use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Http\Resources\Cart\CartItemResource;
-use Shopen\Services\BreadcrumbsService;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
 use Shopen\Services\TextSlidesService;
-use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -68,12 +67,12 @@ class HandleInertiaRequests extends Middleware
                 'error' => fn () => $request->session()->get('error'),
                 'warning' => fn () => $request->session()->get('warning'),
                 'info' => fn () => $request->session()->get('info'),
-                'validation_status' => fn () => $request->session()->get('validation_status'),
+                /*'validation_status' => fn () => $request->session()->get('validation_status'),
                 'validation_message' => fn () => $request->session()->get('validation_message'),
                 'validation_summary' => fn () => $request->session()->get('validation_summary'),
                 'validation_errors' => fn () => $request->session()->get('validation_errors'),
                 'validation_warnings' => fn () => $request->session()->get('validation_warnings'),
-                'is_validated' => fn () => $request->session()->get('is_validated'),
+                'is_validated' => fn () => $request->session()->get('is_validated'),*/
             ],
             'route' => $request->route()->getName()
         ];

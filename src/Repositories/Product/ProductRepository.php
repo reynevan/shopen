@@ -122,9 +122,17 @@ class ProductRepository
         })->toArray();
     }
 
-    public function loadAttributes(Product $product)
+    public function loadAttributes(Product $product): void
     {
         $attributes = $this->attributeRepository->getAll();
+        foreach ($attributes as $attribute) {
+            $product->loadAttribute($attribute);
+        }
+    }
+
+    public function loadAttributesUsedOnProductPage(Product $product): void
+    {
+        $attributes = $this->attributeRepository->getUsedOnProductPage();
         foreach ($attributes as $attribute) {
             $product->loadAttribute($attribute);
         }

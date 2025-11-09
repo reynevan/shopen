@@ -58,6 +58,7 @@ router.on('navigate', () => {
             <!-- 1) PIERWSZY -->
             <li class="flex items-center flex-shrink-0" v-if="breadcrumbs[0]">
                 <Link
+                    title="Strona główna"
                     prefetch
                     :href="breadcrumbs[0].url"
                     class="breadcrumb-element flex items-center gap-1"

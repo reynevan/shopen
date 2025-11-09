@@ -17,6 +17,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'is_active' => 'required|boolean',
+            'is_canonical' => 'boolean',
             'display_in_menu' => 'boolean',
             'attributes' => 'required|array',
             'attributes.*' => 'nullable',

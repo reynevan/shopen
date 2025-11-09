@@ -43,7 +43,6 @@ class Banner extends Model
     public function getPagePlacementKey(): string
     {
         $placementsPageTop = [
-            Placement::ALL_PAGE_TOP->value,
             Placement::HOME_PAGE_TOP->value,
             Placement::CATEGORY_PAGE_TOP->value,
             Placement::PRODUCT_PAGE_TOP->value,
@@ -52,7 +51,6 @@ class Banner extends Model
             return 'page_top';
         }
         $placementsPageBottom = [
-            Placement::ALL_PAGE_BOTTOM->value,
             Placement::HOME_PAGE_BOTTOM->value,
             Placement::CATEGORY_PAGE_BOTTOM->value,
             Placement::PRODUCT_PAGE_BOTTOM->value,

@@ -35,13 +35,9 @@ readonly class ProductShowController
     public function index(Product $product): Response
     {
         $this->recentlyViewedProductsService->add($product);
-
         $product->load(['price', 'relatedProducts.price', 'urlRewrite', 'brand']);
-
-        $this->productRepository->loadAttributes($product);
-
+        $this->productRepository->loadAttributesUsedOnProductPage($product);
         $product->image = $product->getThumbnailUrl();
-
         $user = Auth::user();
 
         return Inertia::render('Frontend/Product/Show', [
@@ -71,7 +67,6 @@ readonly class ProductShowController
         $data = [];
         $selectedAttributes = array_keys(request()->query());
         foreach ($attributes as $attribute) {
-
             $childProductIds = Product::query()
                 ->active()
                 ->where('parent_id', $product->id)

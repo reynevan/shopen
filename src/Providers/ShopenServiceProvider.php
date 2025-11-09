@@ -42,6 +42,7 @@ use Shopen\Services\CustomAttributesService;
 use Shopen\Observers\ProductPriceObserver;
 use Shopen\Services\FiltersService;
 use Shopen\Services\ShoppingListService;
+use Shopen\Services\UrlService;
 
 class ShopenServiceProvider  extends ServiceProvider
 {
@@ -134,6 +135,10 @@ class ShopenServiceProvider  extends ServiceProvider
 
         $this->app->singleton(ShoppingListService::class, function ($app) {
             return new ShoppingListService();
+        });
+
+        $this->app->singleton(UrlService::class, function ($app) {
+            return new UrlService();
         });
 
         Event::listen(ProductPriceRuleUpdated::class, RecalculateDiscountPrices::class);

@@ -4,6 +4,8 @@ namespace Shopen\Models\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Shopen\Models\Attribute\Attribute;
@@ -233,12 +235,13 @@ trait HasCustomAttributes
 
     public function loadAttributes($attributes): static
     {
-        $time = microtime(true);
+        $stringAttributes = Collection::make($attributes)->filter(fn ($attribute) => is_string($attribute))->count() === count($attributes);
+        if ($stringAttributes) {
+            $attributes = $this->getAttributeRepository()->getAllByCode($attributes);
+        }
         foreach ($attributes as $attribute) {
             $this->loadAttribute($attribute);
         }
-
-        config('app.debug') && Log::debug('[TIME] loadAttributes: ' . (microtime(true) - $time));
         return $this;
     }
 

@@ -22,6 +22,7 @@ const categoryStore = useCategoryStore()
 const initialFormState = (category) => ({
     attributes: Array.isArray(category?.attributes) ? {} : (category?.attributes ?? {}),
     is_active: category?.is_active ?? false,
+    is_canonical: category?.is_canonical ?? false,
     parent_id: category?.parent_id,
     seo: Array.isArray(category?.seo) ? {} : (category?.seo ?? {}),
     image_desktop: null,
@@ -142,6 +143,12 @@ onBeforeUnmount(() => {
                         label-for="is_active"
                         label="Aktywna">
                         <Toggle v-model="form.is_active" id="is_active"/>
+                    </FormField>
+
+                    <FormField
+                        label-for="is_canonical"
+                        label="Użyj w breadcrumbs">
+                        <Toggle v-model="form.is_canonical" id="is_canonical"/>
                     </FormField>
 
                     <FormField

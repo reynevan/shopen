@@ -44,7 +44,13 @@ readonly class CategoryShowController
 
         $products = $searchResult->paginatedProducts();
 
-        $category->loadAttributes(['description', 'name']);
+        $category->loadAttributes(['description', 'name', 'is_active']);
+
+        if (!$category->getCustomAttribute('is_active')) {
+            abort(404);
+        }
+
+        session(['last_category_page' => url()->current()]);
 
         return Inertia::render('Frontend/Category/Show', [
             'products' => fn() => ProductResource::collection($products),

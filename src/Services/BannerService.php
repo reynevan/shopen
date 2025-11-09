@@ -15,57 +15,45 @@ use Shopen\Models\Product\Product;
 
 class BannerService
 {
-    private const CACHE_TTL = 0 * 60;
-
-    public function getForPlacement(string $placementKey): Collection
-    {
-        $cacheKey = "banners.predefined.{$placementKey}";
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($placementKey) {
-            return $this->buildBaseQuery()
-                ->where('placement_type', PlacementType::PREDEFINED)
-                ->where('placement_key', $placementKey)
-                ->get();
-        })->map(fn($banner) => $this->transformBanner($banner));
-    }
+    private const CACHE_TTL = 60 * 60;
 
     public function getForCategory(Category $category): array
     {
-        $placements = [
-            Placement::ALL_PAGE_TOP->value,
-            Placement::ALL_PAGE_BOTTOM->value,
-            Placement::CATEGORY_PAGE_TOP->value,
-            Placement::CATEGORY_PAGE_BOTTOM->value,
-            Placement::CATEGORY_PAGE_PRODUCTS_TOP->value,
-            Placement::CATEGORY_PAGE_PRODUCTS_BOTTOM->value,
-        ];
-        $data = [];
-        $banners = $this->buildBaseQuery()
-            ->where(function ($query) use ($category) {
-                $query
-                    ->whereHas('categories', fn($q) => $q->where('category_id', $category->id))
-                    ->orWhereDoesntHave('categories');
-            })
-            ->whereIn('placement_key', $placements)
-            ->get();
-        foreach ($banners as $banner) {
-            $data[$banner->getPagePlacementKey()][] = BannerResource::make($banner);
-        }
-        return $data;
+        $cacheKey = 'banners.category.' . $category->id;
+        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($category) {
+            $placements = [
+                Placement::CATEGORY_PAGE_TOP->value,
+                Placement::CATEGORY_PAGE_BOTTOM->value,
+                Placement::CATEGORY_PAGE_PRODUCTS_TOP->value,
+                Placement::CATEGORY_PAGE_PRODUCTS_BOTTOM->value,
+            ];
+            $data = [];
+            $banners = $this->buildBaseQuery()
+                ->where(function ($query) use ($category) {
+                    $query
+                        ->whereHas('categories', fn($q) => $q->where('category_id', $category->id))
+                        ->orWhereDoesntHave('categories');
+                })
+                ->whereIn('placement_key', $placements)
+                ->get();
+            foreach ($banners as $banner) {
+                $data[$banner->getPagePlacementKey()][] = BannerResource::make($banner);
+            }
+            return $data;
+        });
     }
 
-    public function getForProduct(Product $product)
+    public function getForProduct(Product $product): array
     {
-        $placements = [
-            Placement::ALL_PAGE_TOP,
-            Placement::ALL_PAGE_BOTTOM,
-            Placement::PRODUCT_PAGE_TOP,
-            Placement::PRODUCT_PAGE_BOTTOM,
-        ];
-        $banners = [];
-        foreach ($placements as $placement) {
-            $cacheKey = "banners.product.{$placement->value}.{$product->id}";
-            $banners[$placement->value] = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($placement, $product) {
-                return $this->buildBaseQuery()
+        $cacheKey = 'banners.product.' . $product->id;
+        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($product) {
+            $placements = [
+                Placement::PRODUCT_PAGE_TOP,
+                Placement::PRODUCT_PAGE_BOTTOM,
+            ];
+            $banners = [];
+            foreach ($placements as $placement) {
+                $banners[$placement->value] = $this->buildBaseQuery()
                     ->where('placement_type', PlacementType::PREDEFINED)
                     ->where('placement_key', $placement->value)
                     ->where(function ($query) use ($product) {
@@ -77,23 +65,11 @@ class BannerService
                             })
                             ->orWhereDoesntHave('categories');
                     })
-                    ->get();
-            })->map(fn($banner) => BannerResource::make($banner));
-        }
-        return $banners;
-    }
-
-    public function getByCode(string $code): ?array
-    {
-        $cacheKey = "banners.code.{$code}";
-        $banner = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($code) {
-            return $this->buildBaseQuery()
-                ->where('placement_type', PlacementType::DYNAMIC)
-                ->where('placement_key', $code)
-                ->first();
+                    ->get()
+                    ->map(fn($banner) => BannerResource::make($banner));
+            }
+            return $banners;
         });
-
-        return $banner ? $this->transformBanner($banner) : null;
     }
 
     private function buildBaseQuery()

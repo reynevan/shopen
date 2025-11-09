@@ -196,7 +196,7 @@ class SearchServiceResult
                     'id' => $category->id,
                     'slug' => $category->getFilterSlug($names[$category->id] ?? null),
                     'name' => $names[$category->id] ?? null,
-                    'value' => $category->name,
+                    'value' => $names[$category->id] ?? null,
                     'count' => $categoriesCount[$category->id] ?? 0
                 ];
             })
@@ -215,7 +215,7 @@ class SearchServiceResult
             }
         }
 
-        $attributes = app(ProductAttributeRepository::class)->getFilterable();
+        $attributes = app(ProductAttributeRepository::class)->getFilterable(true);
         foreach ($attributes as $attribute) {
             foreach ($attribute->options as $option) {
                 $option->count = $attributeOptionsCount[$attribute->code][$option->id] ?? 0;
@@ -226,7 +226,6 @@ class SearchServiceResult
                 ->sortBy('value')
                 ->filter(fn($option) => $option->count > 0);
         }
-
         return $attributes->filter(fn($attr) => $attr->options->sum('count') > 0);
     }
 }

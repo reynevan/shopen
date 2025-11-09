@@ -62,6 +62,8 @@ const onInput = (event) => {
 <template>
     <div class="amount-input">
         <button
+            role="button"
+            aria-label="Zwiększ ilość"
             @click="dec"
             :disabled="disabled"
             :class="[
@@ -82,6 +84,8 @@ const onInput = (event) => {
             ]"/>
 
         <button
+            role="button"
+            aria-label="Zmniejsz ilość"
             @click="inc"
             :disabled="disabled"
             :class="[

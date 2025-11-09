@@ -25,6 +25,7 @@ class CategoryResource extends JsonResource
             'parent_id' => $this->parent_id,
             'children' => CategoryResource::collection($this->whenLoaded('children')),
             'is_active' => $this->is_active,
+            'is_canonical' => $this->is_canonical,
             'display_in_menu' => $this->display_in_menu,
             'sort_index' => $this->sort_index,
             'attributes' => $this->resource->getCustomAttributes(),

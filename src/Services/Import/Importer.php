@@ -28,6 +28,7 @@ class Importer
             'is_required' => $attributeData['is_required'] ?? false,
             'is_used_in_list' => $attributeData['in_list'] ?? false,
             'is_visible_in_details' => $attributeData['in_details'] ?? true,
+            'is_used_on_product_page' => $attributeData['is_used_on_product_page'] ?? false,
             'is_color' => $attributeData['is_color'] ?? false,
         ];
         $attribute = Attribute::forceCreate($data);

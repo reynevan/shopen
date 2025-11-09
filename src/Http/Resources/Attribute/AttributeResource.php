@@ -14,7 +14,7 @@ class AttributeResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $data = [
+        return [
             'id' => $this->id,
             'name' => $this->name,
             'entity_type' => $this->entity_type,
@@ -28,8 +28,7 @@ class AttributeResource extends JsonResource
             'is_required' => $this->is_required,
             'is_visible_in_details' => $this->is_visible_in_details,
             'is_used_in_list' => $this->is_used_in_list,
-            'options' => AttributeOptionResource::collection($this->sortedOptions)
+            'options' => AttributeOptionResource::collection($this->whenLoaded('options')),
         ];
-        return $data;
     }
 }

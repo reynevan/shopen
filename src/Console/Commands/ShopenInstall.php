@@ -128,6 +128,7 @@ class ShopenInstall extends Command
                 'is_required' => true,
                 'is_used_in_list' => true,
                 'is_visible_in_details' => false,
+                'is_used_on_product_page' => true,
                 'entity_type' => Attribute::ENTITY_TYPE_PRODUCT,
                 'sort_order' => 5
             ],
@@ -156,6 +157,7 @@ class ShopenInstall extends Command
                 'is_required' => false,
                 'is_used_in_list' => false,
                 'is_visible_in_details' => false,
+                'is_used_on_product_page' => true,
                 'entity_type' => Attribute::ENTITY_TYPE_PRODUCT,
                 'sort_order' => 10
             ],
@@ -170,6 +172,7 @@ class ShopenInstall extends Command
                 'is_required' => false,
                 'is_used_in_list' => false,
                 'is_visible_in_details' => false,
+                'is_used_on_product_page' => true,
                 'sort_order' => 20,
                 'entity_type' => Attribute::ENTITY_TYPE_PRODUCT,
             ],

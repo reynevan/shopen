@@ -4,8 +4,6 @@ namespace Shopen\Enums\Banner;
 
 enum Placement: string
 {
-    case ALL_PAGE_TOP = 'all_page_top';
-    case ALL_PAGE_BOTTOM = 'all_page_bottom';
     case HOME_PAGE_TOP = 'home_page_top';
     case HOME_PAGE_BOTTOM = 'home_page_bottom';
     case CATEGORY_PAGE_TOP = 'category_page_top';
@@ -19,8 +17,6 @@ enum Placement: string
     public function label(): string
     {
         return match ($this) {
-            self::ALL_PAGE_TOP => 'Każda strona - na górze',
-            self::ALL_PAGE_BOTTOM => 'Każda strona - na dole',
             self::HOME_PAGE_TOP => 'Strona główna - na górze',
             self::HOME_PAGE_BOTTOM => 'Strona główna - na dole',
             self::CATEGORY_PAGE_TOP => 'Strona kategorii - na górze',

@@ -26,6 +26,7 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected $casts = [
         'is_active' => 'bool',
+        'is_canonical' => 'bool',
         'display_in_menu' => 'bool',
         'level' => 'int',
         'parent_id' => 'int',
@@ -33,6 +34,7 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected $fillable = [
         'is_active',
+        'is_canonical',
         'parent_id'
     ];
 

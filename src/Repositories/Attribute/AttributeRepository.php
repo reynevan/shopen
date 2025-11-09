@@ -40,6 +40,15 @@ class AttributeRepository
             ->get();
     }
 
+    public function getUsedOnProductPage(): Collection
+    {
+        return static::ATTRIBUTE_MODEL::query()
+            ->with(['options'])
+            ->where('is_used_on_product_page', true)
+            ->orWhere('is_visible_in_details', true)
+            ->get();
+    }
+
     public function getAllByCode($codes)
     {
         return static::ATTRIBUTE_MODEL::query()
@@ -81,16 +90,19 @@ class AttributeRepository
             ->get();
     }
 
-    public function getFilterable(): Collection
+    public function getFilterable($withOptions = false): Collection
     {
-        if (isset($this->filterable[static::ATTRIBUTE_MODEL])) {
-            return $this->filterable[static::ATTRIBUTE_MODEL];
+        if (isset($this->filterable[static::ATTRIBUTE_MODEL][$withOptions])) {
+            return $this->filterable[static::ATTRIBUTE_MODEL][$withOptions];
         }
-        $this->filterable[static::ATTRIBUTE_MODEL] =  static::ATTRIBUTE_MODEL::query()
+        $this->filterable[static::ATTRIBUTE_MODEL][$withOptions] = static::ATTRIBUTE_MODEL::query()
+            ->when($withOptions, function (Builder $query) {
+                $query->with(['options']);
+            })
             ->where('is_filterable', true)
             ->whereIn('frontend_type', ['multiselect', 'select'])
             ->get();
-        return $this->filterable[static::ATTRIBUTE_MODEL];
+        return $this->filterable[static::ATTRIBUTE_MODEL][$withOptions];
     }
 
     public function getSortable(): Collection

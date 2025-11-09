@@ -21,6 +21,7 @@ class Attribute extends Model
         'is_system' => 'bool',
         'is_required' => 'bool',
         'is_visible_in_details' => 'bool',
+        'is_used_on_product_page' => 'bool',
         'is_used_in_list' => 'bool',
         'is_color' => 'bool',
     ];
@@ -37,6 +38,7 @@ class Attribute extends Model
         'is_searchable',
         'is_required',
         'is_visible_in_details',
+        'is_used_on_product_page',
         'is_used_in_list',
         'is_color'
     ];
