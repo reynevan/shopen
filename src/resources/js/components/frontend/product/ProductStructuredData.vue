@@ -5,8 +5,7 @@ import { Head } from '@inertiajs/vue3';
 const props = defineProps({
     product: {
         type: Object,
-        required: true,
-        validator: (p) => p.name && p.image,
+        required: true
     },
 });
 

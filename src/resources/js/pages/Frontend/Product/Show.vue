@@ -8,13 +8,13 @@ import ProductPrice from "@shopen/pages/Frontend/Product/components/ProductPrice
 import ProductReviews from "@shopen/pages/Frontend/Product/components/ProductReviews.vue";
 import ReviewsInfo from "@shopen/pages/Frontend/Product/components/ReviewsInfo.vue";
 import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
-import ProductStructredData from "@shopen/components/frontend/product/ProductStructredData.vue";
+import ProductStructuredData from "@shopen/components/frontend/product/ProductStructuredData.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import AddToShoppingListButton from "@shopen./components/frontend/shoppingList/AddToShoppingListButton.vue";
 import ProductDescription from "@shopen/pages/Frontend/Product/components/ProductDescription.vue";
 import ProductBrand from "@shopen/pages/Frontend/Product/components/ProductBrand.vue";
 import {ref} from "vue";
-import {trackViewItem} from "../../../utils/ga4";
+import {trackViewItem} from "@shopen/utils/ga4.js";
 import DetailsSection from "@shopen/pages/Frontend/Product/components/DetailsSection.vue";
 import ProductInfo from "@shopen/pages/Frontend/Product/components/ProductInfo.vue";
 
@@ -114,6 +114,6 @@ trackViewItem(props.product, props.variants)
 
         <BannersContainer :banners="banners.product_page_bottom"/>
 
-        <ProductStructredData :product="product"/>
+        <ProductStructuredData :product="product"/>
     </div>
 </template>

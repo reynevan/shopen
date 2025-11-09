@@ -24,7 +24,7 @@ const props = defineProps({
     sortOptions: {type: Array},
     searchQuery: {type: String},
     listName: {type: String, default: ''},
-    listId: {type: String},
+    listId: {type: [String,Number]},
 });
 
 const bodyScrollLock = useBodyScrollLock()

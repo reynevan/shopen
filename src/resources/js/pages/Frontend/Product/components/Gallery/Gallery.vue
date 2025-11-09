@@ -14,10 +14,10 @@ const previewIndex = ref(0);
 const isModalOpen = ref(false);
 const maxPreviewImages = ref(5)
 
-if (window && window.innerWidth < 600) {
+if (typeof window !== 'undefined' && window.innerWidth < 600) {
     maxPreviewImages.value = 4;
 }
-if (window && window.innerWidth < 480) {
+if (typeof window !== 'undefined' && window.innerWidth < 480) {
     maxPreviewImages.value = 3;
 }
 
@@ -32,7 +32,7 @@ try {
     }));
 } catch(e) {}
 const wheelOpt = supportsPassive ? { passive: false } : false;
-const wheelEvent = 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
+const wheelEvent = typeof document !== 'undefined' && 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
 function preventDefault(e) {
     e.preventDefault();
 }

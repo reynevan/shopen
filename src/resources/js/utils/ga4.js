@@ -4,6 +4,7 @@
 // ===== PODSTAWOWE EVENTY =====
 
 export const trackPageView = (pageTitle = null, pagePath = null) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'page_view', {
         page_title: pageTitle || document.title,
         page_path: pagePath || window.location.pathname,
@@ -12,6 +13,7 @@ export const trackPageView = (pageTitle = null, pagePath = null) => {
 };
 
 export const trackSearch = (searchTerm, resultsCount = null) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     dataLayer && dataLayer.push({
         event: 'search', search_term: searchTerm,
         ...(resultsCount !== null && { search_results: resultsCount})
@@ -21,6 +23,7 @@ export const trackSearch = (searchTerm, resultsCount = null) => {
 // ===== EVENTY PRODUKTÓW =====
 
 export const trackViewItemList = (items, listName, listId) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'view_item_list', {
         item_list_name: listName,
         item_list_id: listId,
@@ -46,6 +49,7 @@ function getActiveVariant(variants) {
 }
 
 export const trackViewItem = (product, variants) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'view_item', {
         currency: 'PLN',
         value: product.price.final_price_raw,
@@ -60,6 +64,7 @@ export const trackViewItem = (product, variants) => {
 };
 
 export const trackSelectItem = (product, listName) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'select_item', {
         item_list_name: listName,
         items: [{
@@ -74,6 +79,7 @@ export const trackSelectItem = (product, listName) => {
 // ===== EVENTY KOSZYKA =====
 
 export const trackAddToCart = (product, quantity = 1) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'add_to_cart', {
         currency: 'PLN',
         value: (product.price.final_price_raw) * quantity,
@@ -88,6 +94,7 @@ export const trackAddToCart = (product, quantity = 1) => {
 };
 
 export const trackRemoveFromCart = (item, quantity = 1) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'remove_from_cart', {
         currency: 'PLN',
         value: item.total_final_price_raw,
@@ -101,6 +108,7 @@ export const trackRemoveFromCart = (item, quantity = 1) => {
 };
 
 export const trackViewCart = (cartItems) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     const totalValue = cartItems.reduce((sum, item) => sum + (item.total_final_price_raw), 0);
 
     gtag && gtag('event', 'view_cart', {
@@ -118,6 +126,7 @@ export const trackViewCart = (cartItems) => {
 // ===== EVENTY CHECKOUT =====
 
 export const trackBeginCheckout = (cartItems) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'begin_checkout', {
@@ -133,6 +142,7 @@ export const trackBeginCheckout = (cartItems) => {
 };
 
 export const trackAddShippingInfo = (cartItems, shippingMethod) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'add_shipping_info', {
@@ -149,6 +159,7 @@ export const trackAddShippingInfo = (cartItems, shippingMethod) => {
 };
 
 export const trackAddPaymentInfo = (cartItems, paymentMethod) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     const totalValue = cartItems.reduce((sum, item) => sum + item.total_final_price_raw, 0);
 
     gtag && gtag('event', 'add_payment_info', {
@@ -167,6 +178,7 @@ export const trackAddPaymentInfo = (cartItems, paymentMethod) => {
 // ===== EVENT ZAKUPU =====
 
 export const trackPurchase = (order) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'purchase', {
         transaction_id: order.order_number,
         value: order.total_amount,
@@ -185,6 +197,7 @@ export const trackPurchase = (order) => {
 // ===== EVENTY REFUND =====
 
 export const trackRefund = (order, refundedItems = null) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     const eventData = {
         transaction_id: order.order_number || order.uuid,
         currency: 'PLN'
@@ -210,6 +223,7 @@ export const trackRefund = (order, refundedItems = null) => {
 // ===== EVENTY PROMOCJI =====
 
 export const trackViewPromotion = (promoCode) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'view_promotion', {
         promotion_id: promoCode.code,
         promotion_name: promoCode.name,
@@ -219,6 +233,7 @@ export const trackViewPromotion = (promoCode) => {
 };
 
 export const trackSelectPromotion = (promoCode) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'select_promotion', {
         promotion_id: promoCode.code,
         promotion_name: promoCode.name,
@@ -230,6 +245,7 @@ export const trackSelectPromotion = (promoCode) => {
 // ===== EVENTY WISHLIST =====
 
 export const trackAddToWishlist = (product) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'add_to_wishlist', {
         currency: 'PLN',
         value: parseFloat(product.price.final_price_raw),
@@ -244,18 +260,21 @@ export const trackAddToWishlist = (product) => {
 // ===== EVENTY UŻYTKOWNIKÓW =====
 
 export const trackSignUp = (method = 'email') => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'sign_up', {
         method: method
     });
 };
 
 export const trackLogin = (method = 'email') => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     dataLayer && dataLayer.push({event: 'login', method: method});
 };
 
 // ===== EVENTY RECENZJI =====
 
 export const trackReviewSubmit = (product, rating) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'review_submit', {
         item_id: product.id || product.sku,
         item_name: product.name,
@@ -269,6 +288,7 @@ export const trackReviewSubmit = (product, rating) => {
 // ===== EVENTY SHARE =====
 
 export const trackShare = (contentType, itemId, method = 'unknown') => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'share', {
         method: method,
         content_type: contentType,
@@ -279,6 +299,7 @@ export const trackShare = (contentType, itemId, method = 'unknown') => {
 // ===== EVENTY CUSTOM =====
 
 export const trackNewsletterSignup = (location = 'footer') => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'newsletter_signup', {
         location: location,
         custom_parameters: {
@@ -288,6 +309,7 @@ export const trackNewsletterSignup = (location = 'footer') => {
 };
 
 export const trackContactForm = (formType = 'contact') => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'contact_form_submit', {
         form_type: formType,
         custom_parameters: {
@@ -297,6 +319,7 @@ export const trackContactForm = (formType = 'contact') => {
 };
 
 export const trackFilterUse = (filterType, filterValue) => {
+    if (typeof window === 'undefined' || !window.gtag) return;
     gtag && gtag('event', 'filter_products', {
         filter_type: filterType,
         filter_value: filterValue,

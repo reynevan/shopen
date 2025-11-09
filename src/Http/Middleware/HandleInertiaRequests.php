@@ -16,6 +16,7 @@ use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
 use Shopen\Services\TextSlidesService;
+use Tighten\Ziggy\Ziggy;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -77,8 +78,18 @@ class HandleInertiaRequests extends Middleware
             'route' => $request->route()->getName()
         ];
         if (Route::is('admin.*')) {
+            $ziggy = fn () => [
+                ...(new Ziggy)->filter('admin.*')->toArray(),
+                'location' => $request->url(),
+            ];
+            $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
             $data['referer'] = $request->header('referer');
         } else {
+            $ziggy = fn () => [
+                ...(new Ziggy)->filter('!admin.*')->toArray(),
+                'location' => $request->url(),
+            ];
+            $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
             $data['cart'] = function () use ($request) {
                 $subtotal = 0;
                 $items = [];

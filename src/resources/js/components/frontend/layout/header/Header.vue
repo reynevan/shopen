@@ -2,7 +2,6 @@
 
 import {Link} from "@inertiajs/vue3";
 import IconProfile from "@shopen/components/icons/IconProfile.vue";
-import Button from "@shopen/components/frontend/ui/Button.vue";
 import SearchBox from "@shopen/components/frontend/layout/header/SearchBox/SearchBox.vue";
 import MinicartButton from "../../cart/MinicartButton.vue";
 import UserMenu from "./UserMenu.vue";
@@ -11,6 +10,7 @@ import IconHeart from "../../../icons/IconHeart.vue";
 import Navigation from "./Navigation.vue";
 import MobileMenu from "./MobileMenu.vue";
 import Logo from "@shopen/components/frontend/ui/Logo.vue";
+import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
 
 const props = defineProps({
     hideOnScroll: {
@@ -25,7 +25,6 @@ const props = defineProps({
 
 const auth = useAuthStore();
 
-import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
 const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
 
 </script>
