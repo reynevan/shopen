@@ -21,7 +21,7 @@ const submit = () => {
     form.post(route('contact.submit'), {
         preserveScroll: true,
         onSuccess: () => {
-            form.reset();
+            form.reset('subject', 'message', 'name', 'email', 'phone');
         }
     })
 }
