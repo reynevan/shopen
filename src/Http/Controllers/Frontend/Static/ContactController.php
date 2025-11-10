@@ -15,7 +15,9 @@ class ContactController
 {
     public function index(): Response
     {
-        return Inertia::render('Frontend/Static/Contact/Index');
+        return Inertia::render('Frontend/Static/Contact/Index', [
+            'turnstile_site_key' => config('services.turnstile.key')
+        ]);
     }
 
     public function submit(StoreContactMessageRequest $request)
