@@ -5,6 +5,7 @@ import Input from "@shopen/components/frontend/input/Input.vue";
 import {useForm, usePage} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import VueTurnstile from 'vue-turnstile';
+import {ref} from "vue";
 
 const form = useForm({
     subject: '',
@@ -17,10 +18,15 @@ const form = useForm({
 
 const page = usePage()
 
+const captcha = ref(null)
+
 const submit = () => {
     form.post(route('contact.submit'), {
         preserveScroll: true,
         onSuccess: () => {
+            if (captcha.value) {
+                captcha.value.reset()
+            }
             form.reset('subject', 'message', 'name', 'email', 'phone');
         }
     })
@@ -51,7 +57,7 @@ const submit = () => {
             <textarea class="input" rows="6" required v-model="form.message" maxlength="65000"></textarea>
         </FormField>
         <div>
-            <vue-turnstile v-if="page.props.turnstile_site_key" :site-key="page.props.turnstile_site_key" v-model="form.token" theme="light" language="pl" />
+            <vue-turnstile ref="captcha" v-if="page.props.turnstile_site_key" :site-key="page.props.turnstile_site_key" v-model="form.token" theme="light" language="pl" />
 
             <Button type="primary" size="lg" role="submit" :disabled="!form.token">
                 Wyślij
