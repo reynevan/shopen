@@ -27,7 +27,8 @@
         "babenkoivan/elastic-scout-driver": "^4.0",
         "fedeisas/laravel-mail-css-inliner": "^5.4",
         "laravel/socialite": "^5.23",
-        "ext-libxml": "*"
+        "ext-libxml": "*",
+        "ryangjchandler/laravel-cloudflare-turnstile": "^3.0"
     },
     "require-dev": {
         "orchestra/canvas": "^10.0"

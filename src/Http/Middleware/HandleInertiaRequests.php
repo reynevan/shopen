@@ -75,7 +75,8 @@ class HandleInertiaRequests extends Middleware
                 'validation_warnings' => fn () => $request->session()->get('validation_warnings'),
                 'is_validated' => fn () => $request->session()->get('is_validated'),*/
             ],
-            'route' => $request->route()->getName()
+            'route' => $request->route()->getName(),
+            'turnstile_site_key' => $request->inertia() ? Inertia::lazy(fn () => config('services.turnstile.key')) : fn () => config('services.turnstile.key')
         ];
         if (Route::is('admin.*')) {
             $ziggy = fn () => [

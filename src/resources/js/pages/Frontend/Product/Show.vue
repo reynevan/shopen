@@ -76,9 +76,9 @@ trackViewItem(props.product, props.variants)
                         :product="product"
                     ></AddToCartButton>
                     <div v-else>
-                        <Button type="disabled" disabled>
+                        <div class="product-out-of-stock-info">
                             Produkt chwilowo niedostępny
-                        </Button>
+                        </div>
                     </div>
                 </section>
 

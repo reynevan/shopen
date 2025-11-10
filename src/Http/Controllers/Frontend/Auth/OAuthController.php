@@ -17,16 +17,20 @@ class OAuthController
         try {
             $oauthUser = Socialite::driver($provider)->user();
 
-            $user = User::updateOrCreate([
-                'email' => $oauthUser->email
-            ], [
+            $user = User::query()->where('email', $oauthUser->email)->first();
+            if (!$user) {
+                $user = new User();
+                $user->password = Hash::make(Str::random());
+            }
+            $user->fill([
+                'email' => $oauthUser->email,
                 'first_name' => $oauthUser->user['given_name'] ?? $oauthUser->name,
                 'last_name' => $oauthUser->user['family_name'] ?? $oauthUser->name,
                 $provider . '_id' => $oauthUser->id,
                 $provider . '_token' => $oauthUser->token,
-                $provider . '_refresh_token' => $oauthUser->refreshToken,
-                'password' => Hash::make(Str::random()),
+                $provider . '_refresh_token' => $oauthUser->refreshToken
             ]);
+            $user->save();
 
             Auth::login($user);
         } catch (Throwable $e) {

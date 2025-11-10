@@ -30,7 +30,20 @@ const cookieGroups = computed(() => [
         name: 'Podstawowe',
         description: 'Niezbędne do funkcjonowania strony.',
         required: true,
-        cookies: []
+        cookies: [
+            {
+                name: 'XSRF-TOKEN',
+                description: 'Plik cookie do ochrony bezpieczeństwa użytkownika. Pomaga zapobiegać atakom typu Cross-Site Request Forgery (CSRF), zapewniając, że żądania wysyłane z przeglądarki pochodzą z zaufanego źródła.',
+                lifetime: '7 dni',
+                type: '1st party'
+            },
+            {
+                name: 'laravel_session',
+                description: 'plik cookie odpowiada za utrzymanie sesji użytkownika w aplikacji. Umożliwia poprawne działanie uwierzytelniania, zapamiętywanie stanu logowania oraz obsługę funkcji wymagających sesji.',
+                lifetime: '7 dni',
+                type: '1st party'
+            },
+        ]
     },
     {
         id: 'marketing',
@@ -196,14 +209,14 @@ onMounted(() => {
         <template #buttons>
             <div class="flex justify-between w-full">
                 <div class="space-x-3">
-                    <Button type="secondary" @click="acceptAll">
-                        Akceptuj wszystkie
-                    </Button>
+                    <Button type="ghost" @click="rejectAll">Odrzuć wszystkie</Button>
                     <Button type="ghost" @click="acceptSelected">
                         Zapisz wybrane
                     </Button>
+                    <Button type="primary" @click="acceptAll" size="lg">
+                        Akceptuj wszystkie
+                    </Button>
                 </div>
-                <Button type="ghost" @click="rejectAll">Odrzuć wszystkie</Button>
             </div>
         </template>
     </BaseModal>

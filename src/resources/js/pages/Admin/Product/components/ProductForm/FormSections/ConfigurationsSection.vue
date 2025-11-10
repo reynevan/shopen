@@ -1,7 +1,7 @@
 <script setup>
 import Button from "@shopen/components/admin/ui/Button.vue";
-import {Link, usePage} from "@inertiajs/vue3";
-import {computed, ref, watch} from "vue";
+import { usePage} from "@inertiajs/vue3";
+import {ref} from "vue";
 import VariantRow from "../VariantRow.vue";
 
 const form = defineModel();
@@ -21,6 +21,9 @@ const addVariant = () => {
     variantProducts.value.push({ attributes: {}, price: {}, editing: true});
 }
 
+const onRemove = (index) => {
+    variantProducts.value.splice(index, 1);
+}
 
 </script>
 
@@ -43,9 +46,10 @@ const addVariant = () => {
             </tr>
             </thead>
             <tbody>
-            <VariantRow v-for="variant in variantProducts"
+            <VariantRow v-for="(variant, index) in variantProducts"
                         :variant="variant"
                         :product="product"
+                        @onRemove="onRemove(index)"
                         :attributes="attributes"/>
             </tbody>
         </table>

@@ -3,7 +3,7 @@
 namespace Shopen\Http\Requests\Frontend\Contact;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
+use RyanChandler\LaravelCloudflareTurnstile\Rules\Turnstile;
 
 class StoreContactMessageRequest extends FormRequest
 {
@@ -14,13 +14,17 @@ class StoreContactMessageRequest extends FormRequest
 
     public function rules(): array
     {
-        return [
+        $data =  [
             'name' => ['required', 'string'],
             'email' => ['required', 'email'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'max:65000'],
             'phone' => ['nullable', 'string'],
         ];
+        if (config('services.turnstile.key')) {
+            $data['token'] = ['required', new Turnstile];
+        }
+        return $data;
     }
 
     public function messages(): array

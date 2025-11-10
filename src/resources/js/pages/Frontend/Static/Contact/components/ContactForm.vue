@@ -1,9 +1,10 @@
 <script setup>
 
-import FormField from "../../../../../components/frontend/form/FormField.vue";
-import Input from "../../../../../components/frontend/input/Input.vue";
-import {useForm} from "@inertiajs/vue3";
-import Button from "../../../../../components/frontend/ui/Button.vue";
+import FormField from "@shopen/components/frontend/form/FormField.vue";
+import Input from "@shopen/components/frontend/input/Input.vue";
+import {useForm, usePage} from "@inertiajs/vue3";
+import Button from "@shopen/components/frontend/ui/Button.vue";
+import VueTurnstile from 'vue-turnstile';
 
 const form = useForm({
     subject: '',
@@ -11,7 +12,10 @@ const form = useForm({
     name: '',
     email: '',
     phone: '',
+    token: null
 })
+
+const page = usePage()
 
 const submit = () => {
     form.post(route('contact.submit'), {
@@ -47,7 +51,9 @@ const submit = () => {
             <textarea class="input" rows="6" required v-model="form.message" maxlength="65000"></textarea>
         </FormField>
         <div>
-            <Button type="primary" size="lg" role="submit">
+            <vue-turnstile v-if="page.props.turnstile_site_key" :site-key="page.props.turnstile_site_key" v-model="form.token" theme="light" language="pl" />
+
+            <Button type="primary" size="lg" role="submit" :disabled="!form.token">
                 Wyślij
             </Button>
         </div>

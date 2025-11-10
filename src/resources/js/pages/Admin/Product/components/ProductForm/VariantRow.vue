@@ -19,6 +19,8 @@ const props = defineProps({
 
 const flash = useFlash()
 
+const emits = defineEmits(['onRemove'])
+
 const getDefaultFormData = () => {
     const data = {
         attributes: {
@@ -61,6 +63,10 @@ const getOptions = (code) => {
 }
 
 const remove = () => {
+    if (!props.variant.id) {
+        emits('onRemove')
+        return
+    }
     if (!confirm('Na pewno chcesz usunąć ten produkt?')) {
         return;
     }
@@ -156,12 +162,12 @@ const createProduct = () => {
         </td>
         <td>
             <div class="flex divide-x">
-                <ActionButton @click="save" type="accept" :disabled="!editing" title="Zapisz" :loading="loading"/>
-                <ActionButton @click="toggleEdit" type="edit" v-if="!editing" title="Edytuj" :loading="loading"/>
-                <ActionButton @click="cancel" type="cancel" v-if="editing" title="Anuluj" :loading="loading"/>
-                <ActionButton @click="remove" type="remove" v-if="variant.id" title="Usuń produkt" :loading="loading"/>
+                <ActionButton @click="save" type="accept" :disabled="!editing" title="Zapisz" :loading="loading">Zapisz</ActionButton>
+                <ActionButton @click="toggleEdit" type="edit" v-if="!editing" title="Edytuj" :loading="loading">Edytuj</ActionButton>
+                <ActionButton @click="cancel" type="cancel" v-if="editing" title="Anuluj" :loading="loading">Anuluj</ActionButton>
+                <ActionButton @click="remove" type="remove" title="Usuń produkt" :loading="loading">Usuń</ActionButton>
                 <Link v-if="variant.id" :href="route('admin.products.edit', variant.id)">
-                    <ActionButton type="view" :loading="loading"/>
+                    <ActionButton type="view" :loading="loading">Szczegóły</ActionButton>
                 </Link>
             </div>
         </td>
