@@ -17,7 +17,6 @@ const computedSrcset = computed(() => {
             const width = key;
             return {width, url};
         })
-        .sort((a, b) => a.width < b.width ? -1 : 1)
         .map(item => `${item.url} ${item.width}`)
         .join(', ');
 });
