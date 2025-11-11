@@ -42,7 +42,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             <ProductImage
                                 v-if="product.images && product.images.length > 0"
                                 :urls="product.images[0]"
-                                sizes="(min-width: 640px) 250px, 90vw"
+                                sizes="(min-width: 1360px) 284px, (min-width: 1040px) calc(20vw + 16px), (min-width: 780px) calc(33.33vw - 48px), (min-width: 640px) calc(50vw - 72px), calc(50vw - 56px)"
                                 :alt="product.attributes.name"
                                 loading="lazy"
                                 class="object-cover"
@@ -55,7 +55,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             >
                                 <ProductImage
                                     :urls="product.images[1]"
-                                    sizes="(min-width: 640px) 250px, 90vw"
+                                    sizes="(min-width: 1360px) 284px, (min-width: 1040px) calc(20vw + 16px), (min-width: 780px) calc(33.33vw - 48px), (min-width: 640px) calc(50vw - 72px), calc(50vw - 56px)"
                                     :alt="product.attributes.name"
                                     loading="lazy"
                                     class="w-full h-full object-cover"
