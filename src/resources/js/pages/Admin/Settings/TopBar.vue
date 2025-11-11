@@ -48,7 +48,7 @@ const save = () => {
             <div v-for="(slide, index) in form.slides" :key="index" class="flex items-start border-b border-dark">
                 <div class="w-full">
                     <FormField label="Treść">
-                        <TextEditor v-model="slide.content" :id="'slide-' + index" :rows="2"/>
+                        <TextEditor v-model="slide.content" :id="'slide-' + index" :rows="1"/>
                     </FormField>
                     <FormField label="Kolor tekstu" field="color">
                         <ColorPicker v-model="slide.color"/>

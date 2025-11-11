@@ -4,21 +4,14 @@ import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import {Link} from '@inertiajs/vue3'
 import RatingDisplay from "@shopen/components/frontend/product/RatingDisplay.vue";
 import PriceDisplay from "@shopen/components/frontend/ui/PriceDisplay.vue";
-import AddToCartButton from "@shopen/components/frontend/product/thumbnail/AddToCartButton.vue";
 import AddToShoppingListButton from "../../shoppingList/AddToShoppingListButton.vue";
 import ProductImage from "../ProductImage.vue";
 import ProductIcons from "../ProductIcons.vue";
 
 const props = defineProps({
     product: {type: Object},
-    size: {type: String, default: 'md'},
     index: {type: Number, default: 0},
 })
-const imageWidth = props.size === 'sm' ? 150 : 250;
-const mobileImageWidth = props.size === 'sm' ? 150 : 350;
-const productSizes = `(min-width: 1280px) ${imageWidth}px, (min-width: 640px) 33vw, 50vw`;
-const widthClasses = `max-w-[${mobileImageWidth}px] sm:max-w-[${imageWidth}px]`
-const nameClass = props.size === 'sm' ? 'text-sm' : 'text-sm sm:text-md';
 
 const emits = defineEmits(['onClick'])
 
@@ -30,12 +23,11 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
          :class="[product.in_stock ? 'in-stock' : 'out-of-stock']">
         <Link :href="product.url"
               @click="emits('onClick')"
-              class="product-thumbnail relative flex flex-col justify-between w-full"
-              :class="[widthClasses, size === 'md' ? 'gap-2' : '']">
+              class="product-thumbnail relative flex flex-col justify-between w-full max-w-[350}px] sm:max-w-[250px] gap-2">
             <div>
                 <div class="relative cursor-pointer overflow-hidden">
                     <div class="absolute top-2 left-2 z-1">
-                        <ProductIcons :product="product" :size="size"/>
+                        <ProductIcons :product="product" size="md"/>
                     </div>
                     <div class="group block relative w-full h-full">
                         <div class="relative w-full aspect-square">
@@ -50,7 +42,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             <ProductImage
                                 v-if="product.images && product.images.length > 0"
                                 :urls="product.images[0]"
-                                :sizes="productSizes"
+                                sizes="(min-width: 860px) 250px, (min-width: 640px) calc(25vw + 40px), 50vw"
                                 :alt="product.attributes.name"
                                 :loading="index <= 2 ? 'eager' : 'lazy'"
                                 :fetch-priority="index <= 2 ? 'high' : null"
@@ -64,7 +56,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                             >
                                 <ProductImage
                                     :urls="product.images[1]"
-                                    :sizes="productSizes"
+                                    sizes="(min-width: 860px) 250px, (min-width: 640px) calc(25vw + 40px), 50vw"
                                     :alt="product.attributes.name"
                                     loading="lazy"
                                     class="w-full h-full object-cover"
@@ -76,10 +68,10 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                 </div>
                 <div class="px-2 py-2">
                     <div>
-                        <div class="mb-2" :class="nameClass">
+                        <div class="mb-2">
                             {{ product.attributes.name }}
                         </div>
-                        <div v-if="size === 'md' && showReviews" class="flex items-center gap-2">
+                        <div v-if="showReviews" class="flex items-center gap-2">
                             <RatingDisplay :rating="product.rating" size="sm"/>
                             <div class="product-rating-label">{{ product.rating }} ({{ product.reviews_count }})</div>
                         </div>
@@ -94,8 +86,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
             </div>
             <div class="px-2 pb-2">
                 <div class="info-label" v-if="!product.in_stock">
-                    <span v-if="size !== 'sm'">Chwilowo niedostępny</span>
-                    <span v-else>Niedostępny</span>
+                    Chwilowo niedostępny
                 </div>
                 <div class="info-label" v-if="product.in_stock && product.free_shipping">
                     Darmowa dostawa

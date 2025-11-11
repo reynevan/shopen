@@ -6,7 +6,7 @@ import IconX from "@shopen/components/icons/IconX.vue";
 import PreviewImage from "./PreviewImage.vue";
 import GalleryImage from "./GalleryImage.vue";
 
-const props = defineProps(['images']);
+const props = defineProps(['images', 'product']);
 const flicking = useTemplateRef('flicking');
 const modalFlicking = useTemplateRef('modalFlicking');
 
@@ -138,7 +138,7 @@ onUnmounted(() => {
                 ref="flicking">
                 <div v-for="(image, i) in images" :key="i"
                      class="flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)"/>
+                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)" :alt="product.attributes?.name"/>
                 </div>
             </Flicking>
             <div v-if="previewIndex < images.length - 1" @click="nextImage"
@@ -156,7 +156,7 @@ onUnmounted(() => {
                      :class="{'border-strong': i === previewIndex}"
                      class="mr-[5px] w-[95px] h-[95px] hover:shadow transition-all duration-300 border bg-gray-100
                             flex items-center justify-center cursor-pointer box-content">
-                    <PreviewImage :image="image.gallery_preview"/>
+                    <PreviewImage :image="image.gallery_preview" :alt="product.attributes?.name"/>
                 </div>
                 <div v-if="i === (maxPreviewImages - 1) && images.length > maxPreviewImages"
                     @click="openModal(i)"
@@ -165,7 +165,7 @@ onUnmounted(() => {
                     <div class="absolute top-0 left-0 right-0 bottom-0 bg-white/80 flex items-center justify-center text-xl z-1">
                         + {{ images.length - (maxPreviewImages - 1 ) }}
                     </div>
-                    <PreviewImage :image="image.gallery_preview"/>
+                    <PreviewImage :image="image.gallery_preview" :alt="product.attributes?.name"/>
                 </div>
             </template>
         </div>

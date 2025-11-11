@@ -75,6 +75,7 @@ const onInput = (event) => {
 
         <input
             type="number"
+            aria-label="Ilość"
             :value="value"
             :min="min"
             @input="onInput"

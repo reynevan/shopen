@@ -48,7 +48,7 @@ trackViewItem(props.product, props.variants)
     <div class="product-show">
         <div class="flex flex-col md:flex-row gap-6 sm:gap-4">
             <section class="mr-0 sm:mr-6 w-full">
-                <Gallery :images="images"/>
+                <Gallery :images="images" :product="product"/>
             </section>
             <section class="section-main w-full">
                 <div>

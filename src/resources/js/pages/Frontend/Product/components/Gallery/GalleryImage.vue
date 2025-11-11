@@ -29,7 +29,9 @@ const fallbackSrc = computed(() => {
 <template>
     <img :srcset="computedSrcset"
          :src="fallbackSrc"
-         class="img cursor-zoom-in max-w-full max-h-[700px]"
-         @click="emits('onClick')"
+         fetchpriority="high"
+         sizes="(min-width: 1360px) 572px, (min-width: 780px) calc(47.32vw - 62px), (min-width: 640px) calc(100vw - 96px), calc(100vw - 64px)"
+         class="img cursor-zoom-in max-w-full max-h-[572px]"
+
          :alt="alt">
 </template>
