@@ -5,6 +5,7 @@ const emits = defineEmits(['onClick'])
 const props = defineProps({
     image: {type: Object},
     alt: {type: String},
+    main: {type: Boolean},
 })
 
 const computedSrcset = computed(() => {
@@ -28,7 +29,8 @@ const fallbackSrc = computed(() => {
 <template>
     <img :srcset="computedSrcset"
          :src="fallbackSrc"
-         fetchpriority="high"
+         :fetchpriority="main ? 'high' : null"
+         :loading="main ? 'eager' : 'lazy'"
          sizes="(min-width: 1285px) 572px, (min-width: 768px) calc(50vw - 72px), (min-width: 670px) 572px, (min-width: 640px) calc(100vw - 96px),  calc(100vw - 64px)"
          class="img cursor-zoom-in max-w-full max-h-[572px]"
 

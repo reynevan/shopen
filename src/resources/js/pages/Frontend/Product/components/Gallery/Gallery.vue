@@ -138,7 +138,7 @@ onUnmounted(() => {
                 ref="flicking">
                 <div v-for="(image, i) in images" :key="i"
                      class="flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)" :alt="product.attributes?.name"/>
+                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)" :alt="product.attributes?.name" :main="i === 0"/>
                 </div>
             </Flicking>
             <div v-if="previewIndex < images.length - 1" @click="nextImage"

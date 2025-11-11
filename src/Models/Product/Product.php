@@ -90,7 +90,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getGalleryImageSizes(): array
     {
-        return [320, 480, 572, 640, 768, 960, 1144];
+        return [320, 480, 572, 609, 768, 960, 1144];
     }
 
     protected static function newFactory()
@@ -125,7 +125,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             $this
                 ->addMediaConversion('gallery-image-' . $size)
                 ->fit(Fit::Contain, $size, $size)
-                ->quality(100)
+                ->quality(self::IMAGE_QUALITY)
                 ->format('webp')
                 ->nonQueued();
         }
