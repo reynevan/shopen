@@ -88,9 +88,9 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return 95;
     }
 
-    protected function getGalleryImageSize(): int
+    protected function getGalleryImageSizes(): array
     {
-        return 572;
+        return [320, 480, 640, 768, 960, 1144];
     }
 
     protected static function newFactory()
@@ -120,6 +120,15 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
                 ->format('webp')
                 ->nonQueued();
         }
+        foreach ($this->getGalleryImageSizes() as $size) {
+
+            $this
+                ->addMediaConversion('gallery-image-' . $size)
+                ->fit(Fit::Contain, $size, $size)
+                ->quality(100)
+                ->format('webp')
+                ->nonQueued();
+        }
 
         $this
             ->addMediaConversion('thumbnail-mail')
@@ -141,20 +150,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             ->quality(self::IMAGE_QUALITY)
             ->format('webp')
             ->nonQueued();
-
-        $this
-            ->addMediaConversion('gallery-image-' . $this->getGalleryImageSize())
-            ->fit(Fit::Contain, $this->getGalleryImageSize(), $this->getGalleryImageSize())
-            ->quality(100)
-            ->format('webp')
-            ->nonQueued();
-
-        $this
-            ->addMediaConversion('gallery-image-' . ($this->getGalleryImageSize() * 2))
-            ->fit(Fit::Contain, $this->getGalleryImageSize() * 2, $this->getGalleryImageSize() * 2)
-            ->quality(100)
-            ->format('webp')
-            ->nonQueued();
     }
 
     public function getImagesUrls(): array
@@ -165,15 +160,16 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         }
         $images = [];
         foreach ($media as $mediaItem) {
+            $galleryImages = [];
+            foreach ($this->getGalleryImageSizes() as $size) {
+                $galleryImages[$size . 'w'] = $mediaItem->getFullUrl('gallery-image-' . $size);
+            }
             $image = [
                 'gallery_preview' => [
                     $this->getGalleryPreviewSize() . 'w' => $mediaItem->getFullUrl('gallery-preview-' . $this->getGalleryPreviewSize()),
                     ($this->getGalleryPreviewSize() * 2) . 'w' => $mediaItem->getFullUrl('gallery-preview-' . ($this->getGalleryPreviewSize() * 2)),
                 ],
-                'gallery_image' => [
-                    $this->getGalleryImageSize() . 'w' => $mediaItem->getFullUrl('gallery-image-' . $this->getGalleryImageSize()),
-                    ($this->getGalleryImageSize() * 2) . 'w' => $mediaItem->getFullUrl('gallery-image-' . ($this->getGalleryImageSize() * 2)),
-                ]
+                'gallery_image' => $galleryImages
             ];
             $image['original'] = $mediaItem->getFullUrl();
             $images[] = $image;

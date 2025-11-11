@@ -30,7 +30,7 @@ const fallbackSrc = computed(() => {
     <img :srcset="computedSrcset"
          :src="fallbackSrc"
          fetchpriority="high"
-         sizes="(min-width: 1420px) 572px, (min-width: 780px) calc(42.74vw - 26px), (min-width: 640px) calc(23.33vw + 395px), calc(100vw - 64px)"
+         sizes="(min-width: 1285px) 572px, (min-width: 768px) calc(50vw - 72px), (min-width: 670px) 572px, (min-width: 640px) calc(100vw - 96px),  calc(100vw - 64px)"
          class="img cursor-zoom-in max-w-full max-h-[572px]"
 
          :alt="alt">
