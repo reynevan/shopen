@@ -124,7 +124,7 @@ onUnmounted(() => {
 
 <template>
     <div>
-        <div class="relative w-full sm:max-w-[700px] sm:max-h-[700px] mb-4 group">
+        <div class="relative w-full h-full sm:max-w-[572px] sm:max-h-[572px] mb-4 group aspect-square">
             <div v-if="previewIndex > 0" @click="prevImage"
                  class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 left-4">
                 <div
@@ -133,7 +133,7 @@ onUnmounted(() => {
                 </div>
             </div>
             <Flicking
-                :options="{ align: 'prev', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1 }"
+                :options="{ align: 'prev', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1, renderOnlyVisible: true}"
                 @changed="onPreviewChange"
                 ref="flicking">
                 <div v-for="(image, i) in images" :key="i"
