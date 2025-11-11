@@ -95,6 +95,18 @@ const types = [
     </FormField>
 
     <FormField
+        label-for="seo_title"
+        label="Tytuł SEO">
+        <Input v-model="form.seo_title" id="seo_title"/>
+    </FormField>
+
+    <FormField
+        label-for="seo_description"
+        label="Opis SEO">
+        <textarea class="input" v-model="form.seo_description" id="seo_description" rows="4"></textarea>
+    </FormField>
+
+    <FormField
         label-for="categories"
         label="Kategorie">
 

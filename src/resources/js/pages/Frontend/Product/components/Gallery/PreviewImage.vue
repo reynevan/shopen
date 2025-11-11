@@ -29,6 +29,6 @@ const fallbackSrc = computed(() => {
     <img :srcset="computedSrcset"
          :src="fallbackSrc"
          sizes="95px"
-         class="max-w-full max-h-full"
+         class="max-w-full max-h-full aspect-square"
          :alt="alt">
 </template>

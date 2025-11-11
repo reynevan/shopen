@@ -23,6 +23,7 @@ use Shopen\Models\Product\Review\ProductReview;
 use Shopen\Models\PromoCode\PromoCode;
 use Shopen\Models\ShoppingList\ShoppingList;
 use Shopen\Models\Traits\HasCustomAttributes;
+use Shopen\Models\Traits\HasSeoDetails;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
 use Spatie\Image\Enums\Fit;
@@ -33,7 +34,7 @@ use Throwable;
 
 class Product extends Model implements HasMedia, HasCustomAttributesInterface
 {
-    use HasFactory, HasCustomAttributes, HasUrl;
+    use HasFactory, HasCustomAttributes, HasUrl, HasSeoDetails;
     use InteractsWithMedia;
     use Searchable;
 

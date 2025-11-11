@@ -44,6 +44,8 @@ trait ProductsImporter
             'color2',
             'size',
             'materials',
+            'meta_description',
+            'meta_title'
         ];
 
         // Pobierz definicje atrybutów (id + backend_type)
@@ -168,6 +170,8 @@ trait ProductsImporter
                 'color' => $mapOption('color', $get('color')),
                 'material' => $mapOption('material', $get('material')),
                 'size' => $mapOption('size', $get('size')),
+                'meta_description' => $mapOption('meta_description', $get('meta_description')),
+                'meta_title' => $mapOption('meta_title', $get('meta_title')),
             ];
             $categories = $productCategories[$id] ?? [];
             $result[] = [
@@ -225,6 +229,11 @@ trait ProductsImporter
         }
         $product->save();
         $product->setPrice($data['prices']);
+
+        $product->createOrUpdateSeoForWebsite(1, [
+            'seo_title' => $data['meta_title'] ?? $data['name'],
+            'seo_description' => $data['meta_description'] ?? $data['short_description'] ?? null,
+        ]);
 
         $categoryIds = [];
         foreach ($data['categories'] as $catData) {

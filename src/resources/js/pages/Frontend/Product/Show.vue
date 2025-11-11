@@ -9,7 +9,6 @@ import ProductReviews from "@shopen/pages/Frontend/Product/components/ProductRev
 import ReviewsInfo from "@shopen/pages/Frontend/Product/components/ReviewsInfo.vue";
 import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
 import ProductStructuredData from "@shopen/components/frontend/product/ProductStructuredData.vue";
-import Button from "@shopen/components/frontend/ui/Button.vue";
 import AddToShoppingListButton from "@shopen./components/frontend/shoppingList/AddToShoppingListButton.vue";
 import ProductDescription from "@shopen/pages/Frontend/Product/components/ProductDescription.vue";
 import ProductBrand from "@shopen/pages/Frontend/Product/components/ProductBrand.vue";
@@ -17,6 +16,7 @@ import {ref} from "vue";
 import {trackViewItem} from "@shopen/utils/ga4.js";
 import DetailsSection from "@shopen/pages/Frontend/Product/components/DetailsSection.vue";
 import ProductInfo from "@shopen/pages/Frontend/Product/components/ProductInfo.vue";
+import {Head, Link} from "@inertiajs/vue3";
 
 defineOptions({layout: AppLayout})
 
@@ -44,6 +44,10 @@ trackViewItem(props.product, props.variants)
 </script>
 
 <template>
+    <Head>
+        <meta v-if="product.seo.seo_title" name="title" :content="product.seo.seo_title">
+        <meta v-if="product.seo.seo_description" name="description" :content="product.seo.seo_description">
+    </Head>
     <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">
         <div class="flex flex-col md:flex-row gap-6 sm:gap-4">

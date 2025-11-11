@@ -34,6 +34,8 @@ class StoreProductRequest extends FormRequest
             'related_ids.*' => 'exists:products,id',
             'parent_id' => 'nullable|:exists:products,id',
             'tax_class_id' => 'nullable|exists:tax_classes,id',
+            'seo_title' => 'nullable',
+            'seo_description' => 'nullable',
         ];
         if ($this->request->get('type') === Product::TYPE_SIMPLE || !$this->request->get('type') ) {
             $rules['price.price'] = 'required|numeric';

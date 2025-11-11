@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Shopen\Http\Resources\Admin\Attribute\AttributeResource;
 use Shopen\Http\Resources\Admin\Product\Price\ProductPriceResource;
 use Shopen\Http\Resources\Admin\PromoCode\PromoCodeResource;
+use Shopen\Http\Resources\Admin\Seo\SeoDetailResource;
 use Shopen\Http\Resources\MediaResource;
 
 class ProductResource extends JsonResource
@@ -41,7 +42,8 @@ class ProductResource extends JsonResource
             'up_sell_products' => BaseProductResource::collection($this->whenLoaded('upSells')),
             'up_sell_ids' => $this->whenLoaded('upSells', $this->upSells()->pluck('up_sell_product_id')->toArray()),
             'promo_code' => PromoCodeResource::make($this->whenLoaded('promoCode')),
-            'tax_class_id' => $this->tax_class_id
+            'tax_class_id' => $this->tax_class_id,
+            'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
         ];
     }
 }

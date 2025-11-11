@@ -33,6 +33,8 @@ class UpdateProductRequest extends FormRequest
             'related_ids' => 'nullable|array',
             'related_ids.*' => 'exists:products,id',
             'tax_class_id' => 'nullable|exists:tax_classes,id',
+            'seo_title' => 'nullable',
+            'seo_description' => 'nullable',
         ];
         if ($this->request->get('type') === Product::TYPE_SIMPLE || !$this->request->get('type') ) {
             $rules['price.price'] = 'required|numeric';

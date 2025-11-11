@@ -62,11 +62,11 @@ import Logo from "@shopen/components/frontend/ui/Logo.vue";
                             <div>
                                 <a class="text-2xl" href="tel:0 700 880 717">0 700 880 717</a>
                                 <p class="text-sm flex justify-between">
-                                    <span class="text-neutral-500">pon - pt </span>
+                                    <span class="text-neutral-400">pon - pt </span>
                                     <span>8:00 - 16:00</span>
                                 </p>
                                 <p class="text-sm flex justify-between">
-                                    <span class="text-neutral-500">sob </span>
+                                    <span class="text-neutral-400">sob </span>
                                     <span>8:00 - 16:00</span>
                                 </p>
                             </div>

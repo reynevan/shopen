@@ -114,6 +114,11 @@ readonly class ProductCreateController
                 $this->voucherService->createPromoCodeForProduct($product, $data['price']['price']);
             }
 
+            $product->createOrUpdateSeoForWebsite(1, [
+                'seo_title' => $data['seo_title'] ?? null,
+                'seo_description' => $data['seo_description'] ?? null,
+            ]);
+
             DB::commit();
         } catch (Exception $e) {
             Log::error($e);
