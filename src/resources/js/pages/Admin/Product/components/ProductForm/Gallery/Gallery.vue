@@ -93,7 +93,7 @@ const closeMediaDetails = () => {
                     </div>
                     <div class="section mb-4">
                         <label class="mb-2 font-semibold">Role</label>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center divide-x">
                             <MediaTypeTag name="Galeria" :selected="selectedMedia.gallery" @onClick="toggleType(selectedMedia, 'gallery')"/>
                             <MediaTypeTag name="Thumbnail" :selected="selectedMedia.thumbnail" @onClick="toggleType(selectedMedia, 'thumbnail')"/>
                             <MediaTypeTag name="Meta" :selected="selectedMedia.meta" @onClick="toggleType(selectedMedia, 'meta')"/>

@@ -118,6 +118,7 @@ class HandleInertiaRequests extends Middleware
             $data['textSlides'] = $request->inertia() ?
                 Inertia::lazy(fn () => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
                 : fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll());
+            $data['site_name'] = fn () => config('app.name');
         }
         return $data;
     }

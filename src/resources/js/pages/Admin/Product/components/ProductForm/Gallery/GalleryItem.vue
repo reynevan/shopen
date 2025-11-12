@@ -32,20 +32,21 @@ const onSelect = (file) => {
 
 <template>
     <div>
+        <div class="flex justify-end w-full mb-1">
+            <div class="text-xs flex items-center gap-1 cursor-pointer hover:bg-accent px-2 transition-all duration-300"
+                 @click.prevent="emits('onRemove')">
+                <i class="bi bi-x-lg"></i> USUŃ
+            </div>
+        </div>
         <div v-if="!model.url">
             <ImageInput @selected="onSelect"/>
         </div>
         <div v-else @click.prevent="emits('onSelect', model)">
-            <div class="border mb-2 w-[150px] h-[150px] flex items-center justify-center cursor-pointer relative">
-                <div
-                    class="absolute top-1 right-1 text-gray-800 hover:text-red-500 p-1 cursor-pointer z-10 transition-colors"
-                    @click="emits('onRemove')">
-                    <i class="bi bi-trash3-fill"></i>
-                </div>
-                <img :src="model.url" class="max-w-[150px] max-h-[150px] opacity-100 hover:opacity-70 transition-all"/>
+            <div class="border mb-2 w-[150px] h-[150px] flex items-center justify-center cursor-pointer relative group">
+                <img :src="model.url" class="max-w-[150px] max-h-[150px] opacity-100 group-hover:opacity-70 transition-all"/>
 
             </div>
-            <div class="text-xs text-neutral-500 pl-2 mb-1">
+            <div class="text-xs text-neutral-500 mb-1">
                 {{ model.width }}x{{ model.height }} px | {{ model.size }}
             </div>
             <div class="flex items-center gap-2 text-neutral-600">

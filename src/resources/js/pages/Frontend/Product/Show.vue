@@ -16,7 +16,7 @@ import {ref} from "vue";
 import {trackViewItem} from "@shopen/utils/ga4.js";
 import DetailsSection from "@shopen/pages/Frontend/Product/components/DetailsSection.vue";
 import ProductInfo from "@shopen/pages/Frontend/Product/components/ProductInfo.vue";
-import {Head, Link} from "@inertiajs/vue3";
+import {Head, Link, usePage} from "@inertiajs/vue3";
 
 defineOptions({layout: AppLayout})
 
@@ -34,11 +34,14 @@ const props = defineProps({
     configurableAttributes: {type: Array},
     banners: {type: Object}
 })
+const page = usePage();
 
 const showVariantsError = ref(false);
+
 const onAddConfigurableToCart = () => {
     showVariantsError.value = true
 }
+
 trackViewItem(props.product, props.variants)
 
 </script>
@@ -53,10 +56,12 @@ trackViewItem(props.product, props.variants)
         <meta property="og:description" v-if="product.meta_description" :content="product.meta_description" />
         <meta property="og:image" v-if="product.og_image" :content="product.og_image"/>
         <meta property="og:url" :content="product.url">
+        <meta property="og:brand" v-if="product.brand?.name" :content="product.brand.name">
+        <meta property="og:site_name" v-if="page.props.site_name" :content="page.props.site_name">
         <meta property="product:price:amount" :content="product.price.final_price_raw">
         <meta property="product:price:currency" content="PLN">
         <meta property="product:availability" :content="product.in_stock ? 'in stock' : 'out of stock'" />
-        <meta property="product:brand" v-if="product.brand" :content="product.brand.name">
+        <meta property="product:brand" v-if="product.brand?.name" :content="product.brand.name">
     </Head>
     <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">
@@ -68,9 +73,9 @@ trackViewItem(props.product, props.variants)
                 <div>
                     <AddToShoppingListButton :product="product"/>
                 </div>
-                <div class="product-name mb-2">
+                <h1 class="product-name mb-2">
                     {{ product.attributes.name }}
-                </div>
+                </h1>
                 <div v-if="reviewsEnabled">
                     <ReviewsInfo :product="product"/>
                 </div>
