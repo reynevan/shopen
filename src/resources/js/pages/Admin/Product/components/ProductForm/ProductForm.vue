@@ -57,7 +57,7 @@ props.attributes.forEach((attr) => {
     defaultAttributesValues[attr.code] = null;
 })
 const form = useForm({
-    attributes: props.product.attributes ? props.product.attributes : defaultAttributesValues,
+    attributes: props.product.attributes ? (Array.isArray(props.product.attributes) ? {} : props.product.attributes) : defaultAttributesValues,
     type: props.product?.type ?? 'simple',
     visible_individually: props.product?.visible_individually ?? true,
     parent_id: props.parent?.id,
@@ -90,18 +90,20 @@ const taxClassesOptions = props.taxClasses.map(taxClass => {return {id: taxClass
 const save = async () => {
     if (props.product.id) {
         form.put(route('admin.products.update', props.product.id), {
-            preserveState: true,
-            preserveScroll: true
+            preserveScroll: true,
+            preserveState: false,
+            only: ['product']
         });
     } else {
         form.post(route('admin.products.store'), {
-            preserveState: true,
-            preserveScroll: true
+            preserveScroll: true,
+            preserveState: false,
+            only: ['product']
         });
     }
 };
 
-const activeSection = ref('general');
+const activeSection = ref(page.props.tab ?? 'general');
 const onChangeSection = (section) => {
     activeSection.value = section;
 }
@@ -163,7 +165,7 @@ const duplicate = () => {
     </div>
     <div class="flex items-start gap-6">
         <div class="sticky top-20">
-            <FormMenu :sections="sections" @onSelect="onChangeSection"/>
+            <FormMenu :sections="sections" @onSelect="onChangeSection" :activeSection="activeSection"/>
         </div>
         <div class="border-l border-light pl-6 w-full">
             <div v-show="activeSection === 'general'">

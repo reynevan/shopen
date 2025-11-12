@@ -30,6 +30,7 @@ class MediaResource extends JsonResource
             'height' => $height,
             'gallery' => $this->resource->getCustomProperty('gallery') ?? false,
             'thumbnail' => $this->resource->getCustomProperty('thumbnail') ?? false,
+            'meta' => $this->resource->getCustomProperty('meta') ?? false,
         ];
     }
 

@@ -19,6 +19,7 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $seo = $this->resource->getSeoForWebsite(1);
         $data = [
             'id' => $this->id,
             'sku' => $this->sku,
@@ -33,7 +34,11 @@ class ProductResource extends JsonResource
             'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id),
             'is_configurable' => $this->isConfigurable(),
             'is_new' => $this->is_new && $this->is_new_to && $this->is_new_to->isFuture(),
-            'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
+            'meta_title' => $seo->seo_title ?? $this->resource->getCustomAttribute('name'),
+            'meta_description' => strip_tags($seo->seo_description ?? $this->resource->getCustomAttribute('short_description')),
+            'json_ld_image' => $this->resource->getJsonLdImageUrl(),
+            'og_image' => $this->resource->getOgImageUrl(),
+            'canonical_url' => $this->resource->getCanonicalUrl()
         ];
         if (config('shopen.product.reviews.enabled')) {
             $data['rating'] = $this->rating;

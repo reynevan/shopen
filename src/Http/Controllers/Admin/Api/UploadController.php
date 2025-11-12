@@ -26,9 +26,26 @@ class UploadController extends Controller
 
         $path = $file->storeAs('uploads', $filename, 'public');
 
+        $width = $height = null;
+        try {
+            [$width, $height] = getimagesize(asset('/storage/' . $path));
+        } catch (\Exception $e) {}
+
+        $bytes = $file->getSize();
+        if ($bytes < 1024) {
+            $size = $bytes . ' B';
+        } elseif ($bytes < 1048576) {
+            $size = round($bytes / 1024, 2) . ' KB';
+        } else {
+            $size = round($bytes / 1048576, 2) . ' MB';
+        }
+
         return response()->json([
             'location' => asset('/storage/' . $path),
-            'path' => $path
+            'path' => $path,
+            'width' => $width,
+            'height' => $height,
+            'size' => $size,
         ]);
     }
 }

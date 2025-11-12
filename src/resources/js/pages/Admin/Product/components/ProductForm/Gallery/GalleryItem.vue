@@ -19,6 +19,9 @@ const onSelect = (file) => {
         .then(response => {
             model.value.url = response.data.location;
             model.value.path = response.data.path;
+            model.value.width  = response.data.width;
+            model.value.height  = response.data.height;
+            model.value.size  = response.data.size;
         })
         .finally(() => {
             loading.value = false;
@@ -48,6 +51,7 @@ const onSelect = (file) => {
             <div class="flex items-center gap-2 text-neutral-600">
                 <div v-if="model.thumbnail" class="px-1 text-xs bg-accent border border-light">Thumbnail</div>
                 <div v-if="model.gallery" class="px-1 text-xs bg-accent border border-light">Galeria</div>
+                <div v-if="model.meta" class="px-1 text-xs bg-accent border border-light">Meta</div>
             </div>
         </div>
     </div>

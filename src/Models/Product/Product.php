@@ -86,7 +86,7 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
 
     protected function getGalleryPreviewSize(): int
     {
-        return 95;
+        return 109;
     }
 
     protected function getGalleryImageSizes(): array
@@ -102,6 +102,12 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function getEntityType(): string
     {
         return self::ENTITY_TYPE;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('meta')
+            ->singleFile();
     }
 
     public function registerMediaConversions(?Media $media = null): void
@@ -122,7 +128,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
                 ->nonQueued();
         }
         foreach ($this->getGalleryImageSizes() as $size) {
-
             $this
                 ->addMediaConversion('gallery-image-' . $size)
                 ->fit(Fit::Contain, $size, $size)
@@ -138,18 +143,30 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             ->format('jpg')
             ->nonQueued();
 
-
         $this
             ->addMediaConversion('gallery-preview-' . $this->getGalleryPreviewSize())
             ->fit(Fit::Crop, $this->getGalleryPreviewSize(), $this->getGalleryPreviewSize())
             ->quality(self::IMAGE_QUALITY)
             ->format('webp')
             ->nonQueued();
+
         $this
             ->addMediaConversion('gallery-preview-' . ($this->getGalleryPreviewSize() * 2))
             ->fit(Fit::Crop, $this->getGalleryPreviewSize() * 2, $this->getGalleryPreviewSize() * 2)
             ->quality(self::IMAGE_QUALITY)
             ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('json-ld')
+            ->fit(Fit::Crop, 1200, 1200)
+            ->quality(100)
+            ->format('webp')
+            ->nonQueued();
+
+        $this->addMediaConversion('og')
+            ->fit(Fit::Crop, 600, 600)
+            ->quality(100)
+            ->format('jpg')
             ->nonQueued();
     }
 
@@ -176,6 +193,32 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
             $images[] = $image;
         }
         return $images;
+    }
+
+    public function getJsonLdImageUrl()
+    {
+        $metaImage = $this->getFirstMedia('default', ['meta' => true]);
+        if ($metaImage) {
+            return $metaImage->getFullUrl('json-ld');
+        }
+        $image = $this->getFirstMedia();
+        if ($image) {
+            return $image->getFullUrl('json-ld');
+        }
+        return null;
+    }
+
+    public function getOgImageUrl()
+    {
+        $metaImage = $this->getFirstMedia('default', ['meta' => true]);
+        if ($metaImage) {
+            return $metaImage->getFullUrl('og');
+        }
+        $image = $this->getFirstMedia();
+        if ($image) {
+            return $image->getFullUrl('og');
+        }
+        return null;
     }
 
     protected function getThumbnailsResponsiveSizes(): array
@@ -463,6 +506,18 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function getUrl()
     {
         return config('app.url') . '/' . $this->urlRewrite?->request_path;
+    }
+
+    public function getCanonicalUrl()
+    {
+        if (!$this->parent_id) {
+            return $this->getUrl();
+        }
+        $parent = $this->parent;
+        if ($parent && $parent->visible_individually) {
+            return $parent->getUrl();
+        }
+        return$this->getUrl();
     }
 
     public function getVariantAttributes()

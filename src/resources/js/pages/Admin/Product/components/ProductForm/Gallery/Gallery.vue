@@ -5,6 +5,7 @@ import GalleryItem from "./GalleryItem.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
 import {useBodyScrollLock} from "../../../../../../composables/useBodyScrollLock";
+import MediaTypeTag from "./MediaTypeTag.vue";
 
 
 const images = defineModel('images');
@@ -29,7 +30,8 @@ const addMedia = () => {
     let media = {
         id: 'new-' + images.value.length,
         new: true,
-        gallery: true
+        gallery: true,
+        order: images.value.length + 1,
     };
     if (!images.value || !images.value.length) {
         media.thumbnail = true;
@@ -68,10 +70,10 @@ const closeMediaDetails = () => {
                 </draggable>
             </div>
         </div>
-        <div class="fixed top-0 left-0 bottom-0 right-0 transition-all duration-300 bg-black/50"
+        <div class="fixed z-[200] top-0 left-0 bottom-0 right-0 transition-all duration-300 bg-black/50"
              v-if="selectedMedia"
              @click="closeMediaDetails"></div>
-        <div class="fixed z-20 top-0 left-[200px] bottom-0 right-0 transition-all duration-300 bg-white overflow-y-auto"
+        <div class="fixed z-[200] top-0 left-[200px] bottom-0 right-0 transition-all duration-300 bg-white overflow-y-auto"
              :class="selectedMedia ? '' : 'translate-x-full'">
             <div v-if="selectedMedia" class="flex ">
                 <div class="w-full pl-6 py-6 h-full">
@@ -92,20 +94,9 @@ const closeMediaDetails = () => {
                     <div class="section mb-4">
                         <label class="mb-2 font-semibold">Role</label>
                         <div class="flex items-center gap-2">
-                            <div
-                                class="flex items-center gap-2 cursor-pointer pr-4 pl-2 py-2 border border-light rounded hover:bg-accent/50 hover:shadow transition-all"
-                                :class="selectedMedia.gallery ? 'border-strong bg-accent' : 'text-neutral-400'"
-                                @click="toggleType(selectedMedia, 'gallery')">
-                                <i class="bi bi-x-lg" v-if="selectedMedia.gallery"></i>
-                                Galeria
-                            </div>
-                            <div
-                                class="flex items-center gap-2 cursor-pointer pr-4 pl-2 py-2 border border-light rounded hover:bg-accent/50 hover:shadow transition-all"
-                                :class="selectedMedia.thumbnail ? 'border-strong bg-accent' : 'text-neutral-400'"
-                                @click="toggleType(selectedMedia, 'thumbnail')">
-                                <i class="bi bi-x-lg" v-if="selectedMedia.thumbnail"></i>
-                                Thumbnail
-                            </div>
+                            <MediaTypeTag name="Galeria" :selected="selectedMedia.gallery" @onClick="toggleType(selectedMedia, 'gallery')"/>
+                            <MediaTypeTag name="Thumbnail" :selected="selectedMedia.thumbnail" @onClick="toggleType(selectedMedia, 'thumbnail')"/>
+                            <MediaTypeTag name="Meta" :selected="selectedMedia.meta" @onClick="toggleType(selectedMedia, 'meta')"/>
                         </div>
                     </div>
                     <div class="section">

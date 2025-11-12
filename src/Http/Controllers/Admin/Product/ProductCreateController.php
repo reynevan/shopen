@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Http\Controllers\Admin\Product\Trait\HasMedia;
 use Shopen\Http\Requests\Admin\Product\StoreProductRequest;
 use Shopen\Http\Resources\Admin\Product\ProductDuplicateResource;
 use Shopen\Http\Resources\Admin\Product\ProductResource;
@@ -27,6 +28,9 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 readonly class ProductCreateController
 {
+
+    use HasMedia;
+
     public function __construct(
         protected CustomAttributesService $customAttributesService,
         protected ProductAttributeRepository $productAttributeRepository,
@@ -45,6 +49,7 @@ readonly class ProductCreateController
             'categories' => fn () => $this->categoryRepository->getArray(),
             'ceneo_categories' => fn () => $this->ceneoService->getCategories(),
             'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
+            'tab' => request()->query('tab', 'general')
         ]);
     }
 
@@ -62,6 +67,7 @@ readonly class ProductCreateController
             'categories' => fn () => $this->categoryRepository->getArray(),
             'ceneo_categories' => fn () => $this->ceneoService->getCategories(),
             'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
+            'tab' => request()->query('tab', 'general')
         ]);
     }
 
@@ -133,25 +139,5 @@ readonly class ProductCreateController
         return redirect(route('admin.products.edit', $product))->with('success', 'Produkt został utworzony');
     }
 
-    protected function updateImages(Product $product, $imagesData): void
-    {
-        $product->media()->whereNotIn('id', Arr::pluck($imagesData, 'id'))->delete();
 
-        $images = [];
-        usort($imagesData, function ($a, $b) {
-            return ($a['order'] ?? 0) < ($b['order'] ?? 0) ? 1 : -1;
-        });
-        foreach ($imagesData ?? [] as $image) {
-            if (isset($image['id'])) {
-                $images[] = $image['id'];
-                continue;
-            }
-            $media = $product
-                ->addMedia(Storage::disk('public')->path($image['path']))
-                ->toMediaCollection();
-            $images[] = $media->id;
-
-        }
-        Media::setNewOrder($images);
-    }
 }

@@ -154,13 +154,13 @@ onUnmounted(() => {
                 <div v-if="i < (maxPreviewImages - 1 ) || i === (maxPreviewImages - 1) && images.length === maxPreviewImages"
                      @click="selectImage(i)"
                      :class="{'border-strong': i === previewIndex}"
-                     class="mr-[5px] w-[95px] h-[95px] hover:shadow transition-all duration-300 border bg-gray-100
+                     class="mr-[5px] w-[109px] h-[109px] hover:shadow transition-all duration-300 border bg-gray-100
                             flex items-center justify-center cursor-pointer box-content">
                     <PreviewImage :image="image.gallery_preview" :alt="product.attributes?.name"/>
                 </div>
                 <div v-if="i === (maxPreviewImages - 1) && images.length > maxPreviewImages"
                     @click="openModal(i)"
-                    class="mr-[5px] w-[95px] h-[95px] hover:shadow transition-all duration-300 border bg-gray-100
+                    class="mr-[5px] w-[109px] h-[109px] hover:shadow transition-all duration-300 border bg-gray-100
                     flex items-center justify-center cursor-pointer box-content relative">
                     <div class="absolute top-0 left-0 right-0 bottom-0 bg-white/80 flex items-center justify-center text-xl z-1">
                         + {{ images.length - (maxPreviewImages - 1 ) }}

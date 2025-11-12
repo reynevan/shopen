@@ -45,8 +45,18 @@ trackViewItem(props.product, props.variants)
 
 <template>
     <Head>
-        <meta v-if="product.seo.seo_title" name="title" :content="product.seo.seo_title">
-        <meta v-if="product.seo.seo_description" name="description" :content="product.seo.seo_description">
+        <link rel="canonical" :href="product.canonical_url"/>
+        <meta name="title" v-if="product.meta_title" :content="product.meta_title">
+        <meta name="description" v-if="product.meta_description" :content="product.meta_description">
+        <meta property="og:type" content="product" />
+        <meta property="og:title" v-if="product.meta_title" :content="product.meta_title" />
+        <meta property="og:description" v-if="product.meta_description" :content="product.meta_description" />
+        <meta property="og:image" v-if="product.og_image" :content="product.og_image"/>
+        <meta property="og:url" :content="product.url">
+        <meta property="product:price:amount" :content="product.price.final_price_raw">
+        <meta property="product:price:currency" content="PLN">
+        <meta property="product:availability" :content="product.in_stock ? 'in stock' : 'out of stock'" />
+        <meta property="product:brand" v-if="product.brand" :content="product.brand.name">
     </Head>
     <BannersContainer :banners="banners.product_page_top"/>
     <div class="product-show">

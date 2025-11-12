@@ -19,7 +19,7 @@ const jsonLdScript = computed(() => {
         '@context': 'https://schema.org/',
         '@type': 'Product',
         name: props.product.attributes.name,
-        image: props.product.image,
+        image: props.product.json_ld_image ?? props.product.image,
         description: props.product.attributes.description || '',
         sku: props.product.sku || undefined,
 

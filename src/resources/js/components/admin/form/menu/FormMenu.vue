@@ -1,16 +1,32 @@
 <script setup>
     import {ref} from "vue";
     import ProductFormMenuItem from "@shopen/components/admin/form/menu/FormMenuItem.vue";
+    import {router} from "@inertiajs/vue3";
 
     const props = defineProps({
         sections: { type: Array },
+        activeSection: { type: String, default: 'general' },
     })
     const emits = defineEmits(['onSelect'])
-    const selectedSection = ref('general');
+    const selectedSection = ref(props.activeSection);
 
     const setActive = (section) => {
         emits('onSelect', section);
         selectedSection.value = section;
+
+        const params = route().params;
+        params.tab = section;
+
+        router.get(
+            route(route().current(), params),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+                only: ['tab'],
+                replace: true
+            }
+        );
     }
 </script>
 
