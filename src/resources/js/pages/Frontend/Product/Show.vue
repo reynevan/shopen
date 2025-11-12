@@ -48,6 +48,7 @@ trackViewItem(props.product, props.variants)
 
 <template>
     <Head>
+        <title>{{ product.attributes.name }}</title>
         <link rel="canonical" :href="product.canonical_url"/>
         <meta name="title" v-if="product.meta_title" :content="product.meta_title">
         <meta name="description" v-if="product.meta_description" :content="product.meta_description">
@@ -57,7 +58,6 @@ trackViewItem(props.product, props.variants)
         <meta property="og:image" v-if="product.og_image" :content="product.og_image"/>
         <meta property="og:url" :content="product.url">
         <meta property="og:brand" v-if="product.brand?.name" :content="product.brand.name">
-        <meta property="og:site_name" v-if="page.props.site_name" :content="page.props.site_name">
         <meta property="product:price:amount" :content="product.price.final_price_raw">
         <meta property="product:price:currency" content="PLN">
         <meta property="product:availability" :content="product.in_stock ? 'in stock' : 'out of stock'" />
