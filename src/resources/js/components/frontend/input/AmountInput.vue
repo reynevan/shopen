@@ -12,6 +12,9 @@ const props = defineProps({
     min: {
         default: 0
     },
+    max: {
+        type: Number
+    },
     disabled: {
         type: Boolean,
         default: false
@@ -43,7 +46,9 @@ const sizeClasses = {
 const cls = computed(() => sizeClasses[props.size] ?? sizeClasses.sm);
 
 const inc = () => {
-    emit('onChange', Number(props.value) + 1);
+    if (props.value < props.max) {
+        emit('onChange', Number(props.value) + 1);
+    }
 }
 const dec = () => {
     if (props.value > props.min) {
@@ -55,6 +60,9 @@ const onInput = (event) => {
     if (isNaN(newValue) || newValue < props.min) {
         newValue = props.min;
     }
+    if (newValue && newValue > props.max) {
+        newValue = props.max;
+    }
     emit('onChange', newValue);
 }
 </script>
@@ -65,9 +73,9 @@ const onInput = (event) => {
             role="button"
             aria-label="Zwiększ ilość"
             @click="dec"
-            :disabled="disabled"
+            :disabled="disabled || value <= min"
             :class="[
-                disabled ? 'disabled' : 'enabled',
+                disabled || value <= min ? 'disabled' : 'enabled',
                 cls.btn
             ]">
             <IconMinus/>
@@ -78,6 +86,7 @@ const onInput = (event) => {
             aria-label="Ilość"
             :value="value"
             :min="min"
+            :max="max"
             @input="onInput"
             :class="[
                 'text-center py-0 px-2 border border-light shadow-none rounded-none font-light',
@@ -88,9 +97,9 @@ const onInput = (event) => {
             role="button"
             aria-label="Zmniejsz ilość"
             @click="inc"
-            :disabled="disabled"
+            :disabled="disabled || value >= max"
             :class="[
-                disabled ? 'disabled' : 'enabled',
+                disabled || value >= max ? 'disabled' : 'enabled',
                 cls.btn
             ]">
             <IconPlus/>

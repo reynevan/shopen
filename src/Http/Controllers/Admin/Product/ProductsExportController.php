@@ -25,7 +25,7 @@ readonly class  ProductsExportController
     {
         ExportProducts::dispatch();
 
-        return back();
+        return back()->with('success', 'Eksport rozpoczęty. Plik pojawi się na liście wyeksportowanych, gdy będzie gotowy.');
     }
 
     protected function listExports(): array

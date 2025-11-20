@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
+use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
 class ExportProducts implements ShouldQueue
@@ -19,19 +20,22 @@ class ExportProducts implements ShouldQueue
 
     protected $fileName;
     protected $filePath;
+    protected $categoriesNames = [];
 
     public function __construct()
     {
-        // Generowanie nazwy pliku z hashem dla bezpieczeństwa
         $hash = Str::random(32);
         $timestamp = now()->format('Y-m-d_H-i-s');
         $this->fileName = "products_export_{$timestamp}_{$hash}.csv";
         $this->filePath = "exports/{$this->fileName}";
     }
 
-    public function handle(ProductAttributeRepository $attributeRepository): void
+    public function handle(
+        ProductAttributeRepository $attributeRepository,
+        CategoryAttributeRepository $categoryAttributeRepository,
+    ): void
     {
-        // Pobranie wszystkich produktów z relacjami
+        $this->categoriesNames = $categoryAttributeRepository->getValues('name');
         $products = Product::with([
             'price',
             'categories',
@@ -41,27 +45,20 @@ class ExportProducts implements ShouldQueue
             'brand'
         ])->get();
 
-        // Pobranie wszystkich atrybutów
         $attributes = $attributeRepository->getAll();
 
-        // Przygotowanie nagłówków CSV
         $headers = $this->prepareHeaders($attributes);
 
-        // Ścieżka folderu
         $directory = storage_path('app/public/exports');
 
-        // Sprawdzenie czy folder istnieje, a jeśli nie, to jego utworzenie
         if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true); // rekursyjne tworzenie
+            File::makeDirectory($directory, 0755, true);
         }
 
-        // Otwarcie pliku do zapisu
         $handle = fopen(storage_path("app/public/{$this->filePath}"), 'w');
 
-        // Zapisanie nagłówków
         fputcsv($handle, $headers);
 
-        // Eksport każdego produktu
         foreach ($products as $product) {
             $row = $this->prepareProductRow($product, $attributes);
             fputcsv($handle, $row);
@@ -69,7 +66,6 @@ class ExportProducts implements ShouldQueue
 
         fclose($handle);
 
-        // Opcjonalnie: logowanie lub powiadomienie o zakończeniu
         Log::info("Products export completed: {$this->fileName}");
     }
 
@@ -98,7 +94,6 @@ class ExportProducts implements ShouldQueue
             'brand'
         ];
 
-        // Dodanie nagłówków dla wszystkich atrybutów
         foreach ($attributes as $attribute) {
             $headers[] = $attribute->code;
         }
@@ -120,8 +115,8 @@ class ExportProducts implements ShouldQueue
             $product->in_stock ? 1 : 0,
             $product->price ? $product->price->price : '',
             $product->price ? $product->price->final_price : '',
-            $product->price ? $product->price->special_price_from : '',
-            $product->price ? $product->price->special_price_to : '',
+            $product->price ? $product->price->special_price_from?->format('Y-m-d')  : '',
+            $product->price ? $product->price->special_price_to?->format('Y-m-d') : '',
             $product->price ? $product->price->special_price : '',
             $product->price ? $product->price->price_rule_id : '',
             $product->taxClass ? $product->taxClass->code : '',
@@ -168,8 +163,17 @@ class ExportProducts implements ShouldQueue
         if (!$product->categories || $product->categories->isEmpty()) {
             return '';
         }
-
-        return $product->categories->pluck('id')->implode(config('shopen.export.values_separator'));
+        $result = [];
+        $categories = $product->categories;
+        foreach ($categories as $category) {
+            $categoryNamesPath = [];
+            $pathIds = explode('/', $category->path);
+            foreach ($pathIds as $pathId) {
+                $categoryNamesPath[] = $this->categoriesNames[$pathId] ?? null;
+            }
+            $result[] = implode('/', array_filter($categoryNamesPath));
+        }
+        return implode(config('shopen.export.values_separator'), $result);
     }
 
     public function getFileName(): string

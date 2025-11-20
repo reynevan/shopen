@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('parent_id')->nullable()->index();
             $table->integer('level')->unsigned();
+            $table->string('path')->nullable();
             $table->boolean('is_active')->default(true);
             $table->boolean('is_canonical')->default(false);
             $table->integer('sort_index')->default(0);

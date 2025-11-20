@@ -22,22 +22,22 @@ const exportProducts = () => {
         </template>
         <Button @click="exportProducts">Eksportuj</Button>
     </ActionsPanel>
-    <section>
-        <table class="w-full">
+    <section class="px-4">
+        <table class="">
             <thead>
             <tr>
-                <th class="text-left px-2">Nazwa pliku</th>
-                <th class="text-right">Data</th>
-                <th class="text-right">Rozmiar</th>
-                <th class="text-center">Pobierz</th>
+                <th class="text-left px-6">Nazwa pliku</th>
+                <th class="text-right px-6">Data</th>
+                <th class="text-right px-6">Rozmiar</th>
+                <th class="text-center px-6">Pobierz</th>
             </tr>
             </thead>
             <tbody>
-            <tr v-for="file in files">
-                <td class="px-2 py-2">{{ file.name }}</td>
-                <td class="px-2 py-2 text-right">{{ file.created_at }}</td>
-                <td class="px-2 py-2 text-right">{{ file.size }}</td>
-                <td class="px-2 py-2 text-center">
+            <tr v-for="file in files" class="border">
+                <td class="px-6 py-2">{{ file.name }}</td>
+                <td class="px-6 py-2 text-right">{{ file.created_at }}</td>
+                <td class="px-6 py-2 text-right">{{ file.size }}</td>
+                <td class="px-6 py-2 text-center">
                     <a :href="file.download_url" target="_blank">
                         <i class="bi bi-download"></i>
                     </a>

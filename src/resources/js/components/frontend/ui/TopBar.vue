@@ -5,7 +5,7 @@ import { useTopBarStore } from "../../../stores/topBar";
 
 const page = usePage();
 const topBarStore = useTopBarStore();
-topBarStore.setSlides(page.props.textSlides);
+topBarStore.setSlides(page.props.text_slides);
 
 const currentSlideIndex = ref(0);
 const nextSlideIndex = ref(1);

@@ -9,7 +9,6 @@ defineOptions({layout: AppLayout})
 
 <template>
     <div class="contact">
-
         <ContactForm/>
     </div>
 </template>

@@ -23,7 +23,8 @@ class CartController extends Controller
         if (is_null($price)) {
             abort(500);
         }
-        $this->cartService->addToCart($product->id, request()->post('qty') ?? 1, $price->price, $price->final_price);
+        $qty = min(request()->post('qty') ?? 1, config('shopen.cart.max_item_qty', 10));
+        $this->cartService->addToCart($product->id, $qty, $price->price, $price->final_price);
 
         return back();
     }

@@ -9,7 +9,7 @@ import FlashMessage from "@shopen/components/admin/ui/FlashMessage.vue";
 <template>
     <Sidebar/>
     <div class="pl-[100px]">
-        <main class="px-4 pb-20">
+        <main class="pb-20 pt-[72px] px-6">
             <slot/>
         </main>
     </div>

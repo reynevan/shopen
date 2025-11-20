@@ -37,10 +37,10 @@ import Logo from "@shopen/components/frontend/ui/Logo.vue";
                         <Link class="footer-link" href="/kontakt">Kontakt</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/regulamin">Regulamin</Link>
+                        <Link class="footer-link" :href="route('terms-and-conditions')">Regulamin</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/polityka-prywatnosci">Polityka prywatności</Link>
+                        <Link class="footer-link" :href="route('shipping')">Dostawy</Link>
                     </div>
                     <div>
                         <Link class="footer-link" href="/polityka-cookies">Polityka cookies</Link>

@@ -157,6 +157,19 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
         return $this->id . '-' . Str::slug($name);
     }
 
+    public function updatePath()
+    {
+        $path = [];
+        $parent = $this->parent;
+        while ($parent) {
+            array_unshift($path, $parent->id);
+            $parent = $parent->parent;
+        }
+        $path[] = $this->id;
+        $this->path = implode('/', $path);
+        $this->save();
+    }
+
     protected function getDefaultSeoTitle(): string
     {
         return "$this->name - kup online ";

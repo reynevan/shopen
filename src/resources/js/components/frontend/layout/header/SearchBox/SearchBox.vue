@@ -1,13 +1,13 @@
 <script setup>
-import {computed, ref} from 'vue'
+import {computed, nextTick, ref} from 'vue'
 import {router} from '@inertiajs/vue3'
 import IconSearch from "@shopen/components/icons/IconSearch.vue";
 import ProductSearchResultItem from "./ProductSearchResultItem.vue";
-import IconLoader from "../../../../icons/IconLoader.vue";
-import {trackSearch} from "../../../../../utils/ga4";
-import IconChevron from "../../../../icons/IconChevron.vue";
-import IconX from "../../../../icons/IconX.vue";
-import {useBodyScrollLock} from "../../../../../composables/useBodyScrollLock";
+import IconLoader from "@shopen/components/icons/IconLoader.vue";
+import {trackSearch} from "@shopen/utils/ga4.js";
+import IconChevron from "@shopen/components/icons/IconChevron.vue";
+import IconX from "@shopen/components/icons/IconX.vue";
+import {useBodyScrollLock} from "@shopen/composables/useBodyScrollLock.js";
 
 const searchQuery = ref('')
 const searchResults = ref({products: [], categories: []})
@@ -23,6 +23,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['search', 'productSelected', 'categorySelected'])
+
+const mobileInput = ref(null)
 
 const searchProducts = async (query) => {
     if (query.length < props.minSearchLength) {
@@ -92,9 +94,13 @@ const hasResults = computed(() => {
     return searchResults.value.products.length > 0 || searchResults.value.categories.length > 0
 })
 
-const showMobileView = () => {
+const showMobileView = async () => {
     bodyScrollLock.lock()
     mobileViewOpen.value = true
+    if (mobileInput.value) {
+        await nextTick();
+        mobileInput.value.focus()
+    }
 }
 
 const hideMobileView = () => {
@@ -117,7 +123,7 @@ const resetSearch = () => {
 <template>
     <div class="relative w-full h-full">
         <Teleport to="body" :disabled="!mobileViewOpen">
-            <div class="sm:border border-light rounded z-50 bg-header"
+            <div class="search-box sm:border border-light rounded z-50 bg-header"
                  :class="mobileViewOpen ? 'fixed top-0 left-0 bottom-0 right-0 z-100' : 'relative'">
                 <!-- input -->
                 <div class="relative flex items-center">
@@ -138,13 +144,14 @@ const resetSearch = () => {
                         class="input pr-10 hidden sm:block"
                     />
                     <input
+                        ref="mobileInput"
                         @click="showMobileView"
                         v-model="searchQuery"
-                        v-show="mobileViewOpen"
                         @input="handleInput"
                         type="text"
                         placeholder="Szukaj produktów i kategorii..."
-                        class="w-full border-none shadow-none pr-10 transition-colors sm:hidden text-lg pl-16 py-6"
+                        :class="mobileViewOpen ? 'py-6 pl-16 pr-10' : 'py-2 px-4'"
+                        class="mobile-input"
                     />
                     <button
                         @click="showMobileView"

@@ -6,6 +6,7 @@ import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import IconCartPlus from "@shopen/components/icons/IconCartPlus.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
+import {usePage} from "@inertiajs/vue3";
 
 const cart = useCartStore();
 const minicart = useMiniCartStore();
@@ -15,6 +16,10 @@ const props = defineProps({
         type: Object
     }
 })
+
+const page = usePage();
+
+const maxQty = page.props.config?.max_cart_products ?? 10;
 
 const emits = defineEmits(["onAddConfigurable"]);
 
@@ -36,7 +41,7 @@ const updateQty = (newQty) => {
 
 <template>
     <div class="flex items-center gap-4 flex-col sm:flex-row">
-        <AmountInput :value="qty" @onChange="updateQty" :min="1" size="lg"/>
+        <AmountInput :value="qty" @onChange="updateQty" :min="1" size="lg" :max="maxQty"/>
         <Button @click="addToCart"
                 type="primary"
                 size="lg"

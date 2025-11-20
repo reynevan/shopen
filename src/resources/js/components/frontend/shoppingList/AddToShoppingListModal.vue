@@ -15,7 +15,7 @@ const emit = defineEmits(['close']);
 
 const shoppingListStore = useShoppingListStore();
 
-const userLists = computed(() => usePage().props.shoppingLists || []);
+const userLists = computed(() => usePage().props.shopping_lists || []);
 const showNewListInput = ref(false);
 
 const form = useForm({

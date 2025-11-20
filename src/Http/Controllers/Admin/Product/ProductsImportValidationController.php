@@ -4,32 +4,47 @@ namespace Shopen\Http\Controllers\Admin\Product;
 
 use DateTime;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
+use Shopen\Http\Controllers\Admin\Product\Trait\HasCategoryMap;
 use Shopen\Models\Attribute\Attribute;
+use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Models\UrlRewrite;
+use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Services\CsvParser;
 
-readonly class ProductsImportValidationController
+class ProductsImportValidationController
 {
+    use HasCategoryMap;
+
     public function __construct(
         protected CsvParser $csvParser,
         protected ProductAttributeRepository $productAttributeRepository,
+        protected CategoryAttributeRepository $categoryAttributeRepository,
     ) {}
 
     public function validate()
+    {
+        $this->createCategoryMap();
+        $data = $this->validateFile();
+
+        return Inertia::render('Admin/Product/Import', $data);
+    }
+
+    private function validateFile()
     {
         $validator = Validator::make(request()->all(), [
             'file' => 'required|file|mimes:csv,txt',
         ]);
 
         if ($validator->fails()) {
-            return back()->withErrors($validator)->with([
+            return [
                 'validation_status' => 'error',
                 'validation_message' => 'Błąd walidacji pliku'
-            ]);
+            ];
         }
 
         try {
@@ -37,16 +52,15 @@ readonly class ProductsImportValidationController
             $csvData = $this->csvParser->parseCsvFile($file);
 
             if (empty($csvData)) {
-                return back()->withErrors(['file' => 'Plik CSV jest pusty lub nieprawidłowy'])
-                    ->with([
+                return [
                         'validation_status' => 'error',
                         'validation_message' => 'Plik CSV jest pusty lub nieprawidłowy'
-                    ]);
+                    ];
             }
 
             $validationResult = $this->validateCsvData($csvData);
 
-            return back()->with([
+            return [
                 'validation_status' => $validationResult['is_valid'] ? 'success' : 'error',
                 'validation_message' => $validationResult['is_valid']
                     ? 'Walidacja CSV przebiegła pomyślnie'
@@ -61,14 +75,13 @@ readonly class ProductsImportValidationController
                 'validation_errors' => $validationResult['errors'],
                 'validation_warnings' => $validationResult['warnings'],
                 'is_validated' => true
-            ]);
+            ];
 
         } catch (\Exception $e) {
-            return back()->withErrors(['file' => 'Błąd walidacji: ' . $e->getMessage()])
-                ->with([
+            return [
                     'validation_status' => 'error',
                     'validation_message' => 'Błąd walidacji: ' . $e->getMessage()
-                ]);
+                ];
         }
     }
 
@@ -92,7 +105,7 @@ readonly class ProductsImportValidationController
         }
 
         // Sprawdzenie wymaganych nagłówków
-        $requiredHeaders = ['sku', 'name', 'status'];
+        $requiredHeaders = ['sku'];
         $availableHeaders = array_keys($csvData[0]);
 
         foreach ($requiredHeaders as $header) {
@@ -147,7 +160,7 @@ readonly class ProductsImportValidationController
 
         foreach ($csvData as $rowIndex => $row) {
             $rowNumber = $rowIndex + 2; // +2 bo liczymy od 1 i pomijamy nagłówek
-            $rowErrors = $this->validateRow($row, $rowNumber, $attributes);
+            $rowErrors = $this->validateRow($row, $rowNumber, $attributes, $skus);
 
             if (!empty($rowErrors)) {
                 $result['invalid_rows']++;
@@ -161,11 +174,12 @@ readonly class ProductsImportValidationController
         return $result;
     }
 
-    private function validateRow(array $row, int $rowNumber, Collection $attributes): array
+    private function validateRow(array $row, int $rowNumber, Collection $attributes, array $skus): array
     {
         if (count(array_unique(array_values($row))) === 1 && array_values($row)[0] === '') {
             return [];
         }
+        $existingProduct = $row['sku'] ? Product::query()->where('sku', $row['sku'])->exists() : false;
         $errors = [];
         // Walidacja sku
         if (empty($row['sku'])) {
@@ -176,15 +190,15 @@ readonly class ProductsImportValidationController
 
         // Walidacja name (atrybut)
         $nameValue = $row['name'] ?? '';
-        if (empty($nameValue)) {
+        if (empty($nameValue) && !$existingProduct) {
             $errors[] = "Nazwa produktu jest wymagana";
-        } elseif (strlen($nameValue) > 255) {
+        } elseif (!empty($nameValue) && strlen($nameValue) > 255) {
             $errors[] = "Nazwa produktu jest za długa (max 255 znaków)";
         }
 
-        if (!isset($row['status'])) {
+        if (!isset($row['status']) && !$existingProduct) {
             $errors[] = "Status produktu jest wymagany";
-        } else {
+        } elseif (isset($row['status'])) {
             $this->validateBool($row, 'status', $errors);
         }
 
@@ -197,7 +211,7 @@ readonly class ProductsImportValidationController
             $errors[] = "Nieprawidłowy typ produktu '{$row['type']}'";
         }
 
-        if (!empty($row['parent_sku']) && !Product::query()->where('sku', $row['parent_sku'])->exists()) {
+        if (!empty($row['parent_sku']) && !in_array($row['parent_sku'], $skus) && !Product::query()->where('sku', $row['parent_sku'])->exists()) {
             $errors[] = "parent sku - produkt z takim sku nie istnieje";
         }
 
@@ -214,10 +228,18 @@ readonly class ProductsImportValidationController
 
         // Walidacja kategorii
         if (!empty($row['categories'])) {
-            $categoryIds = array_map('trim', explode(config('shopen.export.values_separator'), $row['categories']));
-            foreach ($categoryIds as $categoryId) {
-                if (!is_numeric($categoryId)) {
-                    $errors[] = "ID kategorii '{$categoryId}' musi być liczbą";
+            $categories = array_map('trim', explode(config('shopen.export.values_separator'), $row['categories']));
+            foreach ($categories as $categoryPath) {
+                $categoryPathNames = explode('/', $categoryPath);
+                $parentId = null;
+                foreach ($categoryPathNames as $categoryName) {
+                    $category = $this->getCategory($categoryName, $parentId);
+                    if ($category) {
+                        $parentId = $category->parent_id ?? null;
+                    } else {
+                        $errors[] = 'Nieprawidłowa kategoria: ' . $categoryPath;
+                        break;
+                    }
                 }
             }
         }
@@ -316,7 +338,7 @@ readonly class ProductsImportValidationController
             return;
         }
 
-        $date = DateTime::createFromFormat('Y-m-d', $value);
+        $date = Carbon::parse($value);
 
         if ($date === false || $date->format('Y-m-d') !== $value) {
             $errors[] = "{$attr} - nieprawidłowy format";

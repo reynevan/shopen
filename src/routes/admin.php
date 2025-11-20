@@ -41,7 +41,6 @@ use Shopen\Http\Controllers\Admin\TaxClass\TaxClassEditController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassIndexController;
 use Shopen\Http\Controllers\Admin\User\UserEditController;
 use Shopen\Http\Controllers\Admin\User\UserIndexController;
-use Shopen\Http\Controllers\Frontend\Api\BannerTrackController;
 
 Route::middleware(['web'])->prefix('/admin')->name('admin.')->group(function () {
     Route::get('logowanie', [LoginController::class, 'create'])->name('login');
@@ -59,6 +58,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/produkty/import', [ProductsImportController::class, 'index'])->name('products.import');
     Route::post('/produkty/import', [ProductsImportController::class, 'import'])->name('products.import.process');
     Route::post('/produkty/import/walidacja', [ProductsImportValidationController::class, 'validate'])->name('products.import.validate');
+    Route::get('/produkty/import/walidacja', function () {return redirect(route('admin.products.import')); });
     Route::get('/produkty/export', [ProductsExportController::class, 'index'])->name('products.export');
     Route::get('/produkty/export/{filename}', [ProductsExportController::class, 'download'])->name('products.export.download');
     Route::post('/produkty/export', [ProductsExportController::class, 'export'])->name('products.export.submit');

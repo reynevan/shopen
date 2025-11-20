@@ -68,6 +68,7 @@ trait CategoriesImporter
             $category->createOrUpdateSeoForWebsite(1, [
                 'seo_description' => $data['meta_description'],
             ]);
+            $category->updatePath();
         }
         foreach ($data['children'] as $childRow) {
             $this->importCategory($childRow, $category->id);

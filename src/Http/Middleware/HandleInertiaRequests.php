@@ -67,13 +67,7 @@ class HandleInertiaRequests extends Middleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
                 'warning' => fn () => $request->session()->get('warning'),
-                'info' => fn () => $request->session()->get('info'),
-                /*'validation_status' => fn () => $request->session()->get('validation_status'),
-                'validation_message' => fn () => $request->session()->get('validation_message'),
-                'validation_summary' => fn () => $request->session()->get('validation_summary'),
-                'validation_errors' => fn () => $request->session()->get('validation_errors'),
-                'validation_warnings' => fn () => $request->session()->get('validation_warnings'),
-                'is_validated' => fn () => $request->session()->get('is_validated'),*/
+                'info' => fn () => $request->session()->get('info')
             ],
             'route' => $request->route()->getName()
         ];
@@ -109,16 +103,20 @@ class HandleInertiaRequests extends Middleware
                 ? Inertia::lazy(fn () => app(MenuService::class)->getMenu())
                 : fn() => app(MenuService::class)->getMenu();
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
-            $data['shoppingLists'] = fn () => app(ShoppingListService::class)
+            $data['shopping_lists'] = fn () => app(ShoppingListService::class)
                 ->getCurrentUserListsQuery()
                 ->withCount('products')
                 ->orderBy('name')
                 ->get();
             $data['gtag_id'] = fn() => config('services.gtm.id');
-            $data['textSlides'] = $request->inertia() ?
+            $data['text_slides'] = $request->inertia() ?
                 Inertia::lazy(fn () => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
                 : fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll());
             $data['site_name'] = fn () => config('app.name');
+
+            $data['config'] = fn () => [
+                'max_cart_products' => config('shopen.cart.max_item_qty', 10)
+            ];
         }
         return $data;
     }

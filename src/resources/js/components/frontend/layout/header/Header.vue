@@ -30,7 +30,7 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
 </script>
 
 <template>
-    <header class="header w-full mx-auto bg-header shadow pt-4 pb-2 sm:pb-0 z-10 sticky transition-all duration-300"
+    <header class="header w-full mx-auto bg-header shadow pt-4 z-10 sticky transition-all duration-300"
             :class="isScrollingDown ? '-top-full' : 'top-0'">
         <div class="mx-auto container">
             <div class="flex flex-col sm:gap-4 sm:flex-row justify-between items-center">
@@ -39,7 +39,7 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                         <Logo width="140px"/>
                     </Link>
                 </div>
-                <div class="hidden sm:flex items-center w-full  h-auto sm:h-[42px]">
+                <div class="hidden sm:flex items-center w-full h-auto sm:h-[42px]">
                     <SearchBox/>
                 </div>
                 <div class="flex justify-between items-center w-full sm:w-auto sm:gap-2 order-1 sm:order-2">
@@ -73,12 +73,11 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                               title="Listy zakupowe">
                             <IconHeart size="2xl"/>
                         </Link>
-
-                        <div class="block sm:hidden">
-                            <SearchBox/>
-                        </div>
                     </div>
+                </div>
 
+                <div class="block sm:hidden order-3 w-full">
+                    <SearchBox/>
                 </div>
             </div>
         </div>

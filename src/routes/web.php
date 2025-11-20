@@ -27,6 +27,8 @@ use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListIndexController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListItemController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListShowController;
 use Shopen\Http\Controllers\Frontend\Static\ContactController;
+use Shopen\Http\Controllers\Frontend\Static\ShippingController;
+use Shopen\Http\Controllers\Frontend\Static\TermsAndConditionsController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderCancelController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderPayController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
@@ -95,6 +97,10 @@ Route::middleware(['web'])->group(function () {
 
     Route::get('/kontakt', [ContactController::class, 'index'])->name('contact.index');
     Route::post('/kontakt', [ContactController::class, 'submit'])->name('contact.submit');
+
+    Route::get('/regulamin', [TermsAndConditionsController::class, 'index'])->name('terms-and-conditions');
+
+    Route::get('/dostawy', [ShippingController::class, 'index'])->name('shipping');
 
     Route::post('/payu/notify', [PayuNotifyController::class, 'index'])->name('payu.notify');
 });

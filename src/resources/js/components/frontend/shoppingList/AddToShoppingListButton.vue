@@ -18,7 +18,7 @@ const props = defineProps({
 const page = usePage();
 const shoppingListStore = useShoppingListStore();
 
-const shoppingLists = computed(() => page.props.shoppingLists || []);
+const shoppingLists = computed(() => page.props.shopping_lists || []);
 const addToDefaultListForm = useForm({
     product_id: props.product.id,
 });

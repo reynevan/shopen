@@ -136,9 +136,11 @@ onUnmounted(() => {
                 :options="{ align: 'prev', circular: false, bound: true, preventDefaultOnDrag: true, duration: 200, deceleration: 1, renderOnlyVisible: true}"
                 @changed="onPreviewChange"
                 ref="flicking">
-                <div v-for="(image, i) in images" :key="i"
+                <div v-for="(image, i) in images"
+                     :key="i"
+                     @click="openModal(i)"
                      class="flicking-panel bg-gray-100 w-full flex justify-center items-center">
-                    <GalleryImage :image="image.gallery_image" @onClick="openModal(i)" :alt="product.attributes?.name" :main="i === 0"/>
+                    <GalleryImage :image="image.gallery_image" :alt="product.attributes?.name" :main="i === 0"/>
                 </div>
             </Flicking>
             <div v-if="previewIndex < images.length - 1" @click="nextImage"

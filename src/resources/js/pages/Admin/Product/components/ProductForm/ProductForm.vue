@@ -149,7 +149,6 @@ const duplicate = () => {
 }
 
 </script>
-
 <template>
     <ActionsPanel back-route="admin.products.index">
         <template #title>
@@ -238,6 +237,4 @@ const duplicate = () => {
             </section>
         </div>
     </div>
-
-
 </template>

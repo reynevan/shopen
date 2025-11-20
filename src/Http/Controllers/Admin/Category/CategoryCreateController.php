@@ -63,9 +63,16 @@ readonly class CategoryCreateController
             unset($validated['attributes']);
             $category->fill($validated);
             $category->setParentId($validated['parent_id'] ?? null);
-
+            if ($parent = $category->parent) {
+                $category->level = $parent->level + 1;
+            } else {
+                $category->level = 1;
+            }
             $category->save();
             $category->generateUrlRewrite();
+            $category->updatePath();
+
+            DB::commit();
 
             return redirect(route('admin.categories.edit', $category))->with('success', 'Kategoria została zapisana.');
         } catch (Throwable $e) {

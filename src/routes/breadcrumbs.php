@@ -56,3 +56,11 @@ Breadcrumbs::register('contact.index', function (BreadcrumbsService $breadcrumbs
 Breadcrumbs::register('search.index', function (BreadcrumbsService $breadcrumbs) {
     $breadcrumbs->add('Wyniki wyszukiwania', route('search.index'));
 });
+
+Breadcrumbs::register('terms-and-conditions', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Regulamin', route('terms-and-conditions'));
+});
+
+Breadcrumbs::register('shipping', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('Dostawy', route('shipping'));
+});
