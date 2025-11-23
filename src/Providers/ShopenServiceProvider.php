@@ -50,7 +50,25 @@ class ShopenServiceProvider  extends ServiceProvider
     {
         if (config('app.log_sql_queries')) {
             DB::listen(function ($query) {
-                Log::info($query->sql, ['Bindings' => $query->bindings, 'Time' => $query->time]);
+                $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 15);
+
+                $caller = collect($trace)->first(function ($t) {
+                    return isset($t['file']) &&
+                        !str_contains($t['file'], 'vendor/laravel') &&
+                        !str_contains($t['file'], '/Database/');
+                });
+
+                $location = sprintf(
+                    '%s:%s',
+                    basename($caller['file'] ?? 'unknown'),
+                    $caller['line'] ?? '?'
+                );
+
+                Log::info($query->sql, [
+                    'Bindings' => $query->bindings,
+                    'Time' => $query->time . 'ms',
+                    'Called from' => $location,
+                ]);
             });
         }
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');

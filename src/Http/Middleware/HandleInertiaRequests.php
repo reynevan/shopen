@@ -12,6 +12,7 @@ use Shopen\Core\Context;
 use Shopen\Facades\Breadcrumbs;
 use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Http\Resources\Cart\CartItemResource;
+use Shopen\Http\Resources\User\UserResource;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
@@ -60,7 +61,7 @@ class HandleInertiaRequests extends Middleware
         $data = [
             'errors' => fn() => $this->resolveValidationErrors($request),
             'auth' => fn() => [
-                'user' => $request->user(),
+                'user' => UserResource::make($request->user()),
             ],
             'csrf_token' => fn() => csrf_token(),
             'flash' => [
@@ -103,12 +104,6 @@ class HandleInertiaRequests extends Middleware
                 ? Inertia::lazy(fn () => app(MenuService::class)->getMenu())
                 : fn() => app(MenuService::class)->getMenu();
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
-            $data['shopping_lists'] = fn () => app(ShoppingListService::class)
-                ->getCurrentUserListsQuery()
-                ->withCount('products')
-                ->orderBy('name')
-                ->get();
-            $data['gtag_id'] = fn() => config('services.gtm.id');
             $data['text_slides'] = $request->inertia() ?
                 Inertia::lazy(fn () => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
                 : fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll());

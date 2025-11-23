@@ -74,22 +74,19 @@ class BannerService
 
     public function getForHomePage(): array
     {
-        $cacheKey = 'banners.home-page';
-        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () {
-            $placements = [
-                Placement::HOME_PAGE_TOP,
-                Placement::HOME_PAGE_BOTTOM,
-            ];
-            $banners = [];
-            foreach ($placements as $placement) {
-                $banners[$placement->value] = $this->buildBaseQuery()
-                    ->where('placement_type', PlacementType::PREDEFINED)
-                    ->where('placement_key', $placement->value)
-                    ->get()
-                    ->map(fn($banner) => BannerResource::make($banner));
-            }
-            return $banners;
-        });
+        $placements = [
+            Placement::HOME_PAGE_TOP,
+            Placement::HOME_PAGE_BOTTOM,
+        ];
+        $banners = [];
+        foreach ($placements as $placement) {
+            $placementBanners = $this->buildBaseQuery()
+                ->where('placement_type', PlacementType::PREDEFINED)
+                ->where('placement_key', $placement->value)
+                ->get();
+            $banners[$placement->value] = BannerResource::collection($placementBanners)->resolve();
+        }
+        return $banners;
     }
 
     private function buildBaseQuery()
@@ -97,6 +94,7 @@ class BannerService
         $now = Carbon::now();
         return Banner::query()
             ->where('is_active', true)
+            ->with(['media'])
             ->where(fn($q) => $q->where('start_date', '<=', $now)->orWhereNull('start_date'))
             ->where(fn($q) => $q->where('end_date', '>=', $now)->orWhereNull('end_date'))
             ->orderBy('sort_order', 'asc');

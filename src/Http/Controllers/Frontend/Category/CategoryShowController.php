@@ -13,6 +13,7 @@ use Shopen\Repositories\Product\ProductRepository;
 use Shopen\Services\BannerService;
 use Shopen\Services\FiltersService;
 use Shopen\Services\SearchService\SearchService;
+use Shopen\Services\ShoppingListService;
 
 readonly class CategoryShowController
 {
@@ -24,6 +25,7 @@ readonly class CategoryShowController
         protected ProductSortRegistry        $productSortRegistry,
         protected SearchService              $searchService,
         protected FiltersService             $filtersService,
+        protected ShoppingListService        $shoppingListService
     )
     {
     }
@@ -64,6 +66,11 @@ readonly class CategoryShowController
             'activeSort' => fn() => request()->query('sort') ?? $this->productSortRegistry->defaultKey(),
             'sortOptions' => fn() => $this->productSortRegistry->allOptions(),
             'title' => fn() => $this->getTitle($category),
+            'shoppingLists' => fn() => $this->shoppingListService
+                ->getCurrentUserListsQuery()
+                ->withCount('products')
+                ->orderBy('name')
+                ->get()
         ]);
     }
 

@@ -18,6 +18,7 @@ use Shopen\Repositories\Product\ProductRepository;
 use Shopen\Repositories\Product\Review\ProductReviewRepository;
 use Shopen\Services\BannerService;
 use Shopen\Services\RecentlyViewedProductsService;
+use Shopen\Services\ShoppingListService;
 
 readonly class ProductShowController
 {
@@ -27,7 +28,8 @@ readonly class ProductShowController
         protected BannerService                 $bannerService,
         protected ProductReviewRepository       $productReviewRepository,
         protected RecentlyViewedProductsService $recentlyViewedProductsService,
-        protected ProductAttributeRepository    $productAttributeRepository
+        protected ProductAttributeRepository    $productAttributeRepository,
+        protected ShoppingListService        $shoppingListService
     )
     {
     }
@@ -51,7 +53,12 @@ readonly class ProductShowController
             'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getVisibleInDetails()),
             'banners' => fn() => $this->bannerService->getForProduct($product),
             'sort' => fn() => request('opinie'),
-            'recentlyViewedProducts' => fn() => ProductResource::collection($this->recentlyViewedProductsService->get(except: $product->id))
+            'recentlyViewedProducts' => fn() => ProductResource::collection($this->recentlyViewedProductsService->get(except: $product->id)),
+            'shoppingLists' => fn() => $this->shoppingListService
+                ->getCurrentUserListsQuery()
+                ->withCount('products')
+                ->orderBy('name')
+                ->get()
         ]);
     }
 

@@ -2,9 +2,11 @@
 
 namespace Shopen\Http\Controllers\Frontend;
 
+use Illuminate\Support\Facades\Cache;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Controller;
+use Shopen\Http\Resources\Banner\BannerResource;
 use Shopen\Http\Resources\Brand\BrandResource;
 use Shopen\Http\Resources\Product\ProductResource;
 use Shopen\Repositories\Brand\BrandRepository;
@@ -13,6 +15,8 @@ use Shopen\Services\SearchService\SearchService;
 
 class HomeController extends Controller
 {
+    private const CACHE_TTL = 60 * 60;
+
     public function __construct(
         protected readonly BrandRepository $brandRepository,
         protected readonly BannerService   $bannerService,
@@ -22,18 +26,20 @@ class HomeController extends Controller
 
     public function index(): Response
     {
-
-        $bestsellers = app(SearchService::class)->setCategoryId(1)->setLimit(20)->getProducts()->products();
-
         $newProducts = app(SearchService::class)->setNew(true)->setLimit(20)->getProducts()->products();
 
-        $brands = $this->brandRepository->getVisibleOnHomepage();
+        $brands = fn() => Cache::remember('home.brands', config('app.debug') ? 0 : self::CACHE_TTL, function () {
+            return BrandResource::collection($this->brandRepository->getVisibleOnHomepage())->resolve();
+        });
+
+        $banners = fn() => Cache::remember('home.banners', config('app.debug') ? 0 : self::CACHE_TTL, function () {
+            return $this->bannerService->getForHomePage();
+        });
 
         return Inertia::render('Frontend/Home/Index', [
-                'banners' => fn() => $this->bannerService->getForHomePage(),
-                'bestsellers' => fn() => ProductResource::collection($bestsellers),
-                'brands' => fn() => BrandResource::collection($brands),
-                'newProducts' => fn() => ProductResource::collection($newProducts),
+                'banners' => $banners,
+                'brands' => $brands,
+                //'newProducts' => fn() => ProductResource::collection($newProducts),
             ]
         );
     }
