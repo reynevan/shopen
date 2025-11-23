@@ -58,10 +58,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $user = $request->user();
         $data = [
             'errors' => fn() => $this->resolveValidationErrors($request),
             'auth' => fn() => [
-                'user' => UserResource::make($request->user()),
+                'user' => $user ? UserResource::make($user) : null,
             ],
             'csrf_token' => fn() => csrf_token(),
             'flash' => [
