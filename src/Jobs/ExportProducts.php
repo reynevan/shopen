@@ -49,13 +49,19 @@ class ExportProducts implements ShouldQueue
 
         $headers = $this->prepareHeaders($attributes);
 
-        $directory = storage_path('app/public/exports');
+        $finalDirectory = storage_path('app/public/exports');
+        $tmpDirectory = storage_path('app/tmp');
 
-        if (!File::exists($directory)) {
-            File::makeDirectory($directory, 0755, true);
+        if (!File::exists($finalDirectory)) {
+            File::makeDirectory($finalDirectory, 0755, true);
         }
 
-        $handle = fopen(storage_path("app/public/{$this->filePath}"), 'w');
+        if (!File::exists($tmpDirectory)) {
+            File::makeDirectory($tmpDirectory, 0755, true);
+        }
+
+        $tmpFilePath = $tmpDirectory . '/' . $this->fileName;
+        $handle = fopen($tmpFilePath, 'w');
 
         fputcsv($handle, $headers);
 
@@ -65,6 +71,9 @@ class ExportProducts implements ShouldQueue
         }
 
         fclose($handle);
+
+        $finalFilePath = storage_path("app/public/{$this->filePath}");
+        File::move($tmpFilePath, $finalFilePath);
 
         Log::info("Products export completed: {$this->fileName}");
     }

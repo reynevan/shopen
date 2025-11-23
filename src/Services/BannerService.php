@@ -72,6 +72,26 @@ class BannerService
         });
     }
 
+    public function getForHomePage(): array
+    {
+        $cacheKey = 'banners.home-page';
+        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () {
+            $placements = [
+                Placement::HOME_PAGE_TOP,
+                Placement::HOME_PAGE_BOTTOM,
+            ];
+            $banners = [];
+            foreach ($placements as $placement) {
+                $banners[$placement->value] = $this->buildBaseQuery()
+                    ->where('placement_type', PlacementType::PREDEFINED)
+                    ->where('placement_key', $placement->value)
+                    ->get()
+                    ->map(fn($banner) => BannerResource::make($banner));
+            }
+            return $banners;
+        });
+    }
+
     private function buildBaseQuery()
     {
         $now = Carbon::now();

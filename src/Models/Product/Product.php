@@ -59,7 +59,8 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'is_voucher',
         'is_new',
         'is_new_to',
-        'tax_class_id'
+        'tax_class_id',
+        'ceneo_category_id'
     ];
 
     protected $casts = [
@@ -491,6 +492,17 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function isConfigurable(): bool
     {
         return $this->type === 'configurable';
+    }
+
+    public function isNew()
+    {
+        if (!$this->is_new) {
+            return false;
+        }
+        if (!$this->is_new_to) {
+            return true;
+        }
+        return $this->is_new_to->isFuture();
     }
 
     public function isInStock()

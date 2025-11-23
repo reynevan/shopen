@@ -43,6 +43,7 @@ class ProductResource extends JsonResource
             'up_sell_ids' => $this->whenLoaded('upSells', $this->upSells()->pluck('up_sell_product_id')->toArray()),
             'promo_code' => PromoCodeResource::make($this->whenLoaded('promoCode')),
             'tax_class_id' => $this->tax_class_id,
+            'ceneo_category_id' => $this->ceneo_category_id,
             'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
         ];
     }

@@ -43,8 +43,12 @@ readonly class ProductCreateController
 
     public function create(): Response
     {
+        $product = new Product();
+        if (config('shopen.ceneo.default_category_id')) {
+            $product->ceneo_category_id = config('shopen.ceneo.default_category_id');
+        }
         return Inertia::render('Admin/Product/Create', [
-            'product' => ProductResource::make(new Product()),
+            'product' => ProductResource::make($product),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
             'categories' => fn () => $this->categoryRepository->getArray(),
             'ceneo_categories' => fn () => $this->ceneoService->getCategories(),

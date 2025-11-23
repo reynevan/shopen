@@ -139,7 +139,7 @@ class SearchServiceResult
                 'path' => request()->url(),
                 'pageName' => 'strona',
                 'query' => request()->query(),
-                'onEachSide' => 0
+                'onEachSide' => 1
             ]
         );
     }

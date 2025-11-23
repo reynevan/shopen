@@ -52,87 +52,90 @@ trackViewItem(props.product, props.variants)
         <link rel="canonical" :href="product.canonical_url"/>
         <meta name="title" v-if="product.meta_title" :content="product.meta_title">
         <meta name="description" v-if="product.meta_description" :content="product.meta_description">
-        <meta property="og:type" content="product" />
-        <meta property="og:title" v-if="product.meta_title" :content="product.meta_title" />
-        <meta property="og:description" v-if="product.meta_description" :content="product.meta_description" />
+        <meta property="og:type" content="product"/>
+        <meta property="og:title" v-if="product.meta_title" :content="product.meta_title"/>
+        <meta property="og:description" v-if="product.meta_description" :content="product.meta_description"/>
         <meta property="og:image" v-if="product.og_image" :content="product.og_image"/>
         <meta property="og:url" :content="product.url">
         <meta property="og:brand" v-if="product.brand?.name" :content="product.brand.name">
         <meta property="product:price:amount" :content="product.price.final_price_raw">
         <meta property="product:price:currency" content="PLN">
-        <meta property="product:availability" :content="product.in_stock ? 'in stock' : 'out of stock'" />
+        <meta property="product:availability" :content="product.in_stock ? 'in stock' : 'out of stock'"/>
         <meta property="product:brand" v-if="product.brand?.name" :content="product.brand.name">
     </Head>
-    <BannersContainer :banners="banners.product_page_top"/>
-    <div class="product-show">
-        <div class="flex flex-col md:flex-row gap-6 sm:gap-4">
-            <section class="mr-0 sm:mr-6 w-full">
-                <Gallery :images="images" :product="product"/>
-            </section>
-            <section class="section-main w-full">
-                <div>
-                    <AddToShoppingListButton :product="product"/>
-                </div>
-                <h1 class="product-name mb-2">
-                    {{ product.attributes.name }}
-                </h1>
-                <div v-if="reviewsEnabled">
-                    <ReviewsInfo :product="product"/>
-                </div>
+    <main class="main-container">
+        <BannersContainer :banners="banners.product_page_top"/>
+        <div class="product-show">
+            <div class="flex flex-col md:flex-row gap-6 sm:gap-4">
+                <section class="mr-0 sm:mr-6 w-full">
+                    <Gallery :images="images" :product="product"/>
+                </section>
+                <section class="section-main w-full">
+                    <div>
+                        <AddToShoppingListButton :product="product"/>
+                    </div>
+                    <h1 class="product-name mb-2">
+                        {{ product.attributes.name }}
+                    </h1>
+                    <div v-if="reviewsEnabled">
+                        <ReviewsInfo :product="product"/>
+                    </div>
 
-                <div class="mt-4 mb-4">
-                    <ProductPrice :price="product.price"/>
-                </div>
+                    <div class="mt-4 mb-4">
+                        <ProductPrice :price="product.price"/>
+                    </div>
 
-                <ProductInfo/>
+                    <ProductInfo/>
 
-                <VariantSelect :variants="variants" :showError="showVariantsError"/>
+                    <VariantSelect :variants="variants" :showError="showVariantsError"/>
 
-                <section class="mb-8">
-                    <AddToCartButton
-                        v-if="product.in_stock"
-                        @onAddConfigurable="onAddConfigurableToCart"
-                        :product="product"
-                    ></AddToCartButton>
-                    <div v-else>
-                        <div class="product-out-of-stock-info">
-                            Produkt chwilowo niedostępny
+                    <section class="mb-8">
+                        <AddToCartButton
+                            v-if="product.in_stock"
+                            @onAddConfigurable="onAddConfigurableToCart"
+                            :product="product"
+                        ></AddToCartButton>
+                        <div v-else>
+                            <div class="product-out-of-stock-info">
+                                Produkt chwilowo niedostępny
+                            </div>
                         </div>
+                    </section>
+
+                    <div>
+                        <ProductBrand :product="product"/>
+
+                        <ProductDescription v-if="product.attributes.short_description"
+                                            :description="product.attributes.short_description"/>
                     </div>
                 </section>
+            </div>
 
-                <div>
-                    <ProductBrand :product="product"/>
-
-                    <ProductDescription v-if="product.attributes.short_description" :description="product.attributes.short_description"/>
-                </div>
+            <section>
+                <DetailsSection :product="product" :attributes="attributes"/>
             </section>
+
+            <section class="related-products" v-if="relatedProducts && relatedProducts.length">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title">Zobacz też</h2>
+                </div>
+                <ProductsCarousel :products="relatedProducts" size="md"/>
+            </section>
+
+            <section class="reviews" v-if="reviewsEnabled">
+                <ProductReviews :product="product" :reviews="reviews" :reviewSubmitted="reviewSubmitted" :sort="sort"/>
+            </section>
+
+            <section class="recently-viewed" v-if="recentlyViewedProducts && recentlyViewedProducts.length">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title">Ostatnio oglądane</h2>
+                </div>
+                <ProductsCarousel :products="recentlyViewedProducts" size="md"/>
+            </section>
+
+            <BannersContainer :banners="banners.product_page_bottom"/>
+
+            <ProductStructuredData :product="product"/>
         </div>
-
-        <section>
-            <DetailsSection :product="product" :attributes="attributes" />
-        </section>
-
-        <section class="related-products" v-if="relatedProducts && relatedProducts.length">
-            <div class="section-title-wrapper">
-                <h2 class="section-title">Zobacz też</h2>
-            </div>
-            <ProductsCarousel :products="relatedProducts" size="md"/>
-        </section>
-
-        <section class="reviews" v-if="reviewsEnabled">
-            <ProductReviews :product="product" :reviews="reviews" :reviewSubmitted="reviewSubmitted" :sort="sort"/>
-        </section>
-
-        <section class="recently-viewed" v-if="recentlyViewedProducts && recentlyViewedProducts.length">
-            <div class="section-title-wrapper">
-                <h2 class="section-title">Ostatnio oglądane</h2>
-            </div>
-            <ProductsCarousel :products="recentlyViewedProducts" size="md"/>
-        </section>
-
-        <BannersContainer :banners="banners.product_page_bottom"/>
-
-        <ProductStructuredData :product="product"/>
-    </div>
+    </main>
 </template>

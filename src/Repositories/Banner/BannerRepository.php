@@ -10,6 +10,7 @@ class BannerRepository
     public function getPaginated($sortField, $sortDir, $searchQuery = null)
     {
         return Banner::query()
+            ->with(['media'])
             ->when($searchQuery, function (Builder $query) use ($searchQuery) {
                 $query->whereLike('title', '%' . $searchQuery . '%');
             })

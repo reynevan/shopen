@@ -32,6 +32,7 @@ trait Searchable
             'reviews_count' => $this->reviews_count,
             'popularity' => $this->getPopularity(),
             'thumbnail_url' => $this->getThumbnails(),
+            'is_new_to' => $this->is_new_to,
             'searchable_attributes' => $this->getSearchableAttributeValue(),
             'list_attributes' => $this->getListAttributes(),
             ...$this->getIndexableAttributesValues()

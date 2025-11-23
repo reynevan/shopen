@@ -2,7 +2,6 @@
 import {ref, computed, onMounted, onUnmounted } from 'vue'
 import CategoryTreeItem from './CategoryTreeItem.vue'
 
-// Props
 const props = defineProps({
     categories: {
         type: Array,
@@ -12,10 +11,8 @@ const props = defineProps({
 
 const model = defineModel()
 
-// Reactive data
 const isDropdownOpen = ref(false)
 const expandedCategoryIds = ref(new Set())
-
 
 const selectedCategory = computed(() => {
     const findCategoriesById = (categories, id) => {
@@ -32,7 +29,6 @@ const selectedCategory = computed(() => {
     return findCategoriesById(props.categories, model.value)
 })
 
-// Methods
 const openDropdown = () => {
     isDropdownOpen.value = true
 }
@@ -62,7 +58,6 @@ const toggleExpand = (categoryId) => {
 }
 
 
-// Handle ESC key to close dropdown
 const handleKeydown = (event) => {
     if (event.key === 'Escape' && isDropdownOpen.value) {
         closeDropdown()
@@ -83,11 +78,11 @@ onUnmounted(() => {
         <div @click="openDropdown"
              class="block w-full py-2 px-4 block w-full border border-light rounded-lg outline-none text-sm focus-within:border-accent disabled:opacity-50 disabled:pointer-events-none transition-color flex flex-wrap gap-2">
             <!-- Selected Category Tags -->
-            <div v-if="selectedCategory" class="flex w-full items-center justify-between pr-2 py-1 text-sm cursor-pointer">
+            <div v-if="selectedCategory" class="flex w-full items-center gap-2 pr-2 text-sm cursor-pointer">
                 <span>{{ selectedCategory.name }}</span>
                 <button
                     @click.stop="removeCategory()"
-                    class="ml-1 inline-flex cursor-pointer items-center p-0.5 rounded-full text-accent-400 hover:bg-accent-200 hover:text-accent-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500">
+                    class="ml-1 inline-flex cursor-pointer items-center rounded-full text-accent-400 hover:bg-accent-200 hover:text-accent-600 focus:outline-none">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>

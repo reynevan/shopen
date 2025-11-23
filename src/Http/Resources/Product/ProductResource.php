@@ -33,7 +33,7 @@ class ProductResource extends JsonResource
             'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
             'shopping_list_ids' => app(ShoppingListService::class)->getProductListIds($this->id),
             'is_configurable' => $this->isConfigurable(),
-            'is_new' => $this->is_new && $this->is_new_to && $this->is_new_to->isFuture(),
+            'is_new' => $this->isNew(),
             'meta_title' => $seo->seo_title ?? $this->resource->getCustomAttribute('name'),
             'meta_description' => strip_tags($seo->seo_description ?? $this->resource->getCustomAttribute('short_description')),
             'json_ld_image' => $this->resource->getJsonLdImageUrl(),

@@ -1,8 +1,8 @@
 <script setup>
 import {Head, Link, router, usePage} from '@inertiajs/vue3';
 import {computed, ref} from 'vue';
-import IconChevron from "../icons/IconChevron.vue";
-import IconHome from "../icons/IconHome.vue";
+import IconChevron from "@shopen/components/icons/IconChevron.vue";
+import IconHome from "@shopen/components/icons/IconHome.vue";
 
 const page = usePage();
 const breadcrumbs = computed(() => page.props.breadcrumbs);

@@ -41,8 +41,8 @@ const form = useForm({
     image_desktop: null,
     image_mobile: null,
 });
-const imageDesktop = ref(props.banner?.image_url_desktop);
-const imageMobile = ref(props.banner?.image_url_mobile);
+const imageDesktop = ref(props.banner?.media_desktop);
+const imageMobile = ref(props.banner?.media_mobile);
 
 const isEditing = computed(() => !!props.banner);
 

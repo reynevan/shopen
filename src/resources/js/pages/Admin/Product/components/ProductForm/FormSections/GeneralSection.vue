@@ -109,8 +109,13 @@ const types = [
     <FormField
         label-for="categories"
         label="Kategorie">
-
         <CategoryMultiselect v-model="form.category_ids" :categories="categories"/>
+    </FormField>
+
+    <FormField
+        label-for="ceneo_category_id"
+        label="Kategoria Ceneo">
+        <CategorySelect v-model="form.ceneo_category_id" :categories="ceneoCategories"/>
     </FormField>
 
     <FormField
@@ -145,12 +150,6 @@ const types = [
         label-for="brand_id"
         label="Marka">
         <Select v-model="form.brand_id" id="brand_id" :options="brands"/>
-    </FormField>
-
-    <FormField
-        label-for="ceneo_category_id"
-        label="Kategoria Ceneo">
-        <CategorySelect v-model="form.ceneo_category_id" :categories="ceneoCategories"/>
     </FormField>
 
     <FormField

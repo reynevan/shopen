@@ -61,7 +61,7 @@ const form = useForm({
     type: props.product?.type ?? 'simple',
     visible_individually: props.product?.visible_individually ?? true,
     parent_id: props.parent?.id,
-    ceneo_category_id: props.ceneo_category_id,
+    ceneo_category_id: props.product?.ceneo_category_id,
     tax_class_id: props.product?.tax_class_id,
     configurable_attributes: props.product?.configurable_attributes ?? [],
     sku: props.product?.sku,

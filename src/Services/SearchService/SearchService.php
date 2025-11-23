@@ -25,6 +25,7 @@ class SearchService
     protected ?int $page = null;
     protected ?int $perPage = null;
     protected ?int $limit = null;
+    protected ?bool $new = null;
 
     public function __construct(
         protected ProductSortRegistry        $productSortRegistry,
@@ -39,6 +40,12 @@ class SearchService
     public function setCategoryId($categoryId): static
     {
         $this->categoryId = $categoryId;
+        return $this;
+    }
+
+    public function setNew($value): static
+    {
+        $this->new = $value;
         return $this;
     }
 
@@ -104,6 +111,10 @@ class SearchService
 
         if ($this->ids) {
             $filters[] = ['terms' => ['id' => $this->ids]];
+        }
+
+        if ($this->new) {
+            $filters[] = ['range' => ['is_new_to' => ['gte' => 'now/d']]];
         }
 
         $query = count($filters)

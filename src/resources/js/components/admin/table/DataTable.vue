@@ -2,7 +2,7 @@
 
 import {onMounted, provide, ref} from "vue";
 import {Link} from "@inertiajs/vue3";
-import APIPagination from "../../frontend/ui/APIPagination.vue";
+import APIPagination from "@shopen/components/admin/ui/APIPagination.vue";
 import Input from "../form/input/Input.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 

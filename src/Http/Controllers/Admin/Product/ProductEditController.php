@@ -20,6 +20,7 @@ use Shopen\Repositories\Brand\BrandRepository;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Repositories\TaxClass\TaxClassRepository;
+use Shopen\Services\CeneoService;
 use Shopen\Services\CustomAttributesService;
 
 readonly class ProductEditController
@@ -32,6 +33,7 @@ readonly class ProductEditController
         protected CategoryRepository         $categoryRepository,
         protected BrandRepository           $brandRepository,
         protected TaxClassRepository $taxClassRepository,
+        protected CeneoService $ceneoService
     )
     {
     }
@@ -53,7 +55,8 @@ readonly class ProductEditController
             'brands' => fn() => $this->brandRepository->getAll()->select(['id', 'name'])->toArray(),
             'variants' => fn() => $this->getVariants($product),
             'tax_classes' => fn () => $this->taxClassRepository->getAll()->select(['id', 'name'])->toArray(),
-            'tab' => request()->query('tab', 'general')
+            'tab' => request()->query('tab', 'general'),
+            'ceneo_categories' => fn () => $this->ceneoService->getCategories(),
         ]);
     }
 

@@ -11,9 +11,11 @@ class BannerResource extends JsonResource
 
     public function toArray(Request $request): array
     {
+        $desktopMedia = $this->resource->getMedia('desktop')->first();
+        $mobileMedia = $this->resource->getMedia('mobile')->first();
         // Pełne ścieżki plików w storage (disk "public")
-        $desktopPath = $this->image_path_desktop ? Storage::disk('public')->path($this->image_path_desktop) : null;
-        $mobilePath  = $this->image_path_mobile ? Storage::disk('public')->path($this->image_path_mobile) : null;
+        $desktopPath = $desktopMedia ? $desktopMedia->getPath('banner') : null;
+        $mobilePath  = $mobileMedia ? $mobileMedia->getPath('banner') : null;
 
         // Pobranie wymiarów (szerokość, wysokość) jeśli plik istnieje
         [$desktopWidth, $desktopHeight] = $this->getImageSizeSafe($desktopPath);
@@ -26,8 +28,8 @@ class BannerResource extends JsonResource
             'link_url' => $this->link_url,
             'opens_in_new_tab' => $this->opens_in_new_tab,
 
-            'image_url_desktop' => $this->image_path_desktop ? asset('storage/' . $this->image_path_desktop) : null,
-            'image_url_mobile' => $this->image_path_mobile ? asset('storage/' . $this->image_path_mobile) : null,
+            'image_url_desktop' => $this->getDesktopFileUrl(),
+            'image_url_mobile' => $this->getMobileFileUrl(),
 
             // Nowe pola z wymiarami
             'image_size_desktop' => $desktopWidth && $desktopHeight ? [

@@ -4,10 +4,10 @@ import BaseModal from "@shopen/components/admin/ui/BaseModal.vue";
 import DataTable from "@shopen/components/admin/table/DataTable.vue";
 import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
-import APIPagination from "../../../../frontend/ui/APIPagination.vue";
-import Button from "../../../ui/Button.vue";
-import ActionButton from "../../../ui/ActionButton.vue";
-import Loader from "../../../ui/Loader.vue";
+import APIPagination from "@shopen/components/admin/ui/APIPagination.vue";
+import Button from "@shopen/components/admin/ui/Button.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
+import Loader from "@shopen/components/admin/ui/Loader.vue";
 
 const model = defineModel({type: Array, default: () => []});
 

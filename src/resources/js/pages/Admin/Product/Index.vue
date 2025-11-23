@@ -2,7 +2,7 @@
 import {Link, Head} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
-import ProductsTable from "@shopen/components/admin/product/ProductsTable.vue";
+import ProductsTable from "@shopen/pages/Admin/Product/components/ProductsTable.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import PageTitle from "@shopen/components/admin/ui/PageTitle.vue";
 

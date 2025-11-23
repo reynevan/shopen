@@ -1,10 +1,10 @@
 <script setup>
 
-import DataTable from "../table/DataTable.vue";
-import TableColumn from "../table/TableColumn.vue";
+import DataTable from "@shopen/components/admin/table/DataTable.vue";
+import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
-import ActionButton from "../ui/ActionButton.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 
 const props = defineProps({
     products: Object
@@ -81,15 +81,19 @@ const removeProduct = (product) => {
 
         <TableColumn label="Zdjęcie" v-slot="data" width="70px">
             <div class="min-h-[50px]">
+                <Link :href="route('admin.products.edit', data.row.id)">
                 <img :src="data.row.image"
                      width="50px"
                      class="border"
                      v-if="data.row.image">
+                </Link>
             </div>
         </TableColumn>
 
         <TableColumn field="name" label="Nazwa" sortable v-slot="data">
-            {{ data.row.attributes.name }}
+            <Link :href="route('admin.products.edit', data.row.id)" class="hover:text-black cursor-pointer">
+                {{ data.row.attributes.name }}
+            </Link>
         </TableColumn>
 
         <TableColumn field="sku" label="SKU" v-slot="data">

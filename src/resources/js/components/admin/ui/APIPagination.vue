@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watch, computed } from 'vue';
-import ActionButton from "../../admin/ui/ActionButton.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 
 const props = defineProps({
     meta: {
@@ -68,7 +68,7 @@ const goToPage = () => {
                 @keyup.enter="goToPage"
                 min="1"
                 :max="meta.last_page"
-                class="w-16 p-2 text-center border border-gray-300 rounded-md shadow-sm sm:text-sm"
+                class="w-16 p-2 text-center border border-gray-300 shadow-sm sm:text-sm"
             />
             <div class="text-sm whitespace-nowrap text-gray-500 w-full">/ {{ meta.last_page }}</div>
         </div>

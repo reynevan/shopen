@@ -34,12 +34,18 @@ readonly class BannerCreateController
     {
         $validated = $request->validated();
 
-        $validated['image_path_desktop'] = $request->file('image_desktop')->store('banners', 'public');
-        if ($request->hasFile('image_mobile')) {
-            $validated['image_path_mobile'] = $request->file('image_mobile')->store('banners', 'public');
-        }
+        $banner = new Banner($validated);
+        $banner->save();
 
-        $banner = Banner::create($validated);
+        $banner
+            ->addMedia($request->file('image_desktop'))
+            ->toMediaCollection('desktop');
+
+        if ($request->hasFile('image_mobile')) {
+            $banner
+                ->addMedia($request->file('image_mobile'))
+                ->toMediaCollection('mobile');
+        }
 
         if (!empty($validated['category_ids'])) {
             $banner->categories()->sync($validated['category_ids']);
