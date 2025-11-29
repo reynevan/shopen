@@ -22,6 +22,7 @@ use Shopen\Console\Commands\RecalculateProductPrices;
 use Shopen\Console\Commands\Reindex;
 use Shopen\Console\Commands\SetupAdminUser;
 use Shopen\Console\Commands\ShopenInstall;
+use Shopen\Console\Commands\SyncInstagramPosts;
 use Shopen\Console\Commands\Test;
 use Shopen\Core\BlockDirective;
 use Shopen\Core\Context;
@@ -87,7 +88,8 @@ class ShopenServiceProvider  extends ServiceProvider
                     Test::class,
                     GenerateSitemap::class,
                     CreateAdminUser::class,
-                    ImportMagento::class
+                    ImportMagento::class,
+                    SyncInstagramPosts::class
                 ]);
         }
         $months = [

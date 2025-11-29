@@ -23,20 +23,20 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
          :class="[product.in_stock ? 'in-stock' : 'out-of-stock']">
         <Link :href="product.url"
               @click="emits('onClick')"
-              class="carousel-product-thumbnail relative flex flex-col justify-between w-full max-w-350 sm:max-w-250 gap-2">
+              class="carousel-product-thumbnail relative flex flex-col justify-between w-full max-w-350 sm:max-w-250">
             <div>
                 <div class="relative cursor-pointer overflow-hidden">
                     <div class="absolute top-2 left-2 z-1">
                         <ProductIcons :product="product"/>
                     </div>
-                    <div class="group block relative w-full h-full">
+                    <div class="group block relative w-full h-full product-thumbnail-image">
                         <div class="relative w-full aspect-square">
 
                             <!-- Brak obrazka -->
                             <span v-if="!product.images || !product.images.length"
                                   class="text-no-image-icon bg-no-image-bg w-full h-full flex items-center justify-center">
-                            <IconNoImage xl></IconNoImage>
-                        </span>
+                                <IconNoImage xl></IconNoImage>
+                            </span>
 
                             <!-- Główny obrazek produktu -->
                             <ProductImage
@@ -66,7 +66,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
                     </div>
                 </div>
                 <div class="px-2 py-2">
-                    <div class="mb-2 product-name">
+                    <div class="product-name">
                         {{ product.attributes.name }}
                     </div>
                 </div>

@@ -35,6 +35,7 @@ use Shopen\Http\Controllers\Admin\Product\ProductsIndexController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeCreateController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeEditController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodesIndexController;
+use Shopen\Http\Controllers\Admin\Settings\InstagramSettingsController;
 use Shopen\Http\Controllers\Admin\Settings\TopBarSettingsController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassCreateController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassEditController;
@@ -143,6 +144,11 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::prefix('/ustawienia')->name('settings.')->group(function () {
         Route::get('/belka', [TopBarSettingsController::class, 'index'])->name('top-bar.index');
         Route::put('/belka', [TopBarSettingsController::class, 'update'])->name('top-bar.update');
+
+
+        Route::get('/instagram', [InstagramSettingsController::class, 'index'])->name('instagram.index');
+        Route::put('/instagram', [InstagramSettingsController::class, 'update'])->name('instagram.update');
+        Route::get('/instagram/callback', [InstagramSettingsController::class, 'callback'])->name('instagram.callback');
     });
 
     Route::post('/api/upload-image', [UploadController::class, 'uploadImage']);

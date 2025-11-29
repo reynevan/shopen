@@ -73,7 +73,7 @@ const sizeClasses = {
             @click="handlePrev"
             class="absolute left-2 top-1/2 -translate-y-1/2 z-10 carousel-button"
         >
-            <icon-chevron left/>
+            <IconChevron left/>
         </button>
 
         <Flicking
@@ -95,7 +95,7 @@ const sizeClasses = {
             @click="handleNext"
             class="absolute right-2 top-1/2 -translate-y-1/2 z-10 carousel-button"
         >
-            <icon-chevron right/>
+            <IconChevron right/>
         </button>
     </div>
 </template>

@@ -1,5 +1,5 @@
 <script setup>
-import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
+import SettingsLayout from "@shopen/layouts/admin/SettingsLayout.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import PageTitle from "@shopen/components/admin/ui/PageTitle.vue";
 import FormField from "../../../components/admin/form/FormField.vue";
@@ -9,7 +9,7 @@ import TextEditor from "@shopen/components/admin/form/input/TextEditor.vue";
 import ColorPicker from "@shopen/components/admin/form/input/ColorPicker.vue";
 import Button from "../../../components/frontend/ui/Button.vue";
 
-defineOptions({layout: AdminLayout})
+defineOptions({layout: SettingsLayout})
 
 const props = defineProps({
     slides: {type: Array}
