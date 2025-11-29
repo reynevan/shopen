@@ -49,7 +49,7 @@ class SyncInstagramPosts extends Command
         }
 
             $media = $this->api->fetchRecentMedia($igUserId, $token, 20);
-        dd($media);
+
             foreach ($media as $item) {
                 try {
                     if (!in_array($item['media_type'] ?? '', ['IMAGE', 'CAROUSEL_ALBUM'])) {
