@@ -3,7 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 const scrollDirection = ref(null)
 const lastScrollY = ref(0)
 const scrollY = ref(0)
-const isReady = ref(false) // Flaga gotowości
+const isReady = ref(false)
 
 let ticking = false
 let pendingScrollY = 0

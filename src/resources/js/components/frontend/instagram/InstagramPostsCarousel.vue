@@ -5,6 +5,7 @@ import IconChevron from "@shopen/components/icons/IconChevron.vue";
 const props = defineProps({
     posts: {type: Array},
     instagramProfileUrl: {type: String},
+    alt: {type: String},
 })
 
 const flicking = useTemplateRef('flickingRef');
@@ -62,6 +63,7 @@ const handleNext = async () => {
             v-if="flicking && index > 0 && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handlePrev"
             class="hidden sm:block absolute left-2 top-1/2 -translate-y-1/2 z-10 instagram-carousel-button"
+            aria-label="wstecz"
         >
             <IconChevron left size="4xl"/>
         </button>
@@ -85,7 +87,17 @@ const handleNext = async () => {
             <div v-for="post in posts" :key="post.id"
                  class="flex items-stretch justify-center mx-1 sm:mx-3 w-1/2 md:w-1/3 lg:w-1/5 lg:max-w-[300px] hover:shadow-lg transition-all duration-300">
                 <a :href="post.post_url" target="_blank" class="flex">
-                    <img :src="post.media_url" />
+                    <img
+                        :src="post.media_url"
+                        :srcset="`${post.media_url} 300w, ${post.media_2x_url} 600w`"
+                        sizes="(min-width: 1024px) min(20vw, 300px),
+                             (min-width: 768px) 33vw,
+                             50vw"
+                        :alt="props.alt"
+                        loading="lazy"
+                        width="300"
+                        height="300"
+                    />
                 </a>
             </div>
             <div class="mx-1 sm:mx-3 w-1/2 md:w-1/3 lg:w-1/5 lg:max-w-[300px]"></div>
@@ -95,6 +107,7 @@ const handleNext = async () => {
             v-if="flicking && (index <= flicking.panelCount - flicking.visiblePanels.length) && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handleNext"
             class="hidden sm:block absolute right-2 top-1/2 -translate-y-1/2 z-10 instagram-carousel-button"
+            aria-label="dalej"
         >
             <IconChevron right size="4xl"/>
         </button>

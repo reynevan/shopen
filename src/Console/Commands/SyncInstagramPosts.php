@@ -5,6 +5,7 @@ namespace Shopen\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Shopen\Models\Instagram\InstagramPost;
 use Shopen\Services\ConfigService;
@@ -47,30 +48,38 @@ class SyncInstagramPosts extends Command
             return;
         }
 
-        try {
             $media = $this->api->fetchRecentMedia($igUserId, $token, 20);
+        dd($media);
             foreach ($media as $item) {
-                if (!in_array($item['media_type'] ?? '', ['IMAGE', 'CAROUSEL_ALBUM'])) {
-                    continue;
+                try {
+                    if (!in_array($item['media_type'] ?? '', ['IMAGE', 'CAROUSEL_ALBUM'])) {
+                        continue;
+                    }
+                    $instagramId = $item['id'] ?? null;
+                    $mediaUrl = $item['media_url'] ?? ($item['thumbnail_url'] ?? null);
+                    $permalink = $item['permalink'] ?? null;
+                    $timestamp = isset($item['timestamp']) ? Carbon::make($item['timestamp']) : null;
+
+                    if (!$instagramId || !$mediaUrl || !$permalink) {
+                        continue;
+                    }
+
+                    DB::beginTransaction();
+                    $post = InstagramPost::query()->where('media_id', $instagramId)->firstOrNew(['media_id' => $instagramId]);
+                    $post->post_url = $permalink;
+                    $post->timestamp = $timestamp;
+                    $post->save();
+
+                    if (!$post->media()->count()) {
+                        $post->addMediaFromUrl($mediaUrl)->toMediaCollection();
+                    }
+
+                    DB::commit();
+                } catch (Throwable $e) {
+                    DB::rollBack();
+                    Log::error('[Instagram] Błąd crona: ' . $e->getMessage());
                 }
-                $instagramId = $item['id'] ?? null;
-                $mediaUrl = $item['media_url'] ?? ($item['thumbnail_url'] ?? null);
-                $permalink = $item['permalink'] ?? null;
-                $timestamp = isset($item['timestamp']) ? Carbon::make($item['timestamp']) : null;
-
-                if (!$instagramId || !$mediaUrl || !$permalink) {
-                    continue;
-                }
-
-                $post = InstagramPost::query()->where('media_id', $instagramId)->firstOrNew(['media_id' => $instagramId]);
-
-                $post->media_url = $mediaUrl;
-                $post->post_url = $permalink;
-                $post->timestamp = $timestamp;
-                $post->save();
             }
-        } catch (Throwable $e) {
-            Log::error('[Instagram] Błąd crona: ' . $e->getMessage());
-        }
+
     }
 }
