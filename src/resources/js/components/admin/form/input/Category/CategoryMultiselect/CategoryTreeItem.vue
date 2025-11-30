@@ -1,5 +1,7 @@
 <script setup>
 // Props
+import {computed} from "vue";
+
 const props = defineProps({
     category: {
         type: Object,
@@ -18,6 +20,12 @@ const props = defineProps({
     level: {
         type: Number,
         default: 0
+    },
+    search: {
+        type: String
+    },
+    path: {
+        type: String
     }
 })
 
@@ -32,32 +40,32 @@ const toggleCategory = () => {
 const toggleExpand = () => {
     emit('toggle-expand', props.category.id)
 }
+
+const isVisible = computed(() => !props.search || props.category.name.toLowerCase().indexOf(props.search.toLowerCase()) >= 0)
 </script>
 <template>
     <div>
         <div
-            class="flex items-center px-3 py-2 mb-1 text-sm cursor-pointer hover:bg-gray-50"
-            :class="{ 'bg-accent-100': selectedIds && selectedIds.has(category.id) || parseInt(selectedId) === parseInt(category.id) }"
-            :style="{ paddingLeft: (level * 20 + 12) + 'px' }"
+            class="flex items-center py-2 pr-3 mb-1 text-sm cursor-pointer hover:bg-gray-50"
+            :class="[
+                selectedIds && selectedIds.has(category.id) || parseInt(selectedId) === parseInt(category.id) ? 'bg-accent-100' : ''
+            ]"
+            :style="{ paddingLeft: search ? '12px' : ((level * 20 + 12) + 'px') }"
+            v-show="isVisible"
         >
+            <div v-if="!search">
             <!-- Expand/Collapse Button -->
-            <button
-                v-if="category.children && category.children.length > 0"
-                @click.stop="toggleExpand"
-                class="mr-2 p-0.5 rounded hover:bg-gray-200 focus:outline-none"
-            >
-                <svg
-                    class="h-3 w-3 transform transition-transform"
-                    :class="{ 'rotate-90': expandedIds.has(category.id) }"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <button
+                    v-if="category.children && category.children.length > 0"
+                    @click.stop="toggleExpand"
+                    class="mr-2 p-0.5 rounded hover:bg-gray-200 focus:outline-none"
                 >
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-            <div v-else class="w-5 mr-2"></div>
-
+                    <span class="inline-block" :class="{ 'rotate-90': expandedIds.has(category.id) }">
+                        <i class="bi bi-chevron-right"></i>
+                    </span>
+                </button>
+                <div v-else class="w-5 mr-2"></div>
+            </div>
             <!-- Checkbox -->
             <input
                 type="checkbox"
@@ -71,12 +79,12 @@ const toggleExpand = () => {
                 @click="toggleCategory"
                 class="flex-1 select-none"
             >
-        {{ category.name }}
-      </span>
+                {{ category.name }} <span v-if="search" class="text-neutral-400 text-xs ml-4">{{ path }}</span>
+            </span>
         </div>
 
         <!-- Children -->
-        <div v-if="expandedIds.has(category.id) && category.children && category.children.length > 0">
+        <div v-if="(expandedIds.has(category.id) || search) && category.children && category.children.length > 0">
             <CategoryTreeItem
                 v-for="child in category.children"
                 :key="child.id"
@@ -87,6 +95,8 @@ const toggleExpand = () => {
                 :level="level + 1"
                 @toggle-category="$emit('toggle-category', $event)"
                 @toggle-expand="$emit('toggle-expand', $event)"
+                :search="search"
+                :path="path + ' / ' + child.name"
             />
         </div>
     </div>

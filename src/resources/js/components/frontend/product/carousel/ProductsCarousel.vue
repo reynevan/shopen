@@ -72,6 +72,7 @@ const sizeClasses = {
             v-if="flicking && index > 0 && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handlePrev"
             class="absolute left-2 top-1/2 -translate-y-1/2 z-10 carousel-button"
+            aria-label="wstecz"
         >
             <IconChevron left/>
         </button>
@@ -94,6 +95,7 @@ const sizeClasses = {
             v-if="flicking && (index < flicking.panelCount - flicking.visiblePanels.length) && (flicking.visiblePanels.length < flicking.panelCount)"
             @click="handleNext"
             class="absolute right-2 top-1/2 -translate-y-1/2 z-10 carousel-button"
+            aria-label="dalej"
         >
             <IconChevron right/>
         </button>

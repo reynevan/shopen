@@ -82,16 +82,22 @@ const types = [
     </FormField>
 
     <FormField
-        label-for="ean"
-        label="EAN">
-        <Input v-model="form.ean" id="ean"/>
-    </FormField>
-
-    <FormField
         :required="true"
         label-for="url_key"
         label="Klucz URL">
         <Input v-model="form.url_key" :required="true" id="url_key"/>
+    </FormField>
+
+    <FormField
+        label-for="categories"
+        label="Kategorie">
+        <CategoryMultiselect v-model="form.category_ids" :categories="categories"/>
+    </FormField>
+
+    <FormField
+        label-for="ean"
+        label="EAN">
+        <Input v-model="form.ean" id="ean"/>
     </FormField>
 
     <FormField
@@ -104,12 +110,6 @@ const types = [
         label-for="seo_description"
         label="Opis SEO">
         <textarea class="input" v-model="form.seo_description" id="seo_description" rows="4"></textarea>
-    </FormField>
-
-    <FormField
-        label-for="categories"
-        label="Kategorie">
-        <CategoryMultiselect v-model="form.category_ids" :categories="categories"/>
     </FormField>
 
     <FormField

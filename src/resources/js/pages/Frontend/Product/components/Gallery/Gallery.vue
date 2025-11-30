@@ -5,6 +5,7 @@ import IconChevron from "@shopen/components/icons/IconChevron.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
 import PreviewImage from "./PreviewImage.vue";
 import GalleryImage from "./GalleryImage.vue";
+import {useBodyScrollLock} from "../../../../../composables/useBodyScrollLock";
 
 const props = defineProps(['images', 'product']);
 const flicking = useTemplateRef('flicking');
@@ -13,6 +14,8 @@ const modalFlicking = useTemplateRef('modalFlicking');
 const previewIndex = ref(0);
 const isModalOpen = ref(false);
 const maxPreviewImages = ref(5)
+
+const scrollLock = useBodyScrollLock()
 
 if (typeof window !== 'undefined' && window.innerWidth < 600) {
     maxPreviewImages.value = 4;
@@ -25,28 +28,14 @@ const selectImage = (index) => {
     flicking.value.moveTo(index);
     previewIndex.value = index;
 };
-let supportsPassive = false;
-try {
-    window.addEventListener("test", null, Object.defineProperty({}, 'passive', {
-        get: function () { supportsPassive = true; }
-    }));
-} catch(e) {}
-const wheelOpt = supportsPassive ? { passive: false } : false;
-const wheelEvent = typeof document !== 'undefined' && 'onwheel' in document.createElement('div') ? 'wheel' : 'mousewheel';
-function preventDefault(e) {
-    e.preventDefault();
-}
+
 
 function disableScroll() {
-    window.addEventListener('DOMMouseScroll', preventDefault, false);
-    window.addEventListener(wheelEvent, preventDefault, wheelOpt);
-    window.addEventListener('touchmove', preventDefault, wheelOpt);
+    scrollLock.lock()
 }
 
 function enableScroll() {
-    window.removeEventListener('DOMMouseScroll', preventDefault, false);
-    window.removeEventListener(wheelEvent, preventDefault, wheelOpt);
-    window.removeEventListener('touchmove', preventDefault, wheelOpt);
+    scrollLock.unlock()
 }
 
 const openModal = (index) => {

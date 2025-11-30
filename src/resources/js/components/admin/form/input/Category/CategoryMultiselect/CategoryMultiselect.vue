@@ -20,6 +20,7 @@ const model = defineModel({
 const isDropdownOpen = ref(false)
 const selectedCategoryIds = ref(new Set(model.value))
 const expandedCategoryIds = ref(new Set())
+const search = ref(null)
 
 // Watch for external model changes
 watch(model, (newValue) => {
@@ -118,7 +119,14 @@ onUnmounted(() => {
 
         <!-- Dropdown -->
         <div v-if="isDropdownOpen"
-             class="absolute z-50 mt-1 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+             class="absolute z-50 mt-1 pb-4 w-full bg-white border border-gray-300 rounded-md shadow-lg max-h-[500px] overflow-auto">
+            <div class="sticky top-0">
+                <i class="absolute left-2 top-2 bi bi-search"/>
+                <button v-show="search" class="px-2 py-1 absolute right-2 top-1 cursor-pointer text-xl" @click="() => search = null">
+                    <i class="bi bi-x"/>
+                </button>
+                <input type="text" v-model="search" class="w-full px-10 py-2 border-b pb-2 input">
+            </div>
             <div class="py-1">
                 <CategoryTreeItem
                     v-for="category in categories"
@@ -128,6 +136,8 @@ onUnmounted(() => {
                     :expanded-ids="expandedCategoryIds"
                     @toggle-category="toggleCategory"
                     @toggle-expand="toggleExpand"
+                    :search="search"
+                    :path="category.name"
                 />
             </div>
         </div>
