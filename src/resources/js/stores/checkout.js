@@ -1,9 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import axios from 'axios'
-import {useShippingStore} from "./shipping";
-import {usePaymentStore} from "./payment";
-import {useAddressStore} from "./address";
 import {router, usePage} from "@inertiajs/vue3";
 
 export const useCheckoutStore = defineStore('checkout', () => {

@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import axios from 'axios'
+import { ref } from 'vue'
 import {useCoverStore} from "./cover";
 
 export const useMiniCartStore = defineStore('minicart', () => {

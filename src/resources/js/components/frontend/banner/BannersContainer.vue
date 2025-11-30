@@ -4,12 +4,15 @@ import { defineProps, ref, useTemplateRef } from "vue";
 import { Link, usePage } from "@inertiajs/vue3";
 import { AutoPlay, Pagination  } from "@egjs/flicking-plugins";
 
-const props = defineProps(["banners"]);
+const props = defineProps({
+    banners: {type: Array},
+    highPriority: {type: Boolean, default: false},
+});
 const flicking = useTemplateRef("flicking");
 const page = usePage();
 
 const plugins = [
-    new AutoPlay({ duration: 4000, direction: "NEXT", stopOnHover: false }),
+    //new AutoPlay({ duration: 4000, direction: "NEXT", stopOnHover: false }),
 ];
 if (props.banners?.length > 1) {
     plugins.push(new Pagination({ type: 'bullet' }))
@@ -79,6 +82,7 @@ const trackClick = (banner) => {
                         :src="banner.image_url_desktop"
                         :alt="banner.alt_text"
                         :loading="i > 0 ? 'lazy' : 'eager'"
+                        :fetchpriority="highPriority && i === 0 ? 'high' : null"
                         :width="banner.image_size_desktop?.width"
                         :height="banner.image_size_desktop?.height"
                     />
@@ -88,8 +92,9 @@ const trackClick = (banner) => {
                         :src="banner.image_url_mobile"
                         :alt="banner.alt_text"
                         :loading="i > 0 ? 'lazy' : 'eager'"
-                         :width="banner.image_size_mobile?.width"
-                         :height="banner.image_size_mobile?.height"
+                        :fetchpriority="highPriority && i === 0 ? 'high' : null"
+                        :width="banner.image_size_mobile?.width"
+                        :height="banner.image_size_mobile?.height"
                     />
                 </Link>
 
@@ -101,6 +106,7 @@ const trackClick = (banner) => {
                         :src="banner.image_url_desktop"
                         :alt="banner.alt_text"
                         :loading="i > 0 ? 'lazy' : 'eager'"
+                        :fetchpriority="highPriority && i === 0 ? 'high' : null"
                         :width="banner.image_size_desktop?.width"
                         :height="banner.image_size_desktop?.height"
                     />
@@ -110,6 +116,7 @@ const trackClick = (banner) => {
                         :src="banner.image_url_mobile"
                         :alt="banner.alt_text"
                         :loading="i > 0 ? 'lazy' : 'eager'"
+                        :fetchpriority="highPriority && i === 0 ? 'high' : null"
                         :width="banner.image_size_mobile?.width"
                         :height="banner.image_size_mobile?.height"
                     />

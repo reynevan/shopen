@@ -7,11 +7,19 @@ const isReady = ref(false)
 
 let ticking = false
 let pendingScrollY = 0
+let initialized = false
 
 const updateScrollDirection = () => {
     scrollY.value = pendingScrollY
 
-    // Ignoruj zmiany kierunku jeśli nie jesteśmy gotowi
+    // Przy pierwszym scrollu inicjalizuj wartości
+    if (!initialized) {
+        lastScrollY.value = scrollY.value
+        initialized = true
+        ticking = false
+        return
+    }
+
     if (!isReady.value) {
         lastScrollY.value = scrollY.value
         ticking = false
@@ -45,15 +53,12 @@ export const useScrollDirection = () => {
         listenerCount++
 
         if (!isListening && typeof window !== 'undefined') {
-            lastScrollY.value = window.scrollY
-            pendingScrollY = window.scrollY
-            scrollY.value = window.scrollY
+            // ✅ Brak odczytu window.scrollY przy montowaniu
             isReady.value = false
+            initialized = false
 
-            // Czekamy ~500ms aż przeglądarka zakończy auto-scroll
             readyTimeout = setTimeout(() => {
                 isReady.value = true
-                lastScrollY.value = window.scrollY
             }, 500)
 
             window.addEventListener('scroll', onScroll, { passive: true })
@@ -69,6 +74,7 @@ export const useScrollDirection = () => {
             isListening = false
             isReady.value = false
             scrollDirection.value = null
+            initialized = false
 
             if (readyTimeout) {
                 clearTimeout(readyTimeout)
