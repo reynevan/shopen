@@ -4,7 +4,7 @@ namespace Shopen\Http\Resources\Banner;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class BannerResource extends JsonResource
 {
@@ -13,11 +13,10 @@ class BannerResource extends JsonResource
     {
         $desktopMedia = $this->resource->getMedia('desktop')->first();
         $mobileMedia = $this->resource->getMedia('mobile')->first();
-        // Pełne ścieżki plików w storage (disk "public")
+
         $desktopPath = $desktopMedia ? $desktopMedia->getPath('banner') : null;
         $mobilePath  = $mobileMedia ? $mobileMedia->getPath('banner') : null;
 
-        // Pobranie wymiarów (szerokość, wysokość) jeśli plik istnieje
         [$desktopWidth, $desktopHeight] = $this->getImageSizeSafe($desktopPath);
         [$mobileWidth, $mobileHeight]   = $this->getImageSizeSafe($mobilePath);
 
@@ -28,10 +27,9 @@ class BannerResource extends JsonResource
             'link_url' => $this->link_url,
             'opens_in_new_tab' => $this->opens_in_new_tab,
 
-            'image_url_desktop' => $this->getDesktopFileUrl(),
-            'image_url_mobile' => $this->getMobileFileUrl(),
+            'desktop_urls' => $this->getDesktopFileUrls(),
+            'mobile_urls' => $this->getMobileFileUrls(),
 
-            // Nowe pola z wymiarami
             'image_size_desktop' => $desktopWidth && $desktopHeight ? [
                 'width' => $desktopWidth,
                 'height' => $desktopHeight,
@@ -44,9 +42,6 @@ class BannerResource extends JsonResource
         ];
     }
 
-    /**
-     * Zwraca [width, height] lub [null, null] jeśli brak pliku lub błąd.
-     */
     protected function getImageSizeSafe(?string $absolutePath): array
     {
         if (!$absolutePath || !is_file($absolutePath)) {
@@ -58,9 +53,7 @@ class BannerResource extends JsonResource
             if ($size && isset($size[0], $size[1])) {
                 return [(int) $size[0], (int) $size[1]];
             }
-        } catch (\Throwable $e) {
-            // opcjonalnie: zaloguj błąd
-        }
+        } catch (Throwable $e) {}
 
         return [null, null];
     }

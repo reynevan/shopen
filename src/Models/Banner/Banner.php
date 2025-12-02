@@ -12,6 +12,7 @@ use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use ThrowableThrowable as ThrowableThrowableAlias;
 
 class Banner extends Model implements HasMedia
 {
@@ -41,6 +42,15 @@ class Banner extends Model implements HasMedia
         'sort_order',
     ];
 
+    protected function getDesktopImageSizes()
+    {
+        return [640, 768, 1024, 1440, 1920];
+    }
+
+    protected function getMobileImageSizes()
+    {
+        return [320, 480, 640, 960, 1280];
+    }
     public function registerMediaConversions(?Media $media = null): void
     {
         $this
@@ -48,6 +58,67 @@ class Banner extends Model implements HasMedia
             ->quality(self::IMAGE_QUALITY)
             ->format('webp')
             ->nonQueued();
+
+        foreach ($this->getDesktopImageSizes() as $size) {
+            $this
+                ->addMediaConversion('banner-' . $size)
+                ->performOnCollections('desktop')
+                ->quality(self::IMAGE_QUALITY)
+                ->format('webp')
+                ->width($size)
+                ->nonQueued();
+        }
+
+        foreach ($this->getMobileImageSizes() as $size) {
+            $this
+                ->addMediaConversion('banner-' . $size)
+                ->performOnCollections('mobile')
+                ->quality(self::IMAGE_QUALITY)
+                ->format('webp')
+                ->width($size)
+                ->nonQueued();
+        }
+    }
+
+    public function getDesktopFileUrls(): array
+    {
+        return $this->getFileUrls('desktop');
+    }
+
+    public function getMobileFileUrls(): array
+    {
+        return $this->getFileUrls('mobile');
+    }
+
+    protected function getFileUrls($type): array
+    {
+        $sizes = $type === 'desktop' ? $this->getDesktopImageSizes() : $this->getMobileImageSizes();
+        $media = $this->getMedia($type)->first();
+        $originalWidth = $this->getImageWidth($media->getPath('banner'));
+        $urls = [];
+        foreach ($sizes as $size) {
+            $urls[$size . 'w'] = $media->getUrl('banner-' . $size);
+        }
+        if ($originalWidth > array_pop($sizes)) {
+            $urls[$originalWidth . 'w'] = $media->getUrl('banner');
+        }
+        return $urls;
+    }
+
+    protected function getImageWidth(?string $absolutePath): ?int
+    {
+        if (!$absolutePath || !is_file($absolutePath)) {
+            return null;
+        }
+
+        try {
+            $size = @getimagesize($absolutePath);
+            if ($size && isset($size[0])) {
+                return (int) $size[0];
+            }
+        } catch (\Throwable $e) {}
+
+        return null;
     }
 
     public function getDesktopFileUrl(): ?string
