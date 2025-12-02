@@ -9,8 +9,8 @@ import Footer from "@shopen/components/frontend/layout/footer/Footer.vue";
 import Minicart from "@shopen/components/frontend/cart/Minicart.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
-import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
-import BannersContainer from "../../components/frontend/banner/BannersContainer.vue";
+import CookiesModal from "@shopen/components/frontend/cookies/CookiesModal.vue";
+import BannersContainer from "@shopen/components/frontend/banner/BannersContainer.vue";
 import TopBar from "@shopen/components/frontend/ui/TopBar.vue";
 
 

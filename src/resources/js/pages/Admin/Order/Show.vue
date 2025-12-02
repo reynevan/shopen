@@ -15,7 +15,8 @@ defineOptions({layout: AdminLayout})
 
 const props = defineProps({
     order: {type: Object, required: true},
-    orderStatusOptions: {type: Array}
+    orderStatusOptions: {type: Array},
+    paymentStatusOptions: {type: Array},
 })
 </script>
 <template>
@@ -143,7 +144,7 @@ const props = defineProps({
                             <template #header>
                                 Płatność
                             </template>
-                            <Payment :order="order"/>
+                            <Payment :order="order" :paymentStatuses="paymentStatusOptions"/>
                         </Panel>
                     </div>
                     <div class="w-1/2">

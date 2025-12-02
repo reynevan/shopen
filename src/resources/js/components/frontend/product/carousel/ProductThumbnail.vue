@@ -1,5 +1,5 @@
 <script setup>
-import {computed, defineProps} from 'vue';
+import {defineProps} from 'vue';
 import IconNoImage from "@shopen/components/icons/IconNoImage.vue";
 import {Link} from '@inertiajs/vue3'
 import PriceDisplay from "@shopen/components/frontend/ui/PriceDisplay.vue";
@@ -9,13 +9,9 @@ import ProductIcons from "@shopen/components/frontend/product/ProductIcons.vue";
 const props = defineProps({
     product: {type: Object}
 })
-const imageWidth = 250;
-const mobileImageWidth = 350;
-const productSizes = `(min-width: 640px) ${imageWidth}px, 90vw`;
 
 const emits = defineEmits(['onClick'])
 
-const showReviews = computed(() => typeof props.product.rating !== 'undefined' || typeof props.product.reviews_count !== 'undefined')
 </script>
 
 <template>

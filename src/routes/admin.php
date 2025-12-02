@@ -94,6 +94,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/zamowienia/{order}', [OrderShowController::class, 'show'])->name('orders.show');
     Route::post('/zamowienia/{order}/status', [OrderShowController::class, 'updateStatus'])->name('orders.update-status');
     Route::post('/zamowienia/{order}/wysylka', [OrderShowController::class, 'updateShipping'])->name('orders.shipping');
+    Route::post('/zamowienia/{order}/platnosc/{payment}', [OrderShowController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
     Route::post('/zamowienia/{order}/wyslij-bony', [OrderShowController::class, 'sendVouchersEmail'])->name('orders.send-vouchers');
     Route::get('/api/orders', [ApiOrdersController::class, 'index']);
 

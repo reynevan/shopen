@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Enums\Order\OrderStatus;
+use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Http\Requests\Admin\Order\ShipRequest;
 use Shopen\Http\Requests\Admin\Order\UpdateOrderStatusRequest;
 use Shopen\Http\Resources\Admin\Order\OrderResource;
@@ -18,6 +19,7 @@ use Shopen\Mail\Order\OrderRefunded;
 use Shopen\Mail\Order\OrderShipped;
 use Shopen\Mail\Order\OrderVouchers;
 use Shopen\Models\Order\Order;
+use Shopen\Models\Order\Payment;
 use Shopen\Repositories\Order\OrderRepository;
 use Shopen\Mail\Order\OrderCancelled;
 use Shopen\Mail\Order\OrderDelivered;
@@ -44,7 +46,8 @@ readonly class OrderShowController
 
         return Inertia::render('Admin/Order/Show', [
             'order' => OrderResource::make($order),
-            'orderStatusOptions' => OrderStatus::options()
+            'orderStatusOptions' => OrderStatus::options(),
+            'paymentStatusOptions' => PaymentStatus::options(),
         ]);
     }
 
@@ -96,6 +99,11 @@ readonly class OrderShowController
         $order->save();
 
         return back();
+    }
+
+    public function updatePaymentStatus(Order $order, Payment $payment)
+    {
+
     }
 
     public function sendVouchersEmail(Order $order)

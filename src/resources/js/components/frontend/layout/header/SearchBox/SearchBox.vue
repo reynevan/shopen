@@ -1,13 +1,14 @@
 <script setup>
-import {computed, nextTick, ref} from 'vue'
+import {computed, defineAsyncComponent, nextTick, ref} from 'vue'
 import {router} from '@inertiajs/vue3'
-import IconSearch from "@shopen/components/icons/IconSearch.vue";
-import ProductSearchResultItem from "./ProductSearchResultItem.vue";
-import IconLoader from "@shopen/components/icons/IconLoader.vue";
+import {useBodyScrollLock} from "@shopen/composables/useBodyScrollLock.js";
 import {trackSearch} from "@shopen/utils/ga4.js";
+
+const ProductSearchResultItem = defineAsyncComponent(() => import('@shopen/components/frontend/layout/header/SearchBox/ProductSearchResultItem.vue'));
+import IconSearch from "@shopen/components/icons/IconSearch.vue";
+import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import IconChevron from "@shopen/components/icons/IconChevron.vue";
 import IconX from "@shopen/components/icons/IconX.vue";
-import {useBodyScrollLock} from "@shopen/composables/useBodyScrollLock.js";
 
 const searchQuery = ref('')
 const searchResults = ref({products: [], categories: []})

@@ -6,7 +6,7 @@ import FlashMessage from "@shopen/components/frontend/ui/FlashMessage.vue";
 import Footer from "@shopen/components/frontend/layout/footer/Footer.vue";
 import {usePage} from "@inertiajs/vue3";
 import {computed} from "vue";
-import CookiesModal from "../../components/frontend/cookies/CookiesModal.vue";
+import CookiesModal from "@shopen/components/frontend/cookies/CookiesModal.vue";
 import TopBar from "@shopen/components/frontend/ui/TopBar.vue";
 
 const page = usePage();

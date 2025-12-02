@@ -84,7 +84,6 @@ class Reindex extends Command
         $mapping->keyword('id');
         $mapping->text('name', [
             'analyzer' => 'polish',
-            'boost' => 3,
             'fields' => [
                 'autocomplete' => [
                     'type' => 'text',
@@ -145,7 +144,6 @@ class Reindex extends Command
         $mapping->keyword('url_key');
         $mapping->text('name', [
             'analyzer' => 'polish',
-            'boost' => 3,
             'fields' => [
                 'autocomplete' => [
                     'type' => 'text',
