@@ -1,11 +1,14 @@
 <script setup>
 import BannerImage from "@shopen/components/frontend/banner/BannerImage.vue";
+import {computed} from "vue";
 
-defineProps({
+const props = defineProps({
     banner: Object,
     index: Number,
     highPriority: Boolean,
-});
+})
+
+const hasMobileImage = computed(() => Object.keys(props.banner.mobile_urls).length > 0)
 </script>
 
 <template>
@@ -13,7 +16,7 @@ defineProps({
     <BannerImage
         :banner="banner"
         :class-name="[
-            banner.image_url_mobile ? 'hidden sm:block' : 'block',
+            hasMobileImage ? 'hidden sm:block' : 'block',
             'max-w-full h-auto'
         ]"
         :urls="banner.desktop_urls"
@@ -23,7 +26,7 @@ defineProps({
     />
     <!-- Mobile -->
     <BannerImage
-        v-if="Object.keys(banner.mobile_urls).length > 0"
+        v-if="hasMobileImage"
         :banner="banner"
         class-name="block sm:hidden max-w-full h-auto"
         :urls="banner.mobile_urls"
