@@ -24,13 +24,17 @@
             .sort((a, b) => a.width - b.width)
             .map(item => `${item.url} ${item.width}`)
             .join(', ');
-    });
+    })
+
+    const fallbackSrc = computed(() => {
+        return Object.values(props.urls)[0] || '';
+    })
 </script>
 
 <template>
     <img
         :class="className"
-        :src="banner.image_url_desktop"
+        :src="fallbackSrc"
         :sizes="sizes"
         :srcset="computedSrcset"
         :alt="banner.alt_text"
