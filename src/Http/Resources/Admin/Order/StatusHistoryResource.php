@@ -17,7 +17,7 @@ class StatusHistoryResource extends JsonResource
             'status' => $this->status,
             'status_label' => $this->status->label(),
             'comment' => $this->comment,
-            'email_notification' => $this->email_cotification,
+            'email_notification' => $this->email_notification,
             'time_formatted' => $this->time_formatted
         ];
     }

@@ -1,5 +1,7 @@
 <script setup>
 
+    import IconFilter from "../../../icons/IconFilter.vue";
+
     defineProps(['totalActiveFiltersCount'])
 
     const emits = defineEmits(['onOpen'])
@@ -16,6 +18,9 @@
               class="filters-button-count flex items-center justify-center">
                 {{ totalActiveFiltersCount }}
         </span>
-        <span class="filters-button-label">Filtry</span>
+        <span class="filters-button-label flex gap-2 items-center">
+            <IconFilter size="xl"/>
+            Filtry
+        </span>
     </button>
 </template>

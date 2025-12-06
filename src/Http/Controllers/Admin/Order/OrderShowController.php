@@ -3,6 +3,7 @@
 namespace Shopen\Http\Controllers\Admin\Order;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -103,7 +104,12 @@ readonly class OrderShowController
 
     public function updatePaymentStatus(Order $order, Payment $payment)
     {
-
+        if ($payment->order_id !== $order->id) {
+            return back();
+        }
+        $payment->status = request('status');
+        $payment->save();
+        return back();
     }
 
     public function sendVouchersEmail(Order $order)

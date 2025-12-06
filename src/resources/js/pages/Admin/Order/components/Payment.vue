@@ -2,20 +2,22 @@
 import Button from "@shopen/components/admin/ui/Button.vue";
 import {router} from "@inertiajs/vue3";
 import Select from "@shopen/components/admin/form/input/Select.vue";
-import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 
 const props = defineProps(['order', 'paymentStatuses']);
 
 
-const submit = (paymentId) => {
-    router.post(route('admin.orders.payment', props.order.id, paymentId), {
+const submit = (payment) => {
+    router.post(route('admin.orders.update-payment-status', [props.order.id, payment.id]), {
+        status: payment.status
+    }, {
         preserveState: true,
         preserveScroll: true
     })
 }
 const statusOptions = [];
 for (let id in props.paymentStatuses) {
-    statusOptions.push({id, value: props.paymentStatuses[id] });
+    statusOptions.push({id, value: props.paymentStatuses[id]});
 }
 </script>
 
@@ -25,25 +27,37 @@ for (let id in props.paymentStatuses) {
             <div>{{ order.payment_method_label }}</div>
         </div>
         <div class="divide-y space-y-2">
-            <div v-for="payment in order.payments" class="flex items-start justify-between py-2">
-                <div class="flex flex-col items-start">
-                    <div class="text-xs">kwota</div>
-                    <div>{{ payment.amount }}</div>
-                </div>
-                <div class="flex flex-col items-end">
-                    <div class="text-xs">status</div>
-                    <div v-show="!payment.editing" class="flex items-center">
-                        {{ payment.status_label }}
-                        <ActionButton type="edit" @click="() => payment.editing = true" />
+            <div v-for="payment in order.payments">
+                <div class="flex items-start justify-between py-2">
+                    <div class="flex flex-col items-start">
+                        <div class="text-xs">kwota</div>
+                        <div>{{ payment.amount }}</div>
                     </div>
-                    <div v-show="payment.editing">
-                        <form @submit.prevent="submit" method="POST">
-                            <div class="mb-2">
-                                <Select id="status" v-model="payment.status" :options="statusOptions"/>
-                            </div>
-                            <Button role="submit">Zapisz</Button>
-                            <Button role="button" type="ghost" @click="() => payment.editing = false" >Anuluj</Button>
-                        </form>
+                    <div class="flex flex-col items-end">
+                        <div class="text-xs">status</div>
+                        <div v-show="!payment.editing" class="flex items-center">
+                            {{ payment.status_label }}
+                            <ActionButton type="edit" @click="payment.editing = true"/>
+                        </div>
+                        <div v-show="payment.editing">
+                            <form method="POST">
+                                <div class="mb-2">
+                                    <Select id="status" v-model="payment.status" :options="statusOptions"/>
+                                </div>
+                                <div class="flex gap-2">
+                                    <Button role="button" type="ghost" @click="() => payment.editing = false">
+                                        Anuluj
+                                    </Button>
+                                    <Button role="button" @click="submit(payment)">Zapisz</Button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="payment.gateway_transaction_id" class="flex items-start justify-between pb-2">
+                    <div>
+                        <div class="text-xs">ID transakcji</div>
+                        <div>{{ payment.gateway_transaction_id}}</div>
                     </div>
                 </div>
             </div>

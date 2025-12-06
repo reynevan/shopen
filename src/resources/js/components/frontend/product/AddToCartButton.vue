@@ -1,6 +1,6 @@
 <script setup>
 import {useCartStore} from "@shopen/stores/cart.js";
-import {ref} from "vue";
+import {computed, ref} from "vue";
 import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import IconCartPlus from "@shopen/components/icons/IconCartPlus.vue";
@@ -19,7 +19,7 @@ const props = defineProps({
 
 const page = usePage();
 
-const maxQty = page.props.config?.max_cart_products ?? 10;
+const maxQty = computed(() => props.product.max_cart_qty ?? page.props.config?.max_cart_products ?? 10);
 
 const emits = defineEmits(["onAddConfigurable"]);
 
@@ -30,8 +30,15 @@ const addToCart = async () => {
         emits('onAddConfigurable')
         return
     }
-    await cart.addToCart(props.product, qty.value);
-    minicart.open();
+    await cart.addToCart(props.product, qty.value, {
+        onSuccess: () => {
+            if (!page.props.flash?.error) {
+                minicart.open()
+            }
+        },
+        only: ['cart', 'product']
+    });
+
 }
 
 const updateQty = (newQty) => {
@@ -46,7 +53,7 @@ const updateQty = (newQty) => {
                 type="primary"
                 size="lg"
                 full-width
-                :disabled="cart.addingToCart[product.id]">
+                :disabled="cart.addingToCart[product.id] || maxQty < 1">
             <div class="flex items-center">
                 <IconCartPlus size="xl" v-if="!cart.addingToCart[product.id]"></IconCartPlus>
                 <IconLoader md v-if="cart.addingToCart[product.id]"></IconLoader>

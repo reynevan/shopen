@@ -42,7 +42,6 @@ readonly class OrderService
             ]);
         }
 
-
         return DB::transaction(function () use (
             $userId, $cart, $options, $customBillingAddress
         ) {
@@ -54,14 +53,13 @@ readonly class OrderService
             }
 
             $totals = $this->calculateTotals($cart, $coupon->promoCode ?? null);
-
             $order = Order::create([
                 'user_id' => $userId,
                 'promo_code_coupon_id' => $coupon->id ?? null,
                 'order_number' => Order::generateOrderNumber(),
                 'status' => OrderStatus::NEW,
                 'shipping_method' => $cart->shipping_method,
-                'delivery_point_code' => $options['delivery_point_code'] ?? null,
+                'delivery_point_code' => $cart->delivery_point['name'] ?? null,
                 'payment_method' => $cart->payment_method,
                 'subtotal' => $totals['subtotal'],
                 'shipping_amount' => $totals['shipping_amount'],
@@ -77,6 +75,8 @@ readonly class OrderService
             $this->createOrderItems($order, $cart, $coupon->promoCode ?? null);
 
             $this->createOrderAddresses($order, $customBillingAddress);
+
+            $this->createOrderStatusItem($order);
 
             $this->updateStock($cart);
 
@@ -258,6 +258,11 @@ readonly class OrderService
                 }
             }
         }
+    }
+
+    private function createOrderStatusItem(Order $order): void
+    {
+        $order->statusHistoryItems()->create(['status' => OrderStatus::NEW]);
     }
 
     private function createOrderAddresses(Order $order, $customBillingAddress): void

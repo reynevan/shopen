@@ -26,6 +26,7 @@ use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasSeoDetails;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
+use Shopen\Services\CartService;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -513,6 +514,25 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
     public function getFinalPrice()
     {
         return $this->price?->final_price ?? null;
+    }
+
+    public function getMaxCartQty()
+    {
+        if (!$this->uses_stock) {
+            return config('shopen.cart.max_item_qty', 10);
+        }
+        return min(config('shopen.cart.max_item_qty', 10), $this->stock_qty);
+    }
+
+    public function getMaxAddToCartQty()
+    {
+        if (!$this->uses_stock) {
+            $qty = config('shopen.cart.max_item_qty', 10);
+        } else {
+            $qty = min(config('shopen.cart.max_item_qty', 10), $this->stock_qty);
+        }
+        $cartQty = app(CartService::class)->getProductQty($this->id);
+        return max($qty - $cartQty, 0);
     }
 
     public function getUrl()

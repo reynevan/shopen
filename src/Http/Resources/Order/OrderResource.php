@@ -7,6 +7,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Number;
 use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
+use Shopen\Enums\Order\OrderStatus;
 use Shopen\Http\Resources\Payment\PaymentResource;
 use Shopen\Http\Resources\PromoCode\PromoCodeCouponResource;
 use Shopen\Http\Resources\User\AddressResource;
@@ -19,7 +20,7 @@ class OrderResource extends JsonResource
         return [
             'billing_address' => AddressResource::make($this->whenLoaded('billingAddress')),
             'can_cancel' => $this->canBeCancelled(),
-            'can_pay' => $paymentMethod->requiresRedirect(),
+            'can_pay' => $this->canBePaid(),
             'delivery_point_code' => $this->delivery_point_code,
             'id' => $this->id,
             'items' => OrderItemResource::collection($this->whenLoaded('items')),

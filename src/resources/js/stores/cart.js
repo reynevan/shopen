@@ -15,7 +15,7 @@ export const useCartStore = defineStore('cart', () => {
             return items.value.reduce((count, {quantity}) => count + quantity, 0);
         })
 
-        async function addToCart(product, quantity = 1) {
+        async function addToCart(product, quantity = 1, options = {}) {
 
             trackAddToCart(product, quantity);
 
@@ -26,7 +26,8 @@ export const useCartStore = defineStore('cart', () => {
             }, {
                 only: ['cart'],
                 preserveScroll: true,
-                onFinish: () => addingToCart.value[product.id] = false
+                onFinish: () => addingToCart.value[product.id] = false,
+                ...options
             })
         }
 

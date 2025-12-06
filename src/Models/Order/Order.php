@@ -185,8 +185,14 @@ class Order extends Model
         return $paymentMethod ? $paymentMethod->getName() : null;
     }
 
-    public function canBeCancelled()
+    public function canBeCancelled(): bool
     {
-        return $this->status == OrderStatus::NEW;
+        return $this->status === OrderStatus::NEW;
+    }
+
+    public function canBePaid(): bool
+    {
+        $paymentMethod = app(PaymentMethodManager::class)->get($this->payment_method);
+        return $this->status === OrderStatus::NEW && $paymentMethod->requiresRedirect();
     }
 }

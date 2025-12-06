@@ -49,7 +49,7 @@ readonly class CheckoutOrderController
             Auth::id(),
             $data['customBillingAddress'],
             [
-                'notes' => $data['notes'] ?? null
+                'notes' => $data['notes'] ?? null,
             ]
         );
 

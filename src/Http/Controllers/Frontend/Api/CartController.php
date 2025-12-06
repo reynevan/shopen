@@ -23,7 +23,15 @@ class CartController extends Controller
         if (is_null($price)) {
             abort(500);
         }
-        $qty = min(request()->post('qty') ?? 1, config('shopen.cart.max_item_qty', 10));
+        $qty = request()->post('qty') ?? 1;
+        $productCount = $this->cartService->getProductQty($product->id);
+
+        if ($productCount + $qty > $product->getMaxCartQty()) {
+            return back()->with('error', 'Niewystarczająca ilość produktu w magazynie');
+        }
+        if ($product->uses_stock && $product->stock_qty < $qty) {
+            return back()->with('error', 'Niewystarczająca ilość produktu w magazynie');
+        }
         $this->cartService->addToCart($product->id, $qty, $price->price, $price->final_price);
 
         return back();

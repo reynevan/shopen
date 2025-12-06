@@ -17,6 +17,7 @@ const submit = () => {
         preserveState: true,
         preserveScroll: true
     })
+    form.reset()
 }
 
 const statusOptions = [];
@@ -34,7 +35,7 @@ for (let id in props.orderStatuses) {
             </div>
             <div class="mb-2">
                 <label for="comment">Komentarz</label>
-                <textarea class="block w-full border rounded" rows="4" id="comment" name="comment"
+                <textarea class="block w-full input py-2" rows="4" id="comment" name="comment"
                           v-model="form.comment"></textarea>
             </div>
             <div class="flex items-center gap-2 mb-4">
@@ -46,14 +47,21 @@ for (let id in props.orderStatuses) {
             </div>
         </form>
 
-        <div class="mb-2" v-for="statusItem in statusItems">
-            <div class="flex items-center gap-2">
-                <div class="font-bold ">{{ statusItem.status_label }}</div>
-                <div class="">{{ statusItem.time_formatted }}</div>
-                <div class="" v-if="statusItem.email_notification">Powiadomienie wysłane</div>
-            </div>
-            <div class="" v-if="statusItem.comment">
-                {{ statusItem.comment }}
+        <div v-if="statusItems?.length" class="pt-4 mt-4 border-t">
+            <div class="text-sm uppercase mb-2 pb-2 inline-block border-b">Historia zmian statusu</div>
+            <div class="space-y-4">
+                <div v-for="statusItem in statusItems">
+                    <div class="flex items-center gap-2">
+                        <div class="font-bold ">{{ statusItem.status_label }}</div>
+                        <div class="">{{ statusItem.time_formatted }}</div>
+                        <div class="" v-if="statusItem.email_notification">
+                            <i title="Email z powiadomieniem wysłany" class="bi bi-send-check"></i>
+                        </div>
+                    </div>
+                    <div class="" v-if="statusItem.comment">
+                        {{ statusItem.comment }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>

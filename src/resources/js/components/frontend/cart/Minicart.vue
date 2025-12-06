@@ -5,7 +5,6 @@ import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import {debounce} from "vue-debounce";
 import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import IconX from "@shopen/components/icons/IconX.vue";
-import ProductThumbnailImage from "../product/ProductThumbnailImage.vue";
 import {Link} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import IconLoader from "../../icons/IconLoader.vue";
@@ -74,14 +73,16 @@ const updateItem = debounce((item, val) => {
                     <icon-x md/>
                 </div>
                 <div class="w-[100px] product-image">
-                    <ProductImage :alt="item.product.name" :urls="item.product.image" sizes="100px"
+                    <ProductImage :alt="item.product.name"
+                                  :urls="item.product.image"
+                                  sizes="100px"
                                   :width="100"/>
                 </div>
                 <div class="grow ml-2">
                     <div class="item-title">
-                        <a :href="item.product.url" class="hover:text-black transition-colors">
+                        <Link :href="item.product.url" class="hover:text-black transition-colors">
                             {{ item.product.name }}
-                        </a>
+                        </Link>
                     </div>
 
                     <div v-if="item.product.attributes" class="text-neutral-500">
@@ -93,6 +94,7 @@ const updateItem = debounce((item, val) => {
                         <div class="mr-1">
                             <AmountInput :value="item.quantity"
                                          :disabled="item.loading"
+                                         :max="item.product.max_cart_qty"
                                          @onChange="(val) => { updateItem(item, val) }"></AmountInput>
                         </div>
                         <div v-if="item.loading">

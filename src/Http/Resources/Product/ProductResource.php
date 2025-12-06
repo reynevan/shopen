@@ -38,7 +38,8 @@ class ProductResource extends JsonResource
             'meta_description' => strip_tags($seo->seo_description ?? $this->resource->getCustomAttribute('short_description')),
             'json_ld_image' => $this->resource->getJsonLdImageUrl(),
             'og_image' => $this->resource->getOgImageUrl(),
-            'canonical_url' => $this->resource->getCanonicalUrl()
+            'canonical_url' => $this->resource->getCanonicalUrl(),
+            'max_cart_qty' => $this->getMaxAddToCartQty()
         ];
         if (config('shopen.product.reviews.enabled')) {
             $data['rating'] = $this->rating;

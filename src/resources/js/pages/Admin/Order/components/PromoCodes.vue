@@ -19,7 +19,7 @@ const allSent = computed(() => !props.order.items.some(item => !item.promo_code_
 </script>
 
 <template>
-    <div class="divide-y divide-light">
+    <div v-if="order.has_vouchers" class="divide-y divide-light">
         <template v-for="item in order.items" :key="item.id">
             <div v-if="item.promo_code_coupons?.length" class="flex items-center gap-2 py-2">
                 <div>{{ item.product.promo_code.name }}</div>
@@ -35,8 +35,11 @@ const allSent = computed(() => !props.order.items.some(item => !item.promo_code_
         <div class="mt-4">
             <ActionButton type="mail" @click="sendMail">
                 <span v-if="allSent">Wyślij email ponownie</span>
-                <span v-else>Wyślij email</span>
+                <span v-else>Wyślij email z kodami</span>
             </ActionButton>
         </div>
+    </div>
+    <div v-else class="text-neutral-500 text-sm">
+        Brak bonów podarunkowych w tym zamówieniu
     </div>
 </template>

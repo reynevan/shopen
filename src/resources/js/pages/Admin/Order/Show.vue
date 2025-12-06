@@ -128,7 +128,7 @@ const props = defineProps({
                             <Shipping :order="order"/>
                         </Panel>
                     </div>
-                    <div v-if="order.has_vouchers" class="w-full">
+                    <div class="w-full">
                         <Panel>
                             <template #header>
                                 Bony podarunkowe

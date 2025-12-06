@@ -32,6 +32,7 @@ class CartItemResource extends JsonResource
                 'image' => $product->getThumbnail(),
                 'attributes' => $product->getVariantAttributes(),
                 'url' => $product->getUrl(),
+                'max_cart_qty' => $product->getMaxCartQty()
             ]
         ];
     }

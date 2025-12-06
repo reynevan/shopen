@@ -34,7 +34,7 @@ class OrderResource extends JsonResource
             'shipping_method_trackable' => app(ShippingMethodManager::class)->get($this->shipping_method)?->isTrackable() ?? false,
             'payment_method_label' => app(PaymentMethodManager::class)->get($this->payment_method)?->getName() ?? '-',
             'delivery_point_code' => $this->delivery_point_code,
-            'shipped_at' => $this->shipped_at,
+            'shipped_at' => $this->shipped_at?->translatedFormat('M d, Y H:i:s'),
             'shipping_tracking_code' => $this->shipping_tracking_code,
             'items_count' => $this->items_count,
             'promo_code_coupon' => PromoCodeCouponResource::make($this->whenLoaded('promoCodeCoupon')),

@@ -98,6 +98,11 @@ class Cart extends Model
         return $this->items()->sum('quantity');
     }
 
+    public function productCount($productId): int
+    {
+        return $this->items()->where('product_id', $productId)->sum('quantity');
+    }
+
     public function isEmpty(): bool
     {
         return $this->items()->count() === 0;

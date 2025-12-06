@@ -9,7 +9,7 @@ import {useAuthStore} from "@shopen/stores/auth.js";
 import ProductsCarousel from "@shopen/components/frontend/product/carousel/ProductsCarousel.vue";
 import IconLoader from "@shopen/components/icons/IconLoader.vue";
 import Button from "@shopen/components/frontend/ui/Button.vue";
-import ProductImage from "../../../components/frontend/product/ProductImage.vue";
+import ProductImage from "@shopen/components/frontend/product/ProductImage.vue";
 import {trackRemoveFromCart, trackViewCart} from "../../../utils/ga4";
 
 defineOptions({layout: CheckoutLayout})
@@ -91,7 +91,9 @@ const removeItem = (item) => {
 
                                 <div class="flex items-center justify-between md:justify-center w-full md:w-32">
                                     <span class="md:hidden font-medium">Ilość:</span>
-                                    <AmountInput :value="item.quantity" :disabled="item.loading"
+                                    <AmountInput :value="item.quantity"
+                                                 :max="item.product.max_cart_qty"
+                                                 :disabled="item.loading"
                                                  @onChange="(val) => onQtyChange(item, val)"/>
                                 </div>
 
@@ -105,7 +107,7 @@ const removeItem = (item) => {
                             </div>
 
                             <div class="w-full md:w-auto flex justify-end md:justify-center pt-2 md:pt-0">
-                                <button @click="removeItem(item)" class="text-gray-500 hover:text-red-600 transition-colors"
+                                <button @click="removeItem(item)" class="text-gray-500 hover:text-red-600 transition-colors cursor-pointer"
                                         aria-label="Usuń produkt z koszyka">
                                     <IconX lg/>
                                 </button>

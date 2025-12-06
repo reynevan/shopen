@@ -53,7 +53,9 @@ const filter = () => {
             :meta="orders.meta"
         >
             <TableColumn field="id" label="ID" sortable v-slot="data" width="90px">
-                {{ data.row.order_number }}
+                <Link :href="route('admin.orders.show', data.row.id)" class="hover:underline">
+                    {{ data.row.order_number }}
+                </Link>
             </TableColumn>
 
             <TableColumn field="created_at" label="Data złożenia" sortable v-slot="data">
@@ -80,7 +82,3 @@ const filter = () => {
         </DataTable>
     </div>
 </template>
-
-<style scoped>
-
-</style>

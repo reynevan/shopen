@@ -155,6 +155,11 @@ class CartService
         $this->cart->updateItemQty($itemId, $quantity);
     }
 
+    public function getProductQty(int $productId): int
+    {
+        return $this->getCart()->productCount($productId);
+    }
+
     public function setAddress(Address $address, AddressType $type): void
     {
         $this->createCart();
