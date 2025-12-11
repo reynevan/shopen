@@ -3,6 +3,8 @@
 namespace Shopen\Http\Controllers\Admin\Banner;
 
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -14,6 +16,8 @@ use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\Banner\BannerResource;
 use Shopen\Models\Banner\Banner;
 use Shopen\Repositories\Category\CategoryRepository;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Throwable;
 
 readonly class BannerEditController
 {
@@ -36,24 +40,31 @@ readonly class BannerEditController
     {
         $validated = $request->validated();
 
-        if ($request->hasFile('image_desktop')) {
-            if ($banner->image_path_desktop) {
-                Storage::disk('public')->delete($banner->image_path_desktop);
+        DB::beginTransaction();
+        try {
+            if ($request->hasFile('image_desktop')) {
+                $banner->getMedia('desktop')->each(fn (Media $media) => $media->delete());
+                $banner
+                    ->addMedia($request->file('image_desktop'))
+                    ->toMediaCollection('desktop');
             }
-            $validated['image_path_desktop'] = $request->file('image_desktop')->store('banners', 'public');
-        }
 
-        if ($request->hasFile('image_mobile')) {
-            if ($banner->image_path_mobile) {
-                Storage::disk('public')->delete($banner->image_path_mobile);
+            if ($request->hasFile('image_mobile')) {
+                $banner->getMedia('mobile')->each(fn (Media $media) => $media->delete());
+                $banner
+                    ->addMedia($request->file('image_mobile'))
+                    ->toMediaCollection('mobile');
             }
-            $validated['image_path_mobile'] = $request->file('image_mobile')->store('banners', 'public');
+
+            $banner->update($validated);
+
+            $banner->categories()->sync($validated['category_ids'] ?? []);
+            DB::commit();
+
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error($e->getMessage());
         }
-
-        $banner->update($validated);
-
-        $banner->categories()->sync($validated['category_ids'] ?? []);
-
         return Redirect::route('admin.banners.index')->with('success', 'Baner został zaktualizowany.');
     }
 

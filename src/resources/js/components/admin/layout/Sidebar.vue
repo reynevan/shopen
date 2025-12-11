@@ -1,8 +1,13 @@
 <script setup>
-import {Link} from "@inertiajs/vue3";
+import {Link, router} from "@inertiajs/vue3";
 
 import {useAuthStore} from "@shopen/stores/auth.js";
 const auth = useAuthStore();
+
+const clearCache = () => {
+
+    router.post(route('cache.clear'))
+}
 </script>
 
 <template>
@@ -120,6 +125,11 @@ const auth = useAuthStore();
 
         </ul>
         <ul class="menu-list border-t border-gray-600 pt-4 mt-4">
+            <li class="mb-4 py-2 text-accent">
+                <a @click.prevent="clearCache" class="text-xs flex flex-col items-center cursor-pointer">
+                    <div class="uppercase text-center">Wyczyść cache</div>
+                </a>
+            </li>
             <li class="mb-4 py-2 text-accent">
                 <a @click.prevent="auth.logoutAdmin" class="text-xs flex flex-col items-center cursor-pointer">
                     <div class="uppercase text-center">Wyloguj</div>

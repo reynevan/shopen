@@ -94,6 +94,9 @@ class Banner extends Model implements HasMedia
     {
         $sizes = $type === 'desktop' ? $this->getDesktopImageSizes() : $this->getMobileImageSizes();
         $media = $this->getMedia($type)->first();
+        if (!$media) {
+            return [];
+        }
         $originalWidth = $this->getImageWidth($media->getPath('banner'));
         $urls = [];
         foreach ($sizes as $size) {

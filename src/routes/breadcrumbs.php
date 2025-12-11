@@ -1,6 +1,7 @@
 <?php
 
 use Shopen\Facades\Breadcrumbs;
+use Shopen\Models\Brand\Brand;
 use Shopen\Services\BreadcrumbsService;
 
 Breadcrumbs::register('login', function (BreadcrumbsService $breadcrumbs) {
@@ -63,4 +64,8 @@ Breadcrumbs::register('terms-and-conditions', function (BreadcrumbsService $brea
 
 Breadcrumbs::register('shipping', function (BreadcrumbsService $breadcrumbs) {
     $breadcrumbs->add('Dostawy', route('shipping'));
+});
+
+Breadcrumbs::register('brands.show', function (BreadcrumbsService $breadcrumbs, Brand $brand) {
+    $breadcrumbs->add($brand->name, route('brands.show', $brand));
 });

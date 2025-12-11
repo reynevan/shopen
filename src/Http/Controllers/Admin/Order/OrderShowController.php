@@ -42,7 +42,8 @@ readonly class OrderShowController
             'items.product',
             'items.product.promoCode',
             'items.promoCodeCoupons',
-            'statusHistoryItems'
+            'statusHistoryItems',
+            'promoCodeCoupon.promoCode'
         ]);
 
         return Inertia::render('Admin/Order/Show', [

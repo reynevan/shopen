@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Admin\PromoCode\StorePromoCodeRequest;
-use Shopen\Http\Resources\Admin\Category\CategoryResource;
 use Shopen\Http\Resources\Admin\PromoCode\PromoCodeResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Models\PromoCode\PromoCode;
@@ -51,7 +50,7 @@ readonly class PromoCodeCreateController
             $promoCode = PromoCode::create($data);
 
             foreach ($data['codes'] as $code) {
-                $promoCode->codes()->create($code);
+                $promoCode->coupons()->create($code);
             }
             DB::commit();
 

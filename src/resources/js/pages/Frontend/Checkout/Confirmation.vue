@@ -22,14 +22,15 @@ trackPurchase(props.order)
     <Head>
         <title>Potwierdzenie złożenia zamówienia</title>
     </Head>
-    <div class="py-6 max-w-xl mx-auto text-center">
+    <div class="my-12 py-6 px-2 sm:px-6 max-w-xl mx-auto text-center bg-body">
         <div class="mb-4">
             <div class="flex items-center justify-center pb-4 text-accent-hover">
                 <IconCheckCircle size="8xl"/>
             </div>
-            <h1 class="text-4xl mb-4">Dziękujemy za złożenie zamówienia!</h1>
-            <p class="text-xl text-neutral-600 mb-2">Numer Twojego zamówienia to <span class="text-black">{{ order.order_number }}</span>.</p>
-            <p class="text-xl text-neutral-600 mb-4">
+            <h1 class="text-2xl sm:text-3xl mb-4">Dziękujemy za złożenie zamówienia!</h1>
+            <p class="text-lg sm:text-xl text-neutral-600 mb-2">Numer Twojego zamówienia to <span
+                class="text-black">{{ order.order_number }}</span>.</p>
+            <p class="text-lg sm:text-xl text-neutral-600 mb-4">
                 Wysłaliśmy potwierdzenie na adres: {{ order.email }}
             </p>
             <Link href="/">
@@ -37,7 +38,7 @@ trackPurchase(props.order)
             </Link>
         </div>
         <div v-if="!auth.isLoggedIn" class="my-6 py-6 border-t border-light">
-            <h2 class="text-xl mb-2">Chcesz śledzić swoje zamówienie? Załóż konto!</h2>
+            <h2 class="ext-lg sm:text-xl mb-2">Chcesz śledzić swoje zamówienie? Załóż konto!</h2>
 
             <p class="mb-2">Twoje dane zostaną automatycznie powiązane z tym zamówieniem.</p>
 

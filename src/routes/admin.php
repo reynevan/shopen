@@ -8,6 +8,7 @@ use Shopen\Http\Controllers\Admin\Auth\LoginController;
 use Shopen\Http\Controllers\Admin\Brand\BrandCreateController;
 use Shopen\Http\Controllers\Admin\Brand\BrandEditController;
 use Shopen\Http\Controllers\Admin\Brand\BrandIndexController;
+use Shopen\Http\Controllers\Admin\Cache\CacheController;
 use Shopen\Http\Controllers\Admin\Category\CategoryCreateController;
 use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageEditController;
 use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageIndexController;
@@ -132,7 +133,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::post('/marki', [BrandCreateController::class, 'store'])->name('brands.store');
     Route::get('/marki/nowa', [BrandCreateController::class, 'create'])->name('brands.create');
     Route::get('/marki/{brand:id}', [BrandEditController::class, 'edit'])->name('brands.edit');
-    Route::put('/marki/{brand:id}', [BrandEditController::class, 'update'])->name('brands.update');
+    Route::post('/marki/{brand:id}', [BrandEditController::class, 'update'])->name('brands.update');
     Route::delete('/marki/{brand:id}', [BrandEditController::class, 'destroy'])->name('brands.delete');
 
     Route::get('/stawki-podatkowe', [TaxClassIndexController::class, 'index'])->name('tax-classes.index');
@@ -141,6 +142,8 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::get('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'edit'])->name('tax-classes.edit');
     Route::put('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'update'])->name('tax-classes.update');
     Route::delete('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'destroy'])->name('tax-classes.delete');
+
+    Route::post('/cache/clear', [CacheController::class, 'clear'])->name('cache.clear');
 
     Route::prefix('/ustawienia')->name('settings.')->group(function () {
         Route::get('/belka', [TopBarSettingsController::class, 'index'])->name('top-bar.index');

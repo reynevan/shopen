@@ -11,6 +11,7 @@ import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import FormField from "@shopen/components/admin/form/FormField.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import Select from "../../../../components/admin/form/input/Select.vue";
+import PageTitle from "../../../../components/admin/ui/PageTitle.vue";
 
 
 const props = defineProps({
@@ -95,6 +96,10 @@ const previewImage = (event) => {
 
 <template>
     <ActionsPanel back-route="admin.banners.index">
+        <template #title>
+            <PageTitle v-if="banner && banner.title">{{ banner.title }}</PageTitle>
+            <PageTitle v-else>Nowy banner</PageTitle>
+        </template>
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <section>

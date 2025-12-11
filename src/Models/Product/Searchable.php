@@ -33,6 +33,7 @@ trait Searchable
             'popularity' => $this->getPopularity(),
             'thumbnail_url' => $this->getThumbnails(),
             'is_new_to' => $this->is_new_to,
+            'is_new' => $this->is_new,
             'searchable_attributes' => $this->getSearchableAttributeValue(),
             'list_attributes' => $this->getListAttributes(),
             ...$this->getIndexableAttributesValues()

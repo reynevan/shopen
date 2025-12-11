@@ -136,15 +136,15 @@ class PromoCode extends Model
 
     public function isAppliedToProduct(Product $product): bool
     {
-        if (empty($this->conditionsAttributes) && empty($this->conditionsCategories)) {
-            return true;
-        }
-
         if ($this->applies_to === ApplyType::PER_ITEM &&
             !$this->applies_to_discounted &&
             $product->price &&
             $product->price->isDiscounted()) {
             return false;
+        }
+
+        if (empty($this->conditionsAttributes) && empty($this->conditionsCategories)) {
+            return true;
         }
 
         $attributeRepository = app(AttributeRepository::class);

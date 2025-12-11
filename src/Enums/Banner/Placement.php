@@ -13,7 +13,6 @@ enum Placement: string
     case PRODUCT_PAGE_TOP = 'product_page_top';
     case PRODUCT_PAGE_BOTTOM = 'product_page_bottom';
 
-
     public function label(): string
     {
         return match ($this) {
@@ -28,11 +27,17 @@ enum Placement: string
         };
     }
 
-
     public static function options(): array
     {
         return collect(self::cases())
             ->mapWithKeys(fn($case) => [$case->value => $case->label()])
+            ->toArray();
+    }
+
+    public static function toArray(): array
+    {
+        return collect(self::cases())
+            ->map(fn($case) => ['value' => $case->value, 'label' => $case->label()])
             ->toArray();
     }
 }

@@ -2,8 +2,10 @@
 
 namespace Shopen\Http\Controllers\Admin\Banner;
 
+use Illuminate\Support\Arr;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Enums\Banner\Placement;
 use Shopen\Http\Resources\Admin\Banner\BannerResource;
 use Shopen\Repositories\Banner\BannerRepository;
 
@@ -16,13 +18,13 @@ readonly class BannersIndexController
 
     public function index(): Response
     {
-        $banners = $this->bannerRepository->getPaginated(request('sort', 'id'), request('dir', 'asc'), request('q'));
-
         return Inertia::render('Admin/Banner/Index', [
-            'banners' => BannerResource::collection($banners),
-            'sort' => request('sort', 'id'),
-            'dir' => request('dir', 'desc'),
-            'q' => request('q')
+            'banners' => fn() => BannerResource::collection($this->bannerRepository->getPaginated(request('sort', 'id'), request('dir', 'asc'), request('q'), request('placement'))),
+            'placements' => fn () => Placement::toArray(),
+            'placement' => fn () => request('placement'),
+            'sort' => fn () => request('sort', 'id'),
+            'dir' => fn () => request('dir', 'desc'),
+            'q' => fn () => request('q')
         ]);
     }
 

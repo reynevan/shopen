@@ -31,7 +31,7 @@ const logo = ref(props.brand?.logo_url);
 
 const save = async () => {
     if (form.id) {
-        form.put(route('admin.brands.update', form.id), {
+        form.post(route('admin.brands.update', form.id), {
             preserveState: true,
             preserveScroll: true
         })
@@ -102,9 +102,9 @@ const previewImage = (event) => {
             label="Logo"
             label-for="logo">
             <ImageInput @input="onLogoSelect" v-if="!logo" id="logo"/>
-            <div class="relative" v-if="logo">
+            <div class="flex items-top gap-2" v-if="logo">
                 <img :src="logo" class="max-h-[200px]">
-                <button @click="removeLogo" class="bg-red-500 text-white hover:bg-red-400 transition-colors rounded-full w-8 h-8 flex items-center justify-center absolute right-2 top-2 cursor-pointer">
+                <button @click="removeLogo" class="bg-red-500 text-white hover:bg-red-400 transition-colors rounded-full w-8 h-8 flex items-center justify-center cursor-pointer">
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>

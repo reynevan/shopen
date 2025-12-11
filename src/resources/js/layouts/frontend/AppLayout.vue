@@ -23,17 +23,21 @@ const cart = computed(() => page.props.cart);
     <TopBar/>
     <div class="flex flex-col min-h-screen">
         <Header/>
-        <div class="grow">
+
+        <div class="flex-1 flex flex-col">
             <div class="main-container">
                 <Breadcrumbs/>
                 <BannersContainer :banners="page.props.banners?.page_top"/>
             </div>
+
             <main>
                 <slot/>
             </main>
         </div>
+
         <Footer/>
     </div>
+
     <Teleport to="body">
         <Cover/>
         <Minicart :items="cart.items" :subtotal="cart.subtotal"/>

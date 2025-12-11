@@ -22,14 +22,12 @@ const props = defineProps({
 
 <template>
     <Head>
-        <!-- Twoje tagi SEO specyficzne dla kategorii -->
         <title>{{ title }}</title>
         <meta name="description" :content="category.seo.seo_description">
-        <link rel="canonical"
-              :href="products.meta.path + (products.meta.current_page > 1 ? `?strona=${products.meta.current_page}` : '')">
+        <meta name="title" :content="category.seo.seo_title">
+        <link rel="canonical" :href="products.meta.path + (products.meta.current_page > 1 ? `?strona=${products.meta.current_page}` : '')">
         <link rel="next" v-if="products.links.next" :href="products.links.next">
         <link rel="prev" v-if="products.links.prev" :href="products.links.prev">
-        <!-- ... reszta tagów ... -->
     </Head>
     <main class="main-container">
         <ProductListing
@@ -42,7 +40,6 @@ const props = defineProps({
             :list-name="category.name"
             :list-id="category.id"
         >
-            <!-- Wypełniamy sloty specyficzną treścią dla strony kategorii -->
 
             <template #header="{ resultsCount }">
                 <div class="flex items-start flex-col">

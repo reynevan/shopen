@@ -131,7 +131,9 @@ onUnmounted(() => {
 
         <div>
             <!-- Filters  -->
-            <div class="hidden sm:block top-0 z-5 mb-4 px-4 sm:px-0" ref="filtersPanel"
+            <div v-if="hasActiveFilters || products?.data?.length"
+                class="hidden sm:block top-0 z-5 mb-4 px-4 sm:px-0"
+                 ref="filtersPanel"
                  :class="[
                      isFiltersPanelSticky ? 'shadow-lg' : '',
                      isScrollingUp ? 'relative' : 'sticky'
@@ -188,8 +190,8 @@ onUnmounted(() => {
                 </Transition>
 
                 <!-- No results -->
-                <div v-if="!products.data.length" key="no-products" class="text-center py-12">
-                    <!-- ... treść gdy brak wyników ... -->
+                <div v-if="!products.data.length" key="no-products" class="no-products-label text-center py-12">
+                    Brak produktów do wyświetlenia
                 </div>
 
             </div>

@@ -85,30 +85,37 @@ class SearchServiceResult
         ];
     }
 
-    public function getFilters(): array
+    public function getFilters($excluded = []): array
     {
         $filters = [];
-        $categoriesFilters = $this->getCategoriesFilters();
-        if (count($categoriesFilters)) {
-            $filters[] = [
-                'name' => 'Kategoria',
-                'code' => 'category',
-                'slug' => 'kategoria',
-                'options' => $categoriesFilters
-            ];
+        if (!in_array('category', $excluded)) {
+            $categoriesFilters = $this->getCategoriesFilters();
+            if (count($categoriesFilters)) {
+                $filters[] = [
+                    'name' => 'Kategoria',
+                    'code' => 'category',
+                    'slug' => 'kategoria',
+                    'options' => $categoriesFilters
+                ];
+            }
         }
 
-        $brandFilters = $this->getBrandFilters();
-        if (count($brandFilters)) {
-            $filters[] = [
-                'name' => 'Marka',
-                'code' => 'brand',
-                'slug' => 'brand',
-                'options' => $brandFilters
-            ];
+        if (!in_array('brand', $excluded)) {
+            $brandFilters = $this->getBrandFilters();
+            if (count($brandFilters)) {
+                $filters[] = [
+                    'name' => 'Marka',
+                    'code' => 'brand',
+                    'slug' => 'brand',
+                    'options' => $brandFilters
+                ];
+            }
         }
 
         foreach ($this->getAttributesFilters() as $attribute) {
+            if (in_array($attribute->code, $excluded)) {
+                continue;
+            }
             $filters[] = [
                 'name' => $attribute->name,
                 'code' => $attribute->code,

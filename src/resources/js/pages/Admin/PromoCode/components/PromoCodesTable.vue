@@ -4,7 +4,7 @@ import DataTable from "@shopen/components/admin/table/DataTable.vue";
 import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
-import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 
 const props = defineProps({
     promoCodes: Object
@@ -63,10 +63,6 @@ const removeCode = (code) => {
             <span v-if="!data.row.is_active">Nieaktywny</span>
         </TableColumn>
 
-        <TableColumn field="code" label="Kod" v-slot="data" sortable>
-            kody
-        </TableColumn>
-
         <TableColumn field="name" label="Nazwa" v-slot="data" sortable>
             <div>{{ data.row.name }}</div>
             <div v-if="data.row.description" class="text-neutral-400 text-sm">
@@ -83,7 +79,7 @@ const removeCode = (code) => {
         </TableColumn>
 
 
-        <TableColumn label="-" v-slot="data" width="100px">
+        <TableColumn label="Akcje" v-slot="data" width="100px">
             <div class="flex divide-x divide-x-border-light">
                 <Link :href="route('admin.promo-codes.edit', data.row.id)" class="text-accent cursor-pointer">
                     <ActionButton type="edit"/>

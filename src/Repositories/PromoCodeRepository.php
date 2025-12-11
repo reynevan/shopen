@@ -3,7 +3,9 @@
 namespace Shopen\Repositories;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Shopen\Models\PromoCode\PromoCode;
+use Shopen\Models\PromoCode\PromoCodeCoupon;
 
 class PromoCodeRepository
 {

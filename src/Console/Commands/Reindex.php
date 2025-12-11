@@ -109,6 +109,7 @@ class Reindex extends Command
         $mapping->flattened('thumbnail', ['index' => false]);
         $mapping->text('searchable_attributes', ['analyzer' => 'polish']);
         $mapping->date('is_new_to');
+        $mapping->boolean('is_new');
 
         $mapping->flattened('list_attributes', ['index' => false]);
 

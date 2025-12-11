@@ -15,6 +15,7 @@ use Shopen\Mail\Order\OrderPlaced;
 use Shopen\Mail\Order\OrderStatusChanged;
 use Shopen\Models\Address;
 use Shopen\Models\Cart\Cart;
+use Shopen\Models\Cart\CartItem;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\OrderAddress;
 use Shopen\Models\Order\OrderItem;
@@ -160,6 +161,9 @@ readonly class OrderService
         }
     }
 
+    /**
+     * @throws ValidationException
+     */
     private function calculateTotals($cart, ?PromoCode $promoCode = null): array
     {
         $subtotal = $cart->items->sum(fn($item) => $item->final_price * $item->quantity);
@@ -178,7 +182,6 @@ readonly class OrderService
 
         $discountAmount = $cart->items->sum(fn($item) => ($item->price - $item->final_price) * $item->quantity);
         $promoCodeDiscountAmount = 0;
-
 
 
         if ($promoCode) {
@@ -204,21 +207,27 @@ readonly class OrderService
             'discount_amount' => $discountAmount,
             'promo_code_discount_amount' => $promoCodeDiscountAmount,
             'total_amount' => $subtotal + $shippingAmount - $promoCodeDiscountAmount,
-            'tax_amount' => $this->calculateTotalTaxes($cart, $promoCode),
+            'tax_amount' => $this->calculateTotalTaxes($cart, $shippingAmount, $promoCode),
         ];
     }
 
-    private function calculateTotalTaxes(Cart $cart, ?PromoCode $promoCode = null): float
+    private function calculateTotalTaxes(Cart $cart, $shippingAmount, ?PromoCode $promoCode = null): float
     {
         $tax = .0;
+        $itemsTotalValue = $cart->totalPrice();
         foreach ($cart->items as $item) {
             $product = $item->product;
             $promoCodeDiscountAmount = 0;
             if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($product)) {
                 $promoCodeDiscountAmount = $item->quantity * $promoCode->calculateDiscount($item->final_price);
+            } elseif ($promoCode && $promoCode->applies_to === ApplyType::CART) {
+                $promoCodeDiscountAmount = round($promoCode->discount_value * $item->final_price * $item->quantity / $itemsTotalValue, 2);
             }
             $total = $item->final_price * $item->quantity - $promoCodeDiscountAmount;
             $tax += $product->taxClass ? $total * $product->taxClass->rate / 100 : 0;
+        }
+        if ($shippingAmount > 0) {
+            $tax += $shippingAmount * config('shopen.tax.shipping.value', 23) / 100;
         }
         return $tax;
     }
@@ -226,6 +235,7 @@ readonly class OrderService
 
     private function createOrderItems(Order $order, $cart, ?PromoCode $promoCode): void
     {
+        $itemsTotalValue = $cart->totalPrice();
         foreach ($cart->items as $item) {
             $product = Product::find($item->product_id);
             $finalPrice = $item->final_price;
@@ -233,6 +243,8 @@ readonly class OrderService
             $promoCodeDiscountAmount = 0;
             if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($product)) {
                 $promoCodeDiscountAmount = $item->quantity * $promoCode->calculateDiscount($finalPrice);
+            } elseif ($promoCode && $promoCode->applies_to === ApplyType::CART) {
+                $promoCodeDiscountAmount = round($promoCode->discount_value * $item->final_price * $item->quantity / $itemsTotalValue, 2);
             }
             $total = $item->final_price * $item->quantity - $promoCodeDiscountAmount;
 
@@ -258,6 +270,11 @@ readonly class OrderService
                 }
             }
         }
+    }
+
+    private function calculateOrderItemTax(CartItem $cartItem, ?PromoCode $promoCode): float
+    {
+
     }
 
     private function createOrderStatusItem(Order $order): void

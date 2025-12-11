@@ -3,6 +3,7 @@ import { Head, Link } from '@inertiajs/vue3'
 import AppLayout from "@shopen/layouts/frontend/AppLayout.vue";
 import ProductListing from '@shopen/components/frontend/product/ProductListing.vue';
 import BannersContainer from "@shopen/components/frontend/banner/BannersContainer.vue";
+import {computed} from "vue";
 
 defineOptions({ layout: AppLayout })
 
@@ -16,53 +17,71 @@ const props = defineProps({
     sortOptions: { type: Array },
     title: { type: String }
 })
+
+const logoUrl = computed(() => {
+    let images = Object.values(props.brand.logo)
+    return images?.length ? images[images.length - 1] : null
+})
 </script>
 
 <template>
     <Head>
         <title>{{ title }}</title>
         <meta name="description" :content="brand.seo.seo_description">
+        <meta name="title" :content="brand.seo.seo_title">
+        <meta property="og:brand" :content="brand.name">
+        <meta property="og:url" :content="brand.url">
+        <meta property="og:description" :content="brand.seo.seo_description">
+        <meta property="og:title" :content="brand.seo.seo_title">
+        <meta property="og:image" :content="logoUrl"/>
+        <meta property="og:type" content="website"/>
+        <link rel="canonical"
+              :href="products.meta.path + (products.meta.current_page > 1 ? `?strona=${products.meta.current_page}` : '')">
+        <link rel="next" v-if="products.links.next" :href="products.links.next">
+        <link rel="prev" v-if="products.links.prev" :href="products.links.prev">
     </Head>
 
-    <ProductListing
-        :products="products"
-        :filters="filters"
-        :active-filters="activeFilters"
-        :active-sort="activeSort"
-        :sort-options="sortOptions"
-    >
+    <main class="main-container">
+        <ProductListing
+            :products="products"
+            :filters="filters"
+            :active-filters="activeFilters"
+            :active-sort="activeSort"
+            :sort-options="sortOptions"
+        >
 
-        <template #page-top-banners>
-            <BannersContainer :banners="banners.brand_page_top"/>
-        </template>
+            <template #page-top-banners>
+                <BannersContainer :banners="banners.brand_page_top"/>
+            </template>
 
-        <template #header="{ resultsCount }">
-            <div class="flex items-end">
-                <div class="text-3xl mr-2">{{ brand.name }}</div>
-                <div class="text-neutral-600">({{ resultsCount }})</div>
-            </div>
-        </template>
+            <template #header="{ resultsCount }">
+                <div class="flex items-end">
+                    <div class="text-3xl mr-2">{{ brand.name }}</div>
+                    <div class="text-neutral-600">({{ resultsCount }})</div>
+                </div>
+            </template>
 
-        <template #sidebar-prepend>
-            <BannersContainer :banners="banners.brand_page_filters_top"/>
-        </template>
+            <template #sidebar-prepend>
+                <BannersContainer :banners="banners.brand_page_filters_top"/>
+            </template>
 
-        <template #sidebar-append>
-            <BannersContainer :banners="banners.brand_page_filters_bottom"/>
-        </template>
+            <template #sidebar-append>
+                <BannersContainer :banners="banners.brand_page_filters_bottom"/>
+            </template>
 
-        <template #before-products>
-            <BannersContainer :banners="banners.brand_page_products_top"/>
-        </template>
+            <template #before-products>
+                <BannersContainer :banners="banners.brand_page_products_top"/>
+            </template>
 
-        <template #after-products>
-            <BannersContainer :banners="banners.brand_page_products_bottom"/>
-            <div v-if="brand.description" v-html="brand.description" class="mt-8"></div>
-        </template>
+            <template #after-products>
+                <BannersContainer :banners="banners.brand_page_products_bottom"/>
+                <div v-if="brand.description" v-html="brand.description" class="mt-8"></div>
+            </template>
 
-        <template #page-bottom-banners>
-            <BannersContainer :banners="banners.brand_page_bottom"/>
-        </template>
+            <template #page-bottom-banners>
+                <BannersContainer :banners="banners.brand_page_bottom"/>
+            </template>
 
-    </ProductListing>
+        </ProductListing>
+    </main>
 </template>

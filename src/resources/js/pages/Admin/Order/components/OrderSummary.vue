@@ -26,9 +26,6 @@ const props = defineProps(['order']);
         <div v-if="order.promo_code_coupon" class="flex items-center justify-between mb-1 py-1 border-b">
             <div>Kod rabatowy</div>
             <div class="flex items-center gap-2">
-                <Link class="cursor-pointer underline" :href="route('admin.promo-codes.edit', order.promo_code_coupon.promo_code.id)">
-                    {{ order.promo_code_coupon.promo_code.name }}
-                </Link>
                 <div>
                     {{ order.promo_code_discount_amount }}
                 </div>

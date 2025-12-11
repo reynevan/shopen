@@ -114,7 +114,20 @@ class SearchService
         }
 
         if ($this->new) {
-            $filters[] = ['range' => ['is_new_to' => ['gte' => 'now/d']]];
+            $filters[] = [
+                'term' => [
+                    'is_new' => true,
+                ],
+            ];
+            $filters[] = [
+                'bool' => [
+                    'should' => [
+                        ['range' => ['is_new_to' => ['gte' => 'now/d']]],
+                        ['bool' => ['must_not' => ['exists' => ['field' => 'is_new_to']]]],
+                    ],
+                    'minimum_should_match' => 1,
+                ],
+            ];
         }
 
         $query = count($filters)

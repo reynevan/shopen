@@ -3,12 +3,13 @@
 import DataTable from "@shopen/components/admin/table/DataTable.vue";
 import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
-import {Link, router, usePage} from "@inertiajs/vue3";
-import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
-import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
+import { router, usePage} from "@inertiajs/vue3";
+import ActionButtons from "@shopen/components/admin/ui/ActionButtons.vue";
+import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 
 const props = defineProps({
-    banners: Object
+    banners: Object,
+    placements: Array
 })
 
 const page = usePage();
@@ -20,22 +21,29 @@ const q = page.props.q;
 const search = ref(q);
 
 const onSort = (field, dir) => {
-    router.get(route('admin.banners.index'), {
-        sort: field,
-        dir: dir
-    }, {
-
-    })
+    let data = {
+        sort: sort,
+        dir: dir,
+    };
+    if (page.props.placement) {
+        data.placement = page.props.placement;
+    }
+    if (search.value) {
+        data.q = search.value;
+    }
+    router.get(route('admin.banners.index'), data, {})
 }
 
 const onSearch = () => {
-    router.get(route('admin.banners.index'), {
+    let data = {
         sort: sort,
         dir: dir,
         q: search.value
-    }, {
-
-    })
+    };
+    if (page.props.placement) {
+        data.placement = page.props.placement;
+    }
+    router.get(route('admin.banners.index'), data, {})
 }
 
 const removeBanner = (banner) => {
@@ -46,9 +54,33 @@ const removeBanner = (banner) => {
         preserveScroll: true
     })
 }
+const filterPlacement = (placement) => {
+    let data = {
+        sort: sort,
+        dir: dir,
+        placement: placement,
+    };
+    if (search.value) {
+        data.q = search.value;
+    }
+    router.get(route('admin.banners.index'), data, {})
+}
 </script>
 
 <template>
+    <div class="flex divide-x divide-gray-border-light">
+        <div class="px-2 py-2 text-sm hover:bg-accent/50 transition-all duration-300"
+             :class="!page.props.placement ? 'bg-accent' : 'cursor-pointer'"
+             @click="filterPlacement(null)">
+            Wszystkie
+        </div>
+        <div v-for="placement in placements"
+             class="px-2 py-2 text-sm hover:bg-accent/50 transition-all duration-300"
+             :class="page.props.placement === placement.value ? 'bg-accent' : 'cursor-pointer'"
+             @click="filterPlacement(placement.value)">
+            {{ placement.label }}
+        </div>
+    </div>
     <DataTable
         table-class="w-full"
         head-class="bg-neutral-700 text-neutral-200 py-2"

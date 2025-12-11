@@ -9,7 +9,8 @@ import BannersTable from "./components/BannersTable.vue";
 defineOptions({layout: AdminLayout})
 
 defineProps({
-    banners: Array
+    banners: Array,
+    placements: Array
 });
 </script>
 <template>
@@ -22,5 +23,5 @@ defineProps({
             <Button>Nowy banner</Button>
         </Link>
     </ActionsPanel>
-    <BannersTable :banners="banners"/>
+    <BannersTable :banners="banners" :placements="placements"/>
 </template>

@@ -46,7 +46,7 @@ const getBackgroundClass = (type) => {
 </script>
 
 <template>
-    <div class="fixed top-5 right-5 z-[200] flex flex-col gap-2 max-w-sm w-full">
+    <div class="fixed top-[100px] right-5 z-[200] flex flex-col gap-2 max-w-sm w-full">
         <transition-group
             enter-active-class="transition ease-out duration-300"
             enter-from-class="transform opacity-0 -translate-y-4"

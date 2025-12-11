@@ -28,8 +28,8 @@ class BreadcrumbsService
 
     public function generate(): array
     {
-        if (!config('app.debug') && Cache::has($this->request->path())) {
-            return Cache::get($this->request->path());
+        if (!config('app.debug') && Cache::has($this->getPageCacheKey())) {
+            return Cache::get($this->getPageCacheKey());
         }
         $this->breadcrumbs = [];
         $this->add('Strona główna', route('home'));
@@ -71,7 +71,7 @@ class BreadcrumbsService
 
         $breadcrumbs = $this->finalize();
         if ($saveInCache) {
-            Cache::put($this->request->path(), $breadcrumbs, self::CACHE_TTL);
+            Cache::put($this->getPageCacheKey(), $breadcrumbs, self::CACHE_TTL);
         }
         return $breadcrumbs;
     }
@@ -84,6 +84,11 @@ class BreadcrumbsService
     public function add(string $name, ?string $url = null): void
     {
         $this->breadcrumbs[] = ['name' => $name, 'url' => $url];
+    }
+
+    protected function getPageCacheKey()
+    {
+        return 'breadcrumbs.' . $this->request->path();
     }
 
     protected function finalize(): array

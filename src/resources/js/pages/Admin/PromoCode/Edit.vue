@@ -7,11 +7,12 @@ defineOptions({layout: AdminLayout})
 
 const props = defineProps({
     promoCode: {type: Object, required: true},
+    coupons: {type: Object, required: true},
     categories: {type: Array, required: true},
     attributes: {type: Array, required: true},
 })
 </script>
 <template>
     <Head :title="promoCode.name + ' - Edycja kodu promocyjnego'"/>
-    <PromoCodeForm :promoCode="promoCode" :categories="categories" :attributes="attributes"/>
+    <PromoCodeForm :promoCode="promoCode" :categories="categories" :attributes="attributes" :coupons="coupons"/>
 </template>

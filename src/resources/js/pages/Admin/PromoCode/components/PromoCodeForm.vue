@@ -10,6 +10,7 @@ import {useForm} from "@inertiajs/vue3";
 import CategoryMultiselect from "@shopen/components/admin/form/input/Category/CategoryMultiselect/CategoryMultiselect.vue";
 import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
+import Select from "@shopen/components/admin/form/input/Select.vue";
 
 const props = defineProps(['promoCode', 'attributes', 'categories']);
 
@@ -55,6 +56,15 @@ const removeCode = (i) => {
 const addCode = () => {
     form.codes.push({code: null})
 }
+
+const discountTypeOptions = [
+    {id: 'percentage', value: 'Procentowa'},
+    {id: 'fixed_amount', value: 'Stała kwota'},
+]
+const appliesToOptions = [
+    {id: 'cart', value: 'Cały koszyk'},
+    {id: 'per_item', value: 'Każdy produkt osobno'},
+]
 </script>
 
 <template>
@@ -62,22 +72,12 @@ const addCode = () => {
         <Button @click="save" class="button-primary">Zapisz</Button>
     </ActionsPanel>
     <section>
-        <FormField label="Aktywny" required>
-            <Toggle class="pt-2" v-model="form.is_active"/>
+        <FormField label="Aktywny">
+            <Toggle v-model="form.is_active"/>
         </FormField>
 
         <FormField label="Nazwa" required>
             <Input v-model="form.name" required/>
-        </FormField>
-
-        <FormField label="Kody" required>
-            <div class="space-y-2">
-                <div class="flex gap-2" v-for="(code, i) in form.codes">
-                    <Input v-model="code.code" required/>
-                    <ActionButton type="cancel" @click="removeCode(i)"/>
-                </div>
-                <ActionButton type="add" @click="addCode">Dodaj kod</ActionButton>
-            </div>
         </FormField>
 
         <FormField label="Opis">
@@ -85,10 +85,7 @@ const addCode = () => {
         </FormField>
 
         <FormField label="Typ zniżki" required>
-            <select id="discount_type" v-model="form.discount_type">
-                <option value="percentage">Procentowa</option>
-                <option value="fixed_amount">Stała kwota</option>
-            </select>
+            <Select id="discount_type" v-model="form.discount_type" :options="discountTypeOptions"/>
         </FormField>
 
         <FormField label="Wartość zniżki" required>
@@ -96,10 +93,17 @@ const addCode = () => {
         </FormField>
 
         <FormField label="Zakres zastosowania" required>
-            <select id="applies_to" v-model="form.applies_to">
-                <option value="cart">Cały koszyk</option>
-                <option value="per_item">Każdy produkt osobno</option>
-            </select>
+            <Select id="applies_to" v-model="form.applies_to" :options="appliesToOptions"/>
+        </FormField>
+
+        <FormField label="Kategorie" v-if="form.applies_to === 'per_item'">
+            <CategoryMultiselect :categories="categories" v-model="form.categories"/>
+        </FormField>
+
+        <FormField label="Atrybuty" v-if="form.applies_to === 'per_item'">
+            <div>
+                <AttributeConditionsSelect :attributes="attributes" :conditions="form.attributes"/>
+            </div>
         </FormField>
 
         <FormField label="Maksymalna wartość zniżki" v-if="form.discount_type === 'percentage'">
@@ -119,11 +123,11 @@ const addCode = () => {
         </FormField>
 
         <FormField label="Tylko dla zalogowanych">
-            <Toggle class="pt-2" v-model="form.for_logged_users_only"/>
+            <Toggle v-model="form.for_logged_users_only"/>
         </FormField>
 
         <FormField label="Zastosuj dla przecenionych produktów" v-if="form.applies_to === 'per_item'">
-            <Toggle class="pt-2" v-model="form.applies_to_discounted"/>
+            <Toggle v-model="form.applies_to_discounted"/>
         </FormField>
 
         <FormField label="Limit użyć">
@@ -138,18 +142,34 @@ const addCode = () => {
             <DateInput v-model="form.valid_to"/>
         </FormField>
 
-        <FormField label="Kategorie">
-            <CategoryMultiselect :categories="categories" v-model="form.categories"/>
-        </FormField>
-
-        <FormField label="Atrybuty">
-            <div>
-                <AttributeConditionsSelect :attributes="attributes" :conditions="form.attributes"/>
+        <FormField label="Kody" required>
+            <div class="max-h-[500px] overflow-y-auto mb-4">
+                <div class="space-y-2">
+                    <table class="w-full max-w-[500px]">
+                        <thead>
+                            <tr>
+                                <th class="w-full pr-2 py-1 font-light text-xs uppercase">Kod</th>
+                                <th class="w-16 px-2 py-1 font-light text-xs uppercase">Ilość użyć</th>
+                                <th class="w-12 px-2 py-1 font-light text-xs uppercase">Usuń</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(code, i) in form.codes">
+                                <td class="pr-2">
+                                    <Input v-model="code.code" required/>
+                                </td>
+                                <td class="px-2 text-center">
+                                    {{ code.usage_count }}
+                                </td>
+                                <td class="px-2">
+                                    <ActionButton type="cancel" @click="removeCode(i)"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <ActionButton type="add" @click="addCode">Dodaj kod</ActionButton>
         </FormField>
     </section>
 </template>
-
-<style scoped>
-
-</style>

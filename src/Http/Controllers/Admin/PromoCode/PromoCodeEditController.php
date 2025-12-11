@@ -26,7 +26,7 @@ readonly class PromoCodeEditController
         $promoCode->load('coupons');
 
         return Inertia::render('Admin/PromoCode/Edit', [
-            'promoCode' => PromoCodeResource::make($promoCode),
+            'promoCode' => fn () => PromoCodeResource::make($promoCode),
             'attributes' => fn () => AttributeResource::collection($this->productAttributeRepository->getAll()),
             'categories' => fn () => $this->categoryRepository->getArray(),
         ]);
@@ -44,14 +44,14 @@ readonly class PromoCodeEditController
         $promoCode->update($data);
 
         $codeIds = array_filter(array_map(fn($code) => $code['id'] ?? null, $data['codes']));
-        $promoCode->codes()->whereNotIn('id', $codeIds)->delete();
+        $promoCode->coupons()->whereNotIn('id', $codeIds)->delete();
 
         foreach ($data['codes'] as $code) {
             if ($code['id'] ?? null) {
                 PromoCodeCoupon::query()->where('id', $code['id'])->update(['code' => $code['code']]);
                 continue;
             }
-            $promoCode->codes()->create($code);
+            $promoCode->coupons()->create($code);
         }
 
         return redirect()->to(route('admin.promo-codes.index'));
