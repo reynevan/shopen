@@ -5,6 +5,7 @@ import Input from "@shopen/components/admin/form/input/Input.vue";
 import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import {Link, useForm} from "@inertiajs/vue3";
 import Button from "@shopen/components/admin/ui/Button.vue";
+import PageTitle from "../../../../components/admin/ui/PageTitle.vue";
 
 const props = defineProps(['taxClass']);
 
@@ -34,6 +35,10 @@ const save = () => {
 
 <template>
     <ActionsPanel back-route="admin.tax-classes.index">
+        <template #title>
+            <PageTitle v-if="taxClass && taxClass.name">{{ taxClass.name }}</PageTitle>
+            <PageTitle v-else>Nowa stawka VAT</PageTitle>
+        </template>
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <div class="form">
@@ -49,10 +54,6 @@ const save = () => {
 
             <FormField label="Stawka VAT [%]" required>
                 <Input v-model="form.rate" type="number" required/>
-            </FormField>
-
-            <FormField label="Opis">
-                <Input v-model="form.description"/>
             </FormField>
         </section>
     </div>
