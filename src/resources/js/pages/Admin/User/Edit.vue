@@ -1,10 +1,7 @@
 <script setup>
 import AdminLayout from "@shopen/layouts/admin/AdminLayout.vue";
 import {Head} from "@inertiajs/vue3";
-import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import PageTitle from "@shopen/components/admin/ui/PageTitle.vue";
-import Button from "@shopen/components/admin/ui/Button.vue";
-import UsersTable from "./components/UsersTable.vue";
 import UserForm from "./components/UserForm.vue";
 
 defineOptions({layout: AdminLayout})
@@ -16,13 +13,12 @@ defineProps({
     defaultBillingAddress: {type: Object },
     shippingAddresses: {type: Array },
     billingAddresses: {type: Array },
+    tab: {type: String}
 });
 </script>
 <template>
     <Head title="Klient - edycja"/>
     <main>
-        <PageTitle>{{ user.first_name }} {{ user.last_name}}</PageTitle>
-
         <UserForm
             :user="user"
             :orders="orders"
@@ -30,6 +26,7 @@ defineProps({
             :defaultBillingAddress="defaultBillingAddress"
             :shippingAddresses="shippingAddresses"
             :billingAddresses="billingAddresses"
+            :tab="tab"
         />
     </main>
 </template>

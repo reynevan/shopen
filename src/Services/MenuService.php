@@ -13,8 +13,6 @@ use Shopen\Repositories\UrlRewriteRepository;
 
 class MenuService
 {
-    private const CACHE_TTL = 15 * 60;
-
     public function __construct(
         protected readonly UrlRewriteRepository $urlRewriteRepository,
         protected readonly CategoryAttributeRepository $categoryAttributeRepository
@@ -23,8 +21,7 @@ class MenuService
 
     public function getCategories()
     {
-
-        return Cache::remember('menu.categories', config('app.debug') ? 0 : self::CACHE_TTL, function () {
+        return Cache::rememberForever('menu.categories', function () {
             $urls = $this->getUrls();
 
             $categories = Category::query()

@@ -15,12 +15,10 @@ use Shopen\Models\Product\Product;
 
 class BannerService
 {
-    private const CACHE_TTL = 60 * 60;
-
     public function getForCategory(Category $category): array
     {
         $cacheKey = 'banners.category.' . $category->id;
-        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($category) {
+        return Cache::rememberForever($cacheKey, function () use ($category) {
             $placements = [
                 Placement::CATEGORY_PAGE_TOP->value,
                 Placement::CATEGORY_PAGE_BOTTOM->value,
@@ -46,7 +44,7 @@ class BannerService
     public function getForProduct(Product $product): array
     {
         $cacheKey = 'banners.product.' . $product->id;
-        return Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($product) {
+        return Cache::rememberForever($cacheKey, function () use ($product) {
             $placements = [
                 Placement::PRODUCT_PAGE_TOP,
                 Placement::PRODUCT_PAGE_BOTTOM,

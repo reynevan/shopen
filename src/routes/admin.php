@@ -128,6 +128,9 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
 
     Route::get('/uzytkownicy', [UserIndexController::class, 'index'])->name('users.index');
     Route::get('/uzytkownicy/{user}', [UserEditController::class, 'edit'])->name('users.edit');
+    Route::post('/uzytkownicy/{user}/adresy', [UserEditController::class, 'storeAddress'])->name('users.addresses.store');
+    Route::put('/uzytkownicy/{user}/adresy/{address}', [UserEditController::class, 'updateAddress'])->name('users.addresses.update');
+    Route::delete('/uzytkownicy/{user}/adresy/{address}', [UserEditController::class, 'destroyAddress'])->name('users.addresses.delete');
 
     Route::get('/marki', [BrandIndexController::class, 'index'])->name('brands.index');
     Route::post('/marki', [BrandCreateController::class, 'store'])->name('brands.store');

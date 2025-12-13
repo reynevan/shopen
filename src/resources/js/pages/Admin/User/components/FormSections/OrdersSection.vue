@@ -8,13 +8,16 @@
 </script>
 
 <template>
-    <table class="w-full table-primary">
+    <div v-if="!orders?.length" class="w-full flex justify-center text-neutral-500">
+        Użytkownik nie złożył jeszcze żadnego zamówienia
+    </div>
+    <table v-else class="w-full max-w-[500px] table-primary">
         <thead>
         <tr>
             <th class="text-left">Numer</th>
             <th class="text-right">Status</th>
             <th class="text-right">Wartość</th>
-            <th class="text-right">Akcja</th>
+            <th class="text-right w-[60px]">Akcje</th>
         </tr>
         </thead>
         <tbody>

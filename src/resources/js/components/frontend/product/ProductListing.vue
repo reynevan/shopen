@@ -1,5 +1,5 @@
 <script setup>
-import {ref, computed, watch, onBeforeUnmount, onMounted, onUnmounted} from 'vue'
+import {ref, computed, onBeforeUnmount, onMounted, onUnmounted} from 'vue'
 import {useProductFiltering} from "@shopen/composables/useProductFiltering.js";
 
 import OpenFiltersButton from "@shopen/components/frontend/category/Filters/OpenFiltersButton.vue";
@@ -10,8 +10,8 @@ import SortSelect from "@shopen/components/frontend/category/SortSelect.vue";
 import Pagination from "@shopen/components/frontend/ui/Pagination.vue";
 import {trackSelectItem, trackViewItemList} from "../../../utils/ga4";
 import {router} from "@inertiajs/vue3";
-import Button from "../ui/Button.vue";
-import IconX from "../../icons/IconX.vue";
+import Button from "@shopen/components/frontend/ui/Button.vue";
+import IconX from "@shopen/components/icons/IconX.vue";
 import { useScrollDirection } from '@shopen/composables/useScrollDirection.js'
 import {useBodyScrollLock} from "../../../composables/useBodyScrollLock";
 

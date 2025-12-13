@@ -44,10 +44,18 @@ const stepPrice = computed(() => props.priceRange.max < 100 ? 1 : props.priceRan
 
 const { getActiveFilters } = useProductFiltering(props)
 
-const isFilterActive = (attributeCode, optionId) => {
-    const activeValue = props.activeFilters[attributeCode]
-    if (!activeValue || !Array.isArray(activeValue.options)) return false
-    return activeValue.options.some((option) => option.id === optionId)
+const activeOptionIdsByAttr = computed(() => {
+    const out = Object.create(null)
+
+    for (const [attr, data] of Object.entries(props.activeFilters || {})) {
+        out[attr] = new Set((data?.options || []).map(o => o.id))
+    }
+
+    return out
+})
+
+const isFilterActive = (attributeSlug, optionId) => {
+    return activeOptionIdsByAttr.value[attributeSlug]?.has(optionId) ?? false
 }
 
 const toggleFilter = (attributeCode, optionSlug) => {
@@ -187,7 +195,7 @@ onUnmounted(() => {
                                 class="flex items-center space-x-3 cursor-pointer hover:bg-accent p-2 transition-colors whitespace-nowrap">
                                 <Checkbox
                                     :id="`${attribute.slug}_${option.slug}`"
-                                    :checked="isFilterActive(attribute.code, option.id)"
+                                    :checked="isFilterActive(attribute.slug, option.id)"
                                     @change="toggleFilter(attribute.slug, option.slug)"
                                 />
                                 <span v-if="option.color"

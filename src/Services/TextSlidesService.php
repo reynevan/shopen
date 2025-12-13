@@ -11,7 +11,7 @@ class TextSlidesService
 
     public function getAll()
     {
-        return Cache::remember(self::CACHE_KEY, config('app.debug') ? 0 : 60 * 24, function () {
+        return Cache::rememberForever(self::CACHE_KEY, function () {
            return TextSlide::query()->get();
         });
     }

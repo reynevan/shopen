@@ -22,7 +22,6 @@ class CategoryResource extends JsonResource
             'image_url_desktop' => $this->image_path_desktop ? Storage::url($this->image_path_desktop) : null,
             'image_url_mobile' => $this->image_path_mobile ? Storage::url($this->image_path_mobile) : null,
             'children' => CategoryResource::collection($this->whenLoaded('children')),
-            'url' => $this->resource->getUrl(),
             'seo' => $this->getSeoForWebsite(1, true)
         ];
     }

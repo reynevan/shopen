@@ -131,7 +131,6 @@ class SearchServiceResult
                 ->toArray()
             ];
         }
-
         return $filters;
     }
 

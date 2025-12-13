@@ -8,6 +8,7 @@ const props = defineProps({
     disabled: { type: Boolean, default: false },
     label: { type: String },
     value: { type: String },
+    checked: { type: Boolean, default: false },
 })
 const emits = defineEmits(["change"])
 </script>
@@ -19,6 +20,7 @@ const emits = defineEmits(["change"])
             <input type="checkbox"
                    class="checkbox-input peer cursor-pointer transition-all appearance-none"
                    :id="id"
+                   :checked="checked"
                    @change="emits('change')"
                    v-model="model"
                    :required="required"

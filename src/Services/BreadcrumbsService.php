@@ -12,8 +12,6 @@ use Shopen\Models\UrlRewrite;
 
 class BreadcrumbsService
 {
-    const CACHE_TTL = 60 * 60;
-
     protected array $breadcrumbs = [];
 
     protected array $registeredRoutes = [];
@@ -71,7 +69,7 @@ class BreadcrumbsService
 
         $breadcrumbs = $this->finalize();
         if ($saveInCache) {
-            Cache::put($this->getPageCacheKey(), $breadcrumbs, self::CACHE_TTL);
+            Cache::forever($this->getPageCacheKey(), $breadcrumbs);
         }
         return $breadcrumbs;
     }
@@ -102,7 +100,7 @@ class BreadcrumbsService
     protected function generateForCategory(Category $category): void
     {
         $cacheKey = 'breadcrumbs.category.' . $category->id;
-        $categoryPath = Cache::remember($cacheKey, config('app.debug') ? 0 : self::CACHE_TTL, function () use ($category) {
+        $categoryPath = Cache::rememberForever($cacheKey, function () use ($category) {
             $path = [];
             $current = $category;
             while ($current) {

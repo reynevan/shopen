@@ -3,7 +3,7 @@
 namespace Shopen\Http\Controllers\Frontend\Api;
 
 use Shopen\Http\Resources\Category\CategoryResource;
-use Shopen\Http\Resources\Product\ProductSearchResultResource;
+use Shopen\Http\Resources\Product\List\ProductResource;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Repositories\Product\ProductRepository;
 use Shopen\Services\SearchService\SearchService;
@@ -35,7 +35,7 @@ class SearchController
         $categories = $categoriesSearchResult->categories();
 
         return [
-            'products' => ProductSearchResultResource::collection($products),
+            'products' => ProductResource::collection($products),
             'categories' => CategoryResource::collection($categories)
         ];
     }

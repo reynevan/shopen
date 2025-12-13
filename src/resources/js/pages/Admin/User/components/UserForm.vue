@@ -3,20 +3,22 @@ import ActionsPanel from "@shopen/components/admin/ui/ActionsPanel.vue";
 import Button from "@shopen/components/admin/ui/Button.vue";
 import FormField from "@shopen/components/admin/form/FormField.vue";
 import Input from "@shopen/components/admin/form/input/Input.vue";
-import {useForm, Link} from "@inertiajs/vue3";
+import {useForm} from "@inertiajs/vue3";
 import FormMenu from "@shopen/components/admin/form/menu/FormMenu.vue";
 import {ref} from "vue";
 import AddressesSection from "./FormSections/AddressesSection.vue";
 import OrdersSection from "./FormSections/OrdersSection.vue";
+import PageTitle from "../../../../components/admin/ui/PageTitle.vue";
 
 
 const props = defineProps({
     user: {type: Object, required: true},
     orders: {type: Array},
-    defaultShippingAddress: {type: Object },
-    defaultBillingAddress: {type: Object },
-    shippingAddresses: {type: Array },
-    billingAddresses: {type: Array },
+    defaultShippingAddress: {type: Object},
+    defaultBillingAddress: {type: Object},
+    shippingAddresses: {type: Array},
+    billingAddresses: {type: Array},
+    tab: {type: String}
 })
 
 const form = useForm({
@@ -40,7 +42,7 @@ const sections = [
     }
 ]
 
-const activeSection = ref('general');
+const activeSection = ref(props.tab ?? 'general');
 
 const onChangeSection = (section) => {
     activeSection.value = section;
@@ -53,11 +55,15 @@ const save = () => {
 
 <template>
     <ActionsPanel back-route="admin.users.index">
+        <template #title>
+            <PageTitle v-if="user && user.id">{{ user.first_name }} {{ user.last_name }}</PageTitle>
+            <PageTitle v-else>Nowy użytkownik</PageTitle>
+        </template>
         <Button @click="save" class="button-primary">Zapisz</Button>
     </ActionsPanel>
     <div class="flex items-start gap-6">
         <div class="sticky top-12">
-            <FormMenu :sections="sections" @onSelect="onChangeSection"/>
+            <FormMenu :sections="sections" @onSelect="onChangeSection" :activeSection="activeSection"/>
         </div>
         <div class="border-l border-light pl-6 w-full">
 
@@ -85,14 +91,16 @@ const save = () => {
             </section>
 
             <section v-show="activeSection === 'addresses'">
-                <AddressesSection :defaultShippingAddress="defaultShippingAddress"
-                                  :defaultBillingAddress="defaultBillingAddress"
-                                  :shippingAddresses="shippingAddresses"
-                                  :billingAddresses="billingAddresses"/>
+                <AddressesSection
+                    :user="user"
+                    :defaultShippingAddress="defaultShippingAddress"
+                    :defaultBillingAddress="defaultBillingAddress"
+                    :shippingAddresses="shippingAddresses"
+                    :billingAddresses="billingAddresses"/>
             </section>
 
             <section v-show="activeSection === 'orders'">
-                <OrdersSection :orders="orders" />
+                <OrdersSection :orders="orders"/>
             </section>
 
         </div>

@@ -1,16 +1,17 @@
 <?php
 
-namespace Shopen\Http\Resources\Product;
+namespace Shopen\Http\Resources\Product\List;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Shopen\Http\Resources\Brand\BrandResource;
-use Shopen\Http\Resources\MediaResource;
-use Shopen\Http\Resources\Product\Review\ProductReviewResource;
+use Shopen\Http\Resources\Brand\BaseBrandResource;
+use Shopen\Http\Resources\Product\ProductPriceResource;
+use Shopen\Http\Resources\Seo\SeoDetailResource;
 use Shopen\Services\ShippingService;
 use Shopen\Services\ShoppingListService;
 
-class ProductSearchResultResource extends JsonResource
+class ProductResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -22,17 +23,23 @@ class ProductSearchResultResource extends JsonResource
         $data = [
             'id' => $this->id,
             'sku' => $this->sku,
-            'brand' => BrandResource::make($this->whenLoaded('brand')),
             'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
             'url' => $this->getUrl(),
             'in_stock' => $this->isInStock(),
             'images' => $this->images,
+            'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource),
+            'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
+            'is_configurable' => $this->isConfigurable(),
+            'is_new' => $this->isNew(),
         ];
         if (config('shopen.product.reviews.enabled')) {
             $data['rating'] = $this->rating;
             $data['reviews_count'] = $this->reviews_count;
         }
         foreach ($this->resource->getCustomAttributes() as $key => $value) {
+            if (is_null($value)) {
+                continue;
+            }
             $data['attributes'][$key] = $value;
         }
         return $data;

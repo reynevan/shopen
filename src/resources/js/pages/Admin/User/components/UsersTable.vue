@@ -5,6 +5,8 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {router, usePage, Link} from "@inertiajs/vue3";
 import Input from "@shopen/components/admin/form/input/Input.vue";
+import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
+import ActionButton from "../../../../components/admin/ui/ActionButton.vue";
 
 defineProps(['users'])
 
@@ -56,7 +58,7 @@ const onSearch = () => {
         paginated
         :meta="users.meta"
     >
-        <TableColumn field="id" label="ID" sortable v-slot="data">
+        <TableColumn field="id" label="ID" sortable v-slot="data" width="75px">
             {{ data.row.id }}
         </TableColumn>
 
@@ -72,12 +74,10 @@ const onSearch = () => {
             {{ data.row.last_name }}
         </TableColumn>
 
-
-
         <TableColumn field="-" label="Akcje" v-slot="data" width="75px">
-            <Link :href="route('admin.users.edit', data.row.id)">Edycja</Link>
+            <ActionButtons>
+                <ActionButton type="view" :href="route('admin.users.edit', data.row.id)"/>
+            </ActionButtons>
         </TableColumn>
-
-
     </DataTable>
 </template>

@@ -59,10 +59,19 @@
         @apply border-b;
 
         thead {
-            @apply bg-secondary text-white;
+            @apply bg-neutral-600 text-white;
 
             th {
                 @apply text-sm text-left py-2 px-2 font-normal;
+
+
+                &:first-child {
+                    @apply border-x;
+                }
+
+                &:not(:first-child) {
+                    @apply border-r;
+                }
             }
         }
         tbody {

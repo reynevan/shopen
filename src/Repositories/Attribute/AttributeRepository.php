@@ -5,6 +5,7 @@ namespace Shopen\Repositories\Attribute;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Cache;
 use Shopen\Models\Attribute\Attribute;
 
 class AttributeRepository
@@ -17,10 +18,12 @@ class AttributeRepository
 
     public function getByCode($code)
     {
-        return static::ATTRIBUTE_MODEL::query()->where('code', $code)->first();
+        return Cache::rememberForever(static::ATTRIBUTE_MODEL . '.attributes.' . $code, function () use ($code) {
+            return static::ATTRIBUTE_MODEL::query()->where('code', $code)->first();
+        });
     }
 
-    public function exists($code)
+    public function exists($code): bool
     {
         if (!isset($this->attributeCodes[self::ATTRIBUTE_MODEL]) || !count($this->attributeCodes[self::ATTRIBUTE_MODEL])) {
             $this->attributeCodes[self::ATTRIBUTE_MODEL] = static::ATTRIBUTE_MODEL::query()->select(['code'])->get()->pluck('code')->toArray();
@@ -92,17 +95,16 @@ class AttributeRepository
 
     public function getFilterable($withOptions = false): Collection
     {
-        if (isset($this->filterable[static::ATTRIBUTE_MODEL][$withOptions])) {
+        return Cache::rememberForever(static::ATTRIBUTE_MODEL . '.attributes.filterable.' . ($withOptions ? 'options' : 'no-options'), function () use ($withOptions) {
+            $this->filterable[static::ATTRIBUTE_MODEL][$withOptions] = static::ATTRIBUTE_MODEL::query()
+                ->when($withOptions, function (Builder $query) {
+                    $query->with(['options']);
+                })
+                ->where('is_filterable', true)
+                ->whereIn('frontend_type', ['multiselect', 'select'])
+                ->get();
             return $this->filterable[static::ATTRIBUTE_MODEL][$withOptions];
-        }
-        $this->filterable[static::ATTRIBUTE_MODEL][$withOptions] = static::ATTRIBUTE_MODEL::query()
-            ->when($withOptions, function (Builder $query) {
-                $query->with(['options']);
-            })
-            ->where('is_filterable', true)
-            ->whereIn('frontend_type', ['multiselect', 'select'])
-            ->get();
-        return $this->filterable[static::ATTRIBUTE_MODEL][$withOptions];
+        });
     }
 
     public function getSortable(): Collection
