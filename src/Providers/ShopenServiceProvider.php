@@ -32,6 +32,7 @@ use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
 use Shopen\Jobs\RecalculateDiscountPrices;
 use Shopen\Listeners\MergeGuestShoppingLists;
 use Shopen\Models\Address;
+use Shopen\Models\Brand\Brand;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Product;
@@ -179,6 +180,7 @@ class ShopenServiceProvider  extends ServiceProvider
         Relation::morphMap([
             'product' => Product::class,
             'category' => Category::class,
+            'brand' => Brand::class,
         ]);
 
 

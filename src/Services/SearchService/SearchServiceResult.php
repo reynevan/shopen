@@ -31,7 +31,7 @@ class SearchServiceResult
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
-            ->with(['price', 'urlRewrite', 'brand'])
+            ->with(['price'])
             ->whereIn('id', $resultIds)
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
@@ -42,6 +42,7 @@ class SearchServiceResult
             foreach ($source['list_attributes'] ?? [] as $code => $value) {
                 $product->setCustomAttribute($code, $value);
             }
+            $product->url = $source['url'] ?? null;
             if ($reviewsEnabled) {
                 $product->rating = round((float)$source['rating'] ?? 0, 2);
                 $product->reviews_count = $source['reviews_count'] ?? 0;

@@ -3,6 +3,7 @@
 namespace Shopen\Services;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cookie;
 use Shopen\Enums\Address\AddressType;
@@ -11,6 +12,7 @@ use Shopen\Models\Cart\Cart;
 use Shopen\Models\Cart\CartAddress;
 use Shopen\Models\PromoCode\PromoCode;
 use Shopen\Models\PromoCode\PromoCodeCoupon;
+use Shopen\Repositories\Product\ProductAttributeRepository;
 
 class CartService
 {
@@ -29,12 +31,24 @@ class CartService
         $user = Auth::user();
         if ($user) {
             $this->cart = Cart::query()
-                ->with(['items', 'items.product', 'items.product.urlRewrite'])
+                ->with(['items', 'items.product', 'items.product.urlRewrite', 'items.product.media'])
                 ->where('user_id', $user->id)
                 ->first();
+            $this->loadProductsNames();
             $this->mergeGuestCartIfExists();
         } else {
             $this->setGuestCartIfExists();
+        }
+    }
+
+    protected function loadProductsNames(): void
+    {
+        if (!$this->cart->items) {
+            return;
+        }
+        $names = app(ProductAttributeRepository::class)->getValues('name', Arr::pluck($this->cart->items, 'product.id'));
+        foreach ($this->cart->items as $item) {
+            $item->product->name = $names[$item->product->id];
         }
     }
 

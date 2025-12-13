@@ -11,6 +11,7 @@ use Shopen\Models\Traits\HasCustomAttributes;
 use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
 use Shopen\Models\Traits\HasSeoDetails;
+use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -168,6 +169,15 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
         $path[] = $this->id;
         $this->path = implode('/', $path);
         $this->save();
+    }
+
+    public function loadAttributesFromCache($attributeCodes): static
+    {
+        $repo = app(CategoryAttributeRepository::class);
+        foreach ($attributeCodes as $code) {
+            $this->customAttributes[$code] = $repo->getAttributeValue($this, $code);
+        }
+        return $this;
     }
 
     protected function getDefaultSeoTitle(): string

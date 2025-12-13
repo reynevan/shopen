@@ -24,7 +24,7 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'sku' => $this->sku,
             'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
-            'url' => $this->getUrl(),
+            'url' => $this->url,
             'in_stock' => $this->isInStock(),
             'images' => $this->images,
             'free_shipping' => app(ShippingService::class)->isFreeShippingAvailable($this->resource),

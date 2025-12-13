@@ -97,6 +97,7 @@ class Reindex extends Command
         ]);
         $mapping->text('description', ['analyzer' => 'polish']);
         $mapping->text('sku');
+        $mapping->text('url');
         $mapping->float('price');
         $mapping->boolean('in_stock');
         $mapping->integer('stock_qty');

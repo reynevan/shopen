@@ -17,7 +17,6 @@ use Shopen\Services\ShoppingListService;
 
 readonly class CategoryShowController
 {
-
     public function __construct(
         protected ProductAttributeRepository $productAttributeRepository,
         protected ProductRepository          $productRepository,
@@ -27,15 +26,14 @@ readonly class CategoryShowController
         protected FiltersService             $filtersService,
         protected ShoppingListService        $shoppingListService
     )
-    {
-    }
+    {}
 
     public function index(Category $category): Response
     {
-
         if (request()->query('sort')) {
             $this->productSortRegistry->setDefault(request()->query('sort'));
         }
+
         $searchResult = $this
             ->searchService
             ->setCategoryId($category->id)
@@ -46,11 +44,7 @@ readonly class CategoryShowController
 
         $products = $searchResult->paginatedProducts();
 
-        $category->loadAttributes(['description', 'name', 'is_active']);
-
-        if (!$category->getCustomAttribute('is_active')) {
-            abort(404);
-        }
+        $category->loadAttributesFromCache(['description', 'name']);
 
         session(['last_category_page' => url()->current()]);
 

@@ -2,12 +2,12 @@
 
 namespace Shopen\Repositories\Category;
 
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Collection;
 use Shopen\Models\Category\Category;
 
 class CategoryRepository
 {
-    public function getAll($maxChildrenLevel = false)
+    public function getAll($maxChildrenLevel = false): Collection
     {
         return Category::query()
             ->when($maxChildrenLevel !== false, function ($query) use ($maxChildrenLevel) {
@@ -50,22 +50,19 @@ class CategoryRepository
             }
         }
 
-        // Funkcja rekurencyjna do ustawiania has_selected
         $this->setHasSelected($categoryMap, $selectedCategoryId);
         return $data;
     }
 
-    private function setHasSelected(&$categoryMap, $selectedCategoryId)
+    private function setHasSelected(&$categoryMap, $selectedCategoryId): void
     {
         if ($selectedCategoryId === null) {
             return;
         }
 
-        // Funkcja rekurencyjna do sprawdzania czy kategoria ma wybraną podkategorię
         $hasSelectedChild = function($categoryId) use (&$categoryMap, &$hasSelectedChild, $selectedCategoryId) {
             $category = &$categoryMap[$categoryId];
 
-            // Sprawdzamy wszystkie dzieci
             foreach ($category['children'] as &$child) {
                 if ($child['is_selected'] || $hasSelectedChild($child['id'])) {
                     return true;
@@ -74,13 +71,12 @@ class CategoryRepository
             return false;
         };
 
-        // Ustawiamy has_selected dla wszystkich kategorii
         foreach ($categoryMap as $categoryId => &$category) {
             $category['has_selected'] = $hasSelectedChild($categoryId);
         }
     }
 
-    public function getAllByIds($ids): \Illuminate\Database\Eloquent\Collection
+    public function getAllByIds($ids): Collection
     {
         return Category::query()->whereIn('id', $ids)->get();
     }

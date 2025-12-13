@@ -10,6 +10,7 @@ use Shopen\Http\Controllers\Frontend\Product\ProductShowController;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
 use Shopen\Models\UrlRewrite;
+use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Services\UrlService;
 
 class Dispatcher
@@ -36,12 +37,13 @@ class Dispatcher
             return $controller->index(...$parameters);
         }
         if ($urlRewrite->entity_type === 'category') {
-            $controller = $this->container->make(CategoryShowController::class);
             $category = $urlRewrite->entity;
-            $parameters = $this->getParameters([$category], $controller, 'index');
-            return $controller->index(...$parameters);
+            if (app(CategoryAttributeRepository::class)->getAttributeValue($category, 'is_active')) {
+                $controller = $this->container->make(CategoryShowController::class);
+                $parameters = $this->getParameters([$category], $controller, 'index');
+                return $controller->index(...$parameters);
+            }
         }
-
     }
 
     protected function getParameters(array $parameters, $instance, $method)

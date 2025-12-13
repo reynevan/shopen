@@ -9,6 +9,10 @@ class InstagramPostService
 {
     public function getLatest($limit): Collection
     {
-        return InstagramPost::query()->orderBy('timestamp', 'desc')->limit($limit)->get();
+        return InstagramPost::query()
+            ->with(['media'])
+            ->orderBy('timestamp', 'desc')
+            ->limit($limit)
+            ->get();
     }
 }

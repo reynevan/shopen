@@ -24,6 +24,7 @@ trait Searchable
             'description' => $this->getCustomAttribute('description'),
             'visible_individually' => $this->visible_individually,
             'sku' => $this->sku,
+            'url' => $this->getUrl(),
             'category_id' => $this->categories->pluck('id')->toArray(),
             'brand_id' => $this->brand_id ?? ($this->parent ? $this->parent->brand_id : null),
             'in_stock' => $this->isInStock(),

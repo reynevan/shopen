@@ -47,6 +47,9 @@ class BrandRepository
 
     public function getAllByIds($ids): Collection
     {
+        if (!$ids || (is_array($ids) && empty($ids))) {
+            return new Collection();
+        }
         return Brand::query()->whereIn('id', $ids)->orderBy('name')->get();
     }
 }
