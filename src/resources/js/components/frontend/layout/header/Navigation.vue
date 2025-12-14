@@ -53,7 +53,7 @@ const closeMenu = () => {
             <div
                 class="nav-link border-b-2 group-hover/parent:border-black border-transparent transition-colors duration-500 px-4 py-2"
                 :class="category.subcategories.length > 0 ? 'has-subcategories rounded-t-md' : 'rounded-md'">
-                <Link :href="category.url" class="navigation-label">
+                <Link prefetch :href="category.url" class="navigation-label">
                     {{ category.name }}
                 </Link>
             </div>
@@ -69,7 +69,8 @@ const closeMenu = () => {
                             :key="subcategory.id"
                             @mouseleave="closeLevel3"
                             @mouseenter="setActiveLevel3(subcategory)">
-                            <Link :href="subcategory.url"
+                            <Link prefetch
+                                  :href="subcategory.url"
                                   :class="activeLevel3 === subcategory.id ? 'bg-accent' : ''"
                                   class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-accent flex items-center justify-between">
                                 <span>{{ subcategory.name }}</span>
@@ -81,7 +82,8 @@ const closeMenu = () => {
                                     'opacity-0 pointer-events-none'"
                                  class="absolute left-1/3 w-1/3 min-h-full top-0 transition-opacity ease-out duration-200">
                                 <div v-for="subcategory2 in subcategory.subcategories" :key="subcategory2.id">
-                                    <Link :href="subcategory2.url"
+                                    <Link prefetch
+                                          :href="subcategory2.url"
                                           class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-accent">
                                         {{ subcategory2.name }}
                                     </Link>

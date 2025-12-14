@@ -17,13 +17,13 @@ import Logo from "@shopen/components/frontend/ui/Logo.vue";
                 <div class="col-title">Promocje i inspiracje</div>
                 <div class="col-links">
                     <div>
-                        <Link class="footer-link" href="/">Kategoria 1</Link>
+                        <Link prefetch class="footer-link" href="/">Kategoria 1</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/">Kategoria 2</Link>
+                        <Link prefetch class="footer-link" href="/">Kategoria 2</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/">Kategoria 3</Link>
+                        <Link prefetch class="footer-link" href="/">Kategoria 3</Link>
                     </div>
                 </div>
             </div>
@@ -31,19 +31,19 @@ import Logo from "@shopen/components/frontend/ui/Logo.vue";
                 <div class="col-title">Shopen</div>
                 <div class="col-links">
                     <div>
-                        <Link class="footer-link" href="/o-nas">O nas</Link>
+                        <Link prefetch class="footer-link" href="/o-nas">O nas</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/kontakt">Kontakt</Link>
+                        <Link prefetch class="footer-link" href="/kontakt">Kontakt</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" :href="route('terms-and-conditions')">Regulamin</Link>
+                        <Link prefetch class="footer-link" :href="route('terms-and-conditions')">Regulamin</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" :href="route('shipping')">Dostawy</Link>
+                        <Link prefetch class="footer-link" :href="route('shipping')">Dostawy</Link>
                     </div>
                     <div>
-                        <Link class="footer-link" href="/polityka-cookies">Polityka cookies</Link>
+                        <Link prefetch class="footer-link" href="/polityka-cookies">Polityka cookies</Link>
                     </div>
                 </div>
             </div>

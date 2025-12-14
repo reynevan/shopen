@@ -42,6 +42,7 @@ class MenuService
                     continue;
                 }
                 $map[$category->id] = [
+                    'id' => $category->id,
                     'subcategories' => [],
                     'image' => $category->getMenuMedia(),
                     'url' => $urls[$category->id] ?? '',

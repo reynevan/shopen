@@ -104,7 +104,7 @@ const updateItem = debounce((item, val) => {
                 </div>
                 <div class="grow ml-2">
                     <div class="item-title">
-                        <Link :href="item.product.url" class="hover:text-black transition-colors">
+                        <Link :href="item.product.url" prefetch class="hover:text-black transition-colors">
                             {{ item.product.name }}
                         </Link>
                     </div>
@@ -142,7 +142,7 @@ const updateItem = debounce((item, val) => {
                 <div class="mr-2">Razem:</div>
                 <div>{{ cartStore.subtotal }}</div>
             </div>
-            <Link :href="route('cart.index')" @click="closeMinicart">
+            <Link :href="route('cart.index')" prefetch @click="closeMinicart">
                 <Button type="primary" size="lg" full-width>
                     Koszyk
                 </Button>

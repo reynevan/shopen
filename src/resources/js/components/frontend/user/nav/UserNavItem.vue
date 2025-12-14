@@ -31,7 +31,7 @@ const isActive = computed(() => {
 
 <template>
     <li class="rounded hover:bg-accent transition-all" :class="{ 'bg-accent': isActive }">
-        <Link class="py-2 px-4 flex items-center gap-2 w-full h-full" :href="route(routeName)">
+        <Link prefetch class="py-2 px-4 flex items-center gap-2 w-full h-full" :href="route(routeName)">
             <slot v-if="isActive" name="iconActive" />
             <slot v-else name="iconInactive" />
             <span>{{ label }}</span>

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
 use Shopen\Console\Commands\CreateAdminUser;
@@ -182,6 +183,8 @@ class ShopenServiceProvider  extends ServiceProvider
             'category' => Category::class,
             'brand' => Brand::class,
         ]);
+
+        Vite::prefetch(concurrency: 6);
     }
 
 }

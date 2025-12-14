@@ -15,7 +15,7 @@ const auth = useAuthStore();
 
     <div class="absolute top-[calc(100%-3px)] z-50 hidden group-hover:block bg-white py-2 shadow-lg border border-light rounded-b-lg rounded-r-lg">
         <div v-if="!auth.isLoggedIn" class="flex flex-col px-4">
-            <Link :href="route('login')" title="zaloguj się">
+            <Link prefetch :href="route('login')" title="zaloguj się">
                 <Button type="secondary" class="whitespace-nowrap" full-width :shadow="false">
                     Zaloguj się
                 </Button>
@@ -29,7 +29,7 @@ const auth = useAuthStore();
                 <div class="w-[60px] h-[1px] border-b border-light"></div>
             </div>
 
-            <Link :href="route('sign-up')" title="Zarejestruj się">
+            <Link prefetch :href="route('sign-up')" title="Zarejestruj się">
                 <Button type="primary" class="whitespace-nowrap" full-width :shadow="false">
                     Załóż konto
                 </Button>
@@ -37,7 +37,7 @@ const auth = useAuthStore();
         </div>
         <ul v-if="auth.isLoggedIn">
             <li>
-                <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                <Link prefetch class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
                       title="Zamówienia"
                       :href="route('user.orders.index')">
                     <IconReceipt/>
@@ -45,7 +45,7 @@ const auth = useAuthStore();
                 </Link>
             </li>
             <li>
-                <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                <Link prefetch class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
                       title="Dane do zamówień"
                       :href="route('user.addresses.index')">
                     <IconLocation/>
@@ -53,7 +53,7 @@ const auth = useAuthStore();
                 </Link>
             </li>
             <li>
-                <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                <Link prefetch class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
                       title="Listy zakupowe"
                       :href="route('user.shopping-lists.index')">
                     <IconHeart/>
@@ -61,7 +61,7 @@ const auth = useAuthStore();
                 </Link>
             </li>
             <li>
-                <Link class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
+                <Link prefetch class="flex items-center gap-2 whitespace-nowrap py-2 px-4 hover:bg-accent transition-all"
                       title="Ustawienia konta"
                       :href="route('user.settings.index')">
                     <IconSettings/>

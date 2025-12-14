@@ -22,6 +22,7 @@ const showReviews = computed(() => typeof props.product.rating !== 'undefined' |
     <div class="product-thumbnail-wrapper relative flex justify-center w-full group"
          :class="[product.in_stock ? 'in-stock' : 'out-of-stock']">
         <Link :href="product.url"
+              prefetch
               @click="emits('onClick')"
               class="product-thumbnail relative flex flex-col justify-between w-full max-w-[350}px] sm:max-w-[250px] gap-2">
             <div>
