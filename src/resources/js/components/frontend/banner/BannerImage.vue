@@ -39,7 +39,7 @@
         :srcset="computedSrcset"
         :alt="banner.alt_text"
         :loading="loading"
-        :fetchpriority="fetchpriority"
+        :fetchpriority="fetchPriority"
         :width="banner.image_size_desktop?.width"
         :height="banner.image_size_desktop?.height"/>
 </template>

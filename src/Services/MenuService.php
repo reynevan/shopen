@@ -41,13 +41,12 @@ class MenuService
                 if ($category->level === 0 && !($menuDisplayValues[$category->id] ?? false)) {
                     continue;
                 }
-                $category->subcategories = [];
-                $category->is_current = false;//$category->id == $currentCategoryId;
-                $category->has_current = false;
-                $category->image = $category->getMenuMedia();
-                $category->url = $urls[$category->id] ?? '';
-                $category->setCustomAttribute('name', $names[$category->id] ?? null);
-                $map[$category->id] = $category;
+                $map[$category->id] = [
+                    'subcategories' => [],
+                    'image' => $category->getMenuMedia(),
+                    'url' => $urls[$category->id] ?? '',
+                    'name' => $names[$category->id] ?? '',
+                ];
             }
 
             $tree = [];
@@ -55,13 +54,10 @@ class MenuService
             foreach ($categories as $category) {
                 if (!isset($map[$category->id])) { continue; }
                 if ($category->parent_id && isset($map[$category->parent_id])) {
-                    if ($category->is_current || $category->has_current) {
-                        $map[$category->parent_id]->has_current = true;
-                    }
-                    if (isset($map[$category->parent_id]->subcategories) && count($map[$category->parent_id]->subcategories) >= config('shopen.menu.categories.level_1_max')) {
+                    if (isset($map[$category->parent_id]['subcategories']) && count($map[$category->parent_id]['subcategories']) >= config('shopen.menu.categories.level_1_max')) {
                         continue;
                     }
-                    $map[$category->parent_id]->subcategories = array_merge($map[$category->parent_id]->subcategories ?? [], [$map[$category->id]]);
+                    $map[$category->parent_id]['subcategories'] = array_merge($map[$category->parent_id]['subcategories'] ?? [], [$map[$category->id]]);
                 } elseif (intval($category->level) === 0) {
                     $tree[] = $map[$category->id];
                 }
