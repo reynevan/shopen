@@ -31,6 +31,6 @@ defineProps(['orders'])
             <OrderThumbnail :order="order"/>
         </div>
 
-        <Pagination :links="orders.meta.links" :only="['orders']"/>
+        <Pagination :meta="orders.meta" :links="orders.meta.links" :only="['orders']"/>
     </div>
 </template>

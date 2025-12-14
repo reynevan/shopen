@@ -29,6 +29,7 @@ trait Searchable
             'brand_id' => $this->brand_id ?? ($this->parent ? $this->parent->brand_id : null),
             'in_stock' => $this->isInStock(),
             'price' => $this->getSearchPrice(),
+            'omnibus_price' => $this->getSearchOmnibusPrice(),
             'rating' => $this->rating,
             'reviews_count' => $this->reviews_count,
             'popularity' => $this->getPopularity(),
@@ -75,6 +76,15 @@ trait Searchable
             return $this->getPriceFrom()?->final_price;
         } else {
             return $this->getFinalPrice();
+        }
+    }
+
+    protected function getSearchOmnibusPrice()
+    {
+        if ($this->isConfigurable()) {
+            return $this->getPriceFrom()?->omnibus_price;
+        } else {
+            return $this->price?->omnibus_price ?? null;
         }
     }
 

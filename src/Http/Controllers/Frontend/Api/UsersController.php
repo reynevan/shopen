@@ -71,7 +71,7 @@ class UsersController extends Controller
             $this->cartService->setAddress($address, AddressType::SHIPPING);
         }
 
-        return back();
+        return back()->with('success', 'Adres został zapisany');
     }
 
     public function updateBillingAddress(Address $address, UpdateShippingAddressRequest $request): RedirectResponse

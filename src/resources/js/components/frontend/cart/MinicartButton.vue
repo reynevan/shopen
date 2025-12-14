@@ -3,13 +3,15 @@ import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import {useCoverStore} from "@shopen/stores/cover.js";
 import IconCart from "@shopen/components/icons/IconCart.vue";
 import {usePage} from "@inertiajs/vue3";
+import {useCartStore} from "../../../stores/cart";
 import {computed} from "vue";
 
 const minicart = useMiniCartStore();
+const cartStore = useCartStore()
 const cover = useCoverStore();
-
 const page = usePage();
-const itemsCount = computed(() => page.props.cart.items?.reduce((acc, item) => acc + item.quantity, 0));
+
+const itemsCount = computed(() => cartStore.items?.reduce((acc, item) => acc + item.quantity, 0));
 
 cover.onClose(() => {
     minicart.isOpened = false;

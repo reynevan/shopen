@@ -5,39 +5,63 @@ import AmountInput from "@shopen/components/frontend/input/AmountInput.vue";
 import {debounce} from "vue-debounce";
 import {useMiniCartStore} from "@shopen/stores/minicart.js";
 import IconX from "@shopen/components/icons/IconX.vue";
-import {Link} from "@inertiajs/vue3";
+import {Link, router, usePage} from "@inertiajs/vue3";
 import Button from "@shopen/components/frontend/ui/Button.vue";
-import IconLoader from "../../icons/IconLoader.vue";
-import ProductImage from "../product/ProductImage.vue";
+import IconLoader from "@shopen/components/icons/IconLoader.vue";
+import ProductImage from "@shopen/components/frontend/product/ProductImage.vue";
 import {trackRemoveFromCart} from "../../../utils/ga4";
+import {onMounted, watch} from "vue";
 
-defineOptions({
-    name: 'Minicart'
+const page = usePage()
+
+const minicartStore = useMiniCartStore()
+const cartStore = useCartStore()
+
+const loadCart = () => {
+    if (cartStore.isLoaded) return
+
+    if (page.props.cart) {
+        cartStore.setCart(page.props.cart)
+        return
+    }
+
+    router.reload({
+        only: ['cart'],
+        onSuccess: (page) => {
+            if (page.props.cart) {
+                cartStore.setCart(page.props.cart)
+            }
+        },
+    })
+}
+
+onMounted(() => {
+    loadCart()
 })
 
-const minicart = useMiniCartStore();
-const cart = useCartStore();
-
-defineProps(['items', 'subtotal']);
-
+watch(() => page.props.cart, (newVal) => {
+    if (newVal) {
+        cartStore.setCart(page.props.cart)
+    }
+}, {deep: true})
 
 const closeMinicart = () => {
-    minicart.close();
+    minicartStore.close()
 }
 
 const removeItem = (item) => {
-    trackRemoveFromCart(item, item.quantity);
-    cart.removeItem(item.id);
+    trackRemoveFromCart(item, item.quantity)
+    cartStore.removeItem(item.id)
 }
 
 const updateItem = debounce((item, val) => {
     if (parseInt(val) === 0) {
-        removeItem(item);
+        removeItem(item)
         return;
     }
-    item.loading = true;
-    item.quantity = val;
-    cart.updateItem(item.id, val);
+    item.loading = true
+    item.quantity = val
+    cartStore.updateItem(item.id, val)
 }, 250)
 
 </script>
@@ -45,7 +69,7 @@ const updateItem = debounce((item, val) => {
 <template>
     <div
         class="minicart-panel flex flex-col fixed transition-[right] ease-in-out duration-500 w-screen sm:w-[400px] top-0 bottom-0 overflow-y-auto z-30"
-        :class="{'right-0': minicart.isOpened, 'right-[calc(-100vw)] sm:right-[-401px]': !minicart.isOpened}"
+        :class="{'right-0': minicartStore.isOpened, 'right-[calc(-100vw)] sm:right-[-401px]': !minicartStore.isOpened}"
         ref="minicart-element">
         <div class="flex items-center justify-between pl-4 mb-2 py-4 shadow">
             <div class="text-xl">Podgląd koszyka</div>
@@ -55,7 +79,7 @@ const updateItem = debounce((item, val) => {
                 <IconX size="2xl"/>
             </div>
         </div>
-        <div v-if="!items || items.length === 0" class="flex flex-col items-center px-6 ">
+        <div v-if="!cartStore.items || cartStore.items.length === 0" class="flex flex-col items-center px-6 ">
             <div class="mt-10">
                 <IconCartEmpty size="8xl"/>
             </div>
@@ -64,7 +88,7 @@ const updateItem = debounce((item, val) => {
             </div>
         </div>
         <div class="overflow-y-auto grow divide-y divide-light">
-            <div v-for="item in items"
+            <div v-for="item in cartStore.items"
                  :key="item.id"
                  class="minicart-item flex items-start mx-4 py-6 relative px-6">
                 <div class="absolute top-2 right-2 cursor-pointer minicart-item-remove-btn"
@@ -113,10 +137,10 @@ const updateItem = debounce((item, val) => {
                 </div>
             </div>
         </div>
-        <div class="border-t pt-2 pb-6 px-6" v-if="items.length">
+        <div class="border-t pt-2 pb-6 px-6" v-if="cartStore.items.length">
             <div class="flex justify-between items-center my-4 text-lg">
                 <div class="mr-2">Razem:</div>
-                <div>{{ subtotal }}</div>
+                <div>{{ cartStore.subtotal }}</div>
             </div>
             <Link :href="route('cart.index')" @click="closeMinicart">
                 <Button type="primary" size="lg" full-width>
@@ -129,7 +153,7 @@ const updateItem = debounce((item, val) => {
             </a>
             </div>
         </div>
-        <div class="border-t pt-2 pb-6 px-6" v-if="!items || items.length === 0">
+        <div class="border-t pt-2 pb-6 px-6" v-if="!cartStore.items || cartStore.items.length === 0">
             <div class="text-center mt-4">
                 <span class="continue-shopping-link" @click.prevent="closeMinicart">
                     Kontynuuj zakupy →

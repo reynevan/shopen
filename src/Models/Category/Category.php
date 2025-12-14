@@ -3,7 +3,9 @@
 namespace Shopen\Models\Category;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
+use Shopen\Http\Resources\Seo\SeoDetailResource;
 use Shopen\Models\Category\Attribute\CategoryAttribute;
 use Shopen\Models\Interfaces\HasCustomAttributesInterface;
 use Shopen\Models\Product\Product;
@@ -178,6 +180,12 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
             $this->customAttributes[$code] = $repo->getAttributeValue($this, $code);
         }
         return $this;
+    }
+
+    public function getSeoData(int $websiteId, bool $generateDefault = false){
+        return Cache::rememberForever('category.seo.' . $websiteId . ($generateDefault ? '.default' : ''), function () use ($websiteId, $generateDefault) {
+            return SeoDetailResource::make($this->getSeoForWebsite($websiteId, $generateDefault))->resolve();
+        });
     }
 
     protected function getDefaultSeoTitle(): string

@@ -23,7 +23,7 @@ class ProductResource extends JsonResource
         $data = [
             'id' => $this->id,
             'sku' => $this->sku,
-            'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->whenLoaded('price')),
+            'price' => ProductPriceResource::make($this->isConfigurable() ? $this->getPriceFrom() : $this->price),
             'url' => $this->url,
             'in_stock' => $this->isInStock(),
             'images' => $this->images,

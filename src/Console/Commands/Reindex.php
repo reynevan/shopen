@@ -99,6 +99,7 @@ class Reindex extends Command
         $mapping->text('sku');
         $mapping->text('url');
         $mapping->float('price');
+        $mapping->float('omnibus_price');
         $mapping->boolean('in_stock');
         $mapping->integer('stock_qty');
         $mapping->integer('popularity');

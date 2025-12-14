@@ -10,6 +10,7 @@ use Illuminate\Support\Str;
 use Shopen\Http\Resources\Attribute\FilterResource;
 use Shopen\Models\Brand\Brand;
 use Shopen\Models\Category\Category;
+use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Product;
 use Shopen\Pagination\LengthAwarePaginator;
 use Shopen\Repositories\Brand\BrandRepository;
@@ -31,7 +32,6 @@ class SearchServiceResult
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
-            ->with(['price'])
             ->whereIn('id', $resultIds)
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
@@ -48,6 +48,13 @@ class SearchServiceResult
                 $product->reviews_count = $source['reviews_count'] ?? 0;
             }
             $product->images = $source['thumbnail_url'];
+
+            $price = new ProductPrice([
+                'product_id' => $product->id,
+                'final_price' => $source['price'] ?? null,
+                'omnibus_price' => $source['omnibus_price'] ?? null
+            ]);
+            $product->price = $price;
         }
         return $products;
     }

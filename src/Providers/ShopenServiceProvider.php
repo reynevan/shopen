@@ -173,7 +173,7 @@ class ShopenServiceProvider  extends ServiceProvider
             return '/' . request()->path();
         });
 
-        Route::model('address', Address::class);
+        //Route::model('address', Address::class);
 
         JsonResource::withoutWrapping();
 
@@ -182,9 +182,6 @@ class ShopenServiceProvider  extends ServiceProvider
             'category' => Category::class,
             'brand' => Brand::class,
         ]);
-
-
-
     }
 
 }

@@ -5,14 +5,13 @@ namespace Shopen\Http\Controllers\Frontend\Product;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
-use Shopen\Http\Resources\Attribute\AttributeOptionResource;
 use Shopen\Http\Resources\Attribute\AttributeResource;
 use Shopen\Http\Resources\Product\ProductResource;
+use Shopen\Http\Resources\Product\List\ProductResource as ListProductResource;
 use Shopen\Http\Resources\Product\Review\ProductReviewResource;
 use Shopen\Models\Attribute\AttributeOption;
 use Shopen\Models\Product\Attribute\Value\ProductAttributeInt;
 use Shopen\Models\Product\Product;
-use Shopen\Models\UrlRewrite;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Repositories\Product\ProductRepository;
 use Shopen\Repositories\Product\Review\ProductReviewRepository;
@@ -44,7 +43,7 @@ readonly class ProductShowController
 
         return Inertia::render('Frontend/Product/Show', [
             'product' => fn() => ProductResource::make($product),
-            'relatedProducts' => fn() => ProductResource::collection($this->productRepository->getRelatedProducts($product)),
+            'relatedProducts' => fn() => ListProductResource::collection($this->productRepository->getRelatedProducts($product)),
             'reviews' => fn() => ProductReviewResource::collection(config('shopen.product.reviews.enabled') ? $this->productReviewRepository->getForProduct($product, request('opinie')) : []),
             'reviewsEnabled' => config('shopen.product.reviews.enabled'),
             'reviewSubmitted' => fn() => config('shopen.product.reviews.enabled') && $user && $product->reviews()->where('user_id', $user->id)->exists(),
@@ -53,7 +52,7 @@ readonly class ProductShowController
             'attributes' => fn() => AttributeResource::collection($this->productAttributeRepository->getVisibleInDetails()),
             'banners' => fn() => $this->bannerService->getForProduct($product),
             'sort' => fn() => request('opinie'),
-            'recentlyViewedProducts' => fn() => ProductResource::collection($this->recentlyViewedProductsService->get(except: $product->id)),
+            'recentlyViewedProducts' => fn() => ListProductResource::collection($this->recentlyViewedProductsService->get(except: $product->id)),
             'shoppingLists' => fn() => $this->shoppingListService
                 ->getCurrentUserListsQuery()
                 ->withCount('products')

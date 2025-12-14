@@ -13,6 +13,7 @@ use Shopen\Facades\Breadcrumbs;
 use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Http\Resources\Cart\CartItemResource;
 use Shopen\Http\Resources\User\UserResource;
+use Shopen\Models\Cart\Cart;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
@@ -24,7 +25,7 @@ class HandleInertiaRequests extends Middleware
 
     public function __construct(
         protected readonly CartService $cartService,
-        protected readonly Context $context,
+        protected readonly Context     $context,
     )
     {
         $this->rootView = Route::is('admin.*') ? 'admin' : 'app';
@@ -65,55 +66,67 @@ class HandleInertiaRequests extends Middleware
                 'user' => $user ? UserResource::make($user) : null,
             ],
             'csrf_token' => fn() => csrf_token(),
-            'flash' => [
-                'success' => fn () => $request->session()->get('success'),
-                'error' => fn () => $request->session()->get('error'),
-                'warning' => fn () => $request->session()->get('warning'),
-                'info' => fn () => $request->session()->get('info')
-            ],
-            'route' => $request->route()->getName()
+            'route' => $request->route()->getName(),
+            ...$this->getFlashData($request),
         ];
         if (Route::is('admin.*')) {
-            $ziggy = fn () => [
+            $ziggy = fn() => [
                 ...(new Ziggy)->filter('admin.*')->toArray(),
                 'location' => $request->url(),
             ];
             $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
             $data['referer'] = $request->header('referer');
         } else {
-            $ziggy = fn () => [
+            $ziggy = fn() => [
                 ...(new Ziggy)->filter('!admin.*')->toArray(),
                 'location' => $request->url(),
             ];
             $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
-            $data['cart'] = function () use ($request) {
-                $subtotal = 0;
-                $items = [];
-                if ($this->cartService->hasCart()) {
-                    $cart = $this->cartService->getCart();
-                    $items = CartItemResource::collection($cart->items)->toArray($request);
-                    $subtotal = $cart->totalPrice();
-                }
 
-                return [
-                    'items' => $items,
-                    'subtotal' => Number::currency($subtotal)
-                ];
 
-            };
+            $data['cart'] = Inertia::lazy(fn() => $this->getCart($request));
             $data['menu'] = $request->inertia()
-                ? Inertia::lazy(fn () => app(MenuService::class)->getMenu())
+                ? Inertia::lazy(fn() => app(MenuService::class)->getMenu())
                 : fn() => app(MenuService::class)->getMenu();
             $data['breadcrumbs'] = fn() => Breadcrumbs::generate();
             $data['text_slides'] = $request->inertia() ?
-                Inertia::lazy(fn () => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
+                Inertia::lazy(fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll()))
                 : fn() => TextSlideResource::collection(app(TextSlidesService::class)->getAll());
-            $data['site_name'] = fn () => config('app.name');
+            $data['site_name'] = fn() => config('app.name');
 
-            $data['config'] = fn () => [
+            $data['config'] = fn() => [
                 'max_cart_products' => config('shopen.cart.max_item_qty', 10)
             ];
         }
         return $data;
+    }
+
+    protected function getFlashData(Request $request): array
+    {
+        $data = [];
+        $types = ['success', 'error', 'warning', 'info'];
+        foreach ($types as $type) {
+            $value = $request->session()->get($type);
+            if ($value) {
+                $data[$type] = $value;
+            }
+        }
+        return count($data) ? ['flash' => $data] : [];
+    }
+
+    protected function getCart(Request $request): array
+    {
+        $subtotal = 0;
+        $items = [];
+        if ($this->cartService->hasCart()) {
+            $cart = $this->cartService->getCart();
+            $items = CartItemResource::collection($cart->items)->toArray($request);
+            $subtotal = $cart->totalPrice();
+        }
+
+        return [
+            'items' => $items,
+            'subtotal' => Number::currency($subtotal)
+        ];
     }
 }

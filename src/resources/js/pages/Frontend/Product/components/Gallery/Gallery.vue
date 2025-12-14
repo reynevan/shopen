@@ -118,7 +118,7 @@ onUnmounted(() => {
                  class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 left-4">
                 <div
                     class="p-4 rounded bg-white shadow hover:shadow-lg opacity-0 duration-300 group-hover:opacity-100 transition-all cursor-pointer">
-                    <IconChevron left md/>
+                    <IconChevron left/>
                 </div>
             </div>
             <Flicking
@@ -136,7 +136,7 @@ onUnmounted(() => {
                  class="flex z-2 justify-center items-center h-full absolute top-0 bottom-0 right-4">
                 <div
                     class="p-4 rounded bg-white shadow hover:shadow-lg opacity-0 duration-300 group-hover:opacity-100 transition-all cursor-pointer">
-                    <IconChevron right md/>
+                    <IconChevron right/>
                 </div>
             </div>
         </div>
@@ -167,7 +167,7 @@ onUnmounted(() => {
 
                 <button @click="closeModal"
                         class="absolute top-4 right-4 text-black text-3xl font-bold z-60 hover:scale-110 transition cursor-pointer">
-                    <IconX lg/>
+                    <IconX/>
                 </button>
 
                 <div class="order-2 md:order-1 flex-shrink-0 flex flex-row md:flex-col justify-start md:justify-center w-full md:w-auto md:h-screen items-center gap-2 p-4 overflow-x-auto md:overflow-y-auto">

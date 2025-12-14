@@ -22,12 +22,13 @@ class CartService
     protected ?Cart $cart = null;
 
     public function __construct(protected Request $request)
-    {
-        $this->initializeCart();
-    }
+    {}
 
     protected function initializeCart(): void
     {
+        if ($this->cart) {
+            return;
+        }
         $user = Auth::user();
         if ($user) {
             $this->cart = Cart::query()
@@ -43,7 +44,7 @@ class CartService
 
     protected function loadProductsNames(): void
     {
-        if (!$this->cart->items) {
+        if (!$this->cart || !$this->cart->items) {
             return;
         }
         $names = app(ProductAttributeRepository::class)->getValues('name', Arr::pluck($this->cart->items, 'product.id'));
@@ -62,6 +63,8 @@ class CartService
 
     protected function createCart(): Cart
     {
+        $this->initializeCart();
+
         if ($this->cart) {
             return $this->cart;
         }
@@ -140,11 +143,13 @@ class CartService
 
     public function getCart(): ?Cart
     {
+        $this->initializeCart();
         return $this->cart ?: new Cart();
     }
 
     public function hasCart(): bool
     {
+        $this->initializeCart();
         return $this->cart !== null;
     }
 
