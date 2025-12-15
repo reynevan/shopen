@@ -32,6 +32,7 @@ class SearchServiceResult
         $sources = Arr::pluck($this->searchResult['hits']['hits'], '_source', '_source.id');
         $ids =  implode(',', $sortIds ?? $resultIds);
         $products = Product::query()
+            ->select(['id', 'type'])
             ->whereIn('id', $resultIds)
             ->orderByRaw("FIELD(id, $ids)")
             ->get();
@@ -48,13 +49,13 @@ class SearchServiceResult
                 $product->reviews_count = $source['reviews_count'] ?? 0;
             }
             $product->images = $source['thumbnail_url'];
+            $product->is_new = $source['is_new'];
 
-            $price = new ProductPrice([
+            $product->price = new ProductPrice([
                 'product_id' => $product->id,
                 'final_price' => $source['price'] ?? null,
                 'omnibus_price' => $source['omnibus_price'] ?? null
             ]);
-            $product->price = $price;
         }
         return $products;
     }

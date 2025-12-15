@@ -5,8 +5,11 @@ namespace Shopen\Repositories\Attribute;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Cache;
 use Shopen\Models\Attribute\Attribute;
+use Shopen\Models\Category\Attribute\CategoryAttribute;
+use Shopen\Models\Product\Attribute\ProductAttribute;
 
 class AttributeRepository
 {
@@ -18,7 +21,7 @@ class AttributeRepository
 
     public function getByCode($code)
     {
-        return Cache::rememberForever(static::ATTRIBUTE_MODEL . '.attributes.' . $code, function () use ($code) {
+        return Cache::rememberForever($this->getModelCacheKey() . '.' . $code, function () use ($code) {
             return static::ATTRIBUTE_MODEL::query()->where('code', $code)->first();
         });
     }
@@ -26,7 +29,7 @@ class AttributeRepository
     public function exists($code): bool
     {
         if (!isset($this->attributeCodes[self::ATTRIBUTE_MODEL]) || !count($this->attributeCodes[self::ATTRIBUTE_MODEL])) {
-            $this->attributeCodes[self::ATTRIBUTE_MODEL] = static::ATTRIBUTE_MODEL::query()->select(['code'])->get()->pluck('code')->toArray();
+            $this->attributeCodes[self::ATTRIBUTE_MODEL] = $this->getAttributeCodes();
         }
         return in_array($code, $this->attributeCodes[self::ATTRIBUTE_MODEL]);
     }
@@ -95,7 +98,7 @@ class AttributeRepository
 
     public function getFilterable($withOptions = false): Collection
     {
-        return Cache::rememberForever(static::ATTRIBUTE_MODEL . '.attributes.filterable.' . ($withOptions ? 'options' : 'no-options'), function () use ($withOptions) {
+        return Cache::rememberForever($this->getModelCacheKey() . '.filterable.' . ($withOptions ? 'options' : 'no-options'), function () use ($withOptions) {
             $this->filterable[static::ATTRIBUTE_MODEL][$withOptions] = static::ATTRIBUTE_MODEL::query()
                 ->when($withOptions, function (Builder $query) {
                     $query->with(['options']);
@@ -138,5 +141,23 @@ class AttributeRepository
             })
             ->select(['entity_id', 'value'])
             ->pluck('value', 'entity_id');
+    }
+
+    protected function getModelCacheKey(): string
+    {
+        if (static::ATTRIBUTE_MODEL === ProductAttribute::class) {
+            return 'product.attribute';
+        }
+        if (static::ATTRIBUTE_MODEL === CategoryAttribute::class) {
+            return 'category.attribute';
+        }
+        return 'attribute';
+    }
+
+    protected function getAttributeCodes()
+    {
+        return Cache::rememberForever($this->getModelCacheKey() . '.codes', function () {
+            return static::ATTRIBUTE_MODEL::query()->select(['code'])->get()->pluck('code')->toArray();
+        });
     }
 }

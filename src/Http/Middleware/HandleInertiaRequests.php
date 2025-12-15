@@ -62,9 +62,7 @@ class HandleInertiaRequests extends Middleware
         $user = $request->user();
         $data = [
             'errors' => fn() => $this->resolveValidationErrors($request),
-            'auth' => fn() => [
-                'user' => $user ? UserResource::make($user) : null,
-            ],
+            'auth' => fn() => !!$user,
             'csrf_token' => fn() => csrf_token(),
             'route' => $request->route()->getName(),
             ...$this->getFlashData($request),
