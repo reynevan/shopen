@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('visible_individually')->default(true);
             $table->foreignId('parent_id')->nullable();
             $table->foreign('parent_id')->references('id')->on('products')->onDelete('cascade');
-            $table->boolean('uses_stock');
+            $table->boolean('uses_stock')->default(false);
             $table->integer('stock_qty')->unsigned()->default(0);
             $table->boolean('in_stock')->default(false);
             $table->boolean('is_virtual')->default(false);

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('instagram_posts', function (Blueprint $table) {
             $table->id();
             $table->string('media_id');
-            $table->string('media_url', 1024);
             $table->string('post_url', 1024);
             $table->timestamp('timestamp');
             $table->timestamps();

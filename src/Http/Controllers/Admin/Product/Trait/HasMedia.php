@@ -17,7 +17,7 @@ trait HasMedia
 
     private function deleteRemovedImages(Product $product, array $imagesData): void
     {
-        $existingIds = Arr::pluck($imagesData, 'id');
+        $existingIds = Arr::pluck(array_filter($imagesData, fn($image) => !($image['new'] ?? false)), 'id');
         $product->media()->whereNotIn('id', $existingIds)->delete();
     }
 
