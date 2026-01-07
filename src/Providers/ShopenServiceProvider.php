@@ -23,7 +23,6 @@ use Shopen\Console\Commands\SetupAdminUser;
 use Shopen\Console\Commands\ShopenInstall;
 use Shopen\Console\Commands\SyncInstagramPosts;
 use Shopen\Console\Commands\Test;
-use Shopen\Core\BlockDirective;
 use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
