@@ -17,7 +17,10 @@ export const useCheckoutStore = defineStore('checkout', () => {
             notes: notes.value,
         }, {
             preserveState: true,
-            preserveScroll: true
+            preserveScroll: true,
+            onSuccess: () => {
+                router.reload({ only: ['cart'] })
+            },
         })
     }
 

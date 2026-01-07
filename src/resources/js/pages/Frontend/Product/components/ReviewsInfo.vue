@@ -32,7 +32,3 @@ const reviewsCountLabel = computed(() => {
         <div>{{ product.rating }} ({{ product.reviews_count ?? 0 }} {{ reviewsCountLabel }})</div>
     </div>
 </template>
-
-<style scoped>
-
-</style>

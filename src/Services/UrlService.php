@@ -14,7 +14,8 @@ class UrlService
             return $this->rewrites[$path];
         }
 
-        $urlRewrite = UrlRewrite::with('entity')
+        $urlRewrite = UrlRewrite::query()
+            ->with('entity')
             ->where('request_path', $path)
             ->first();
 

@@ -9,6 +9,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('orders')) {
+            return;
+        }
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid')->nullable()->unique();
@@ -21,9 +24,11 @@ return new class extends Migration
             $table->string('payment_method');
             $table->decimal('subtotal', 10, 2);
             $table->decimal('shipping_amount', 10, 2)->default(0);
+            $table->decimal('shipping_amount_returned', 10, 2)->default(0);
             $table->decimal('payment_amount', 10, 2)->default(0);
             $table->decimal('discount_amount', 10, 2)->default(0);
             $table->decimal('total_amount', 10, 2);
+            $table->decimal('returned_amount', 10, 2)->default(0);
             $table->decimal('tax_amount', 10, 2)->default(0);
             $table->foreignId('promo_code_coupon_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('promo_code_discount_amount', 10, 2)->default(0);

@@ -32,12 +32,46 @@ const props = defineProps({
     min: {
         type: Number
     },
+    max: {
+        type: Number
+    },
     autofocus: {
         type: Boolean,
         default: false,
-    }
+    },
+    placeholder: String
 })
 
+const emits = defineEmits(['input'])
+
+
+const onInput = (event) => {
+    if (props.type !== 'number') {
+        emits('input', event.target.value);
+        return;
+    }
+
+    let val = parseFloat(event.target.value);
+
+    if (isNaN(val)) {
+        emits('input', event.target.value);
+        return;
+    }
+
+    if (typeof props.max === 'number' && val > props.max) {
+        model.value = props.max;
+        emits('input', props.max);
+        return;
+    }
+
+    if (typeof props.min === 'number' && val < props.min) {
+        model.value = props.min;
+        emits('input', props.min);
+        return;
+    }
+
+    emits('input', val);
+}
 
 const sizeClasses = computed(() => {
     switch (props.size) {
@@ -53,6 +87,7 @@ const sizeClasses = computed(() => {
 
 <template>
     <input
+        @input="onInput"
         :type="type"
         :id="props.id"
         v-model="model"
@@ -60,6 +95,8 @@ const sizeClasses = computed(() => {
         :disabled="disabled"
         :autofocus="autofocus"
         :min="min"
+        :max="max"
+        :placeholder="placeholder"
         class="input"
         :class="[sizeClasses, props.class, error ? 'border-red-400' : '']"
     />

@@ -81,7 +81,8 @@ const form = useForm({
     is_new: props.product?.is_new ?? false,
     is_new_to: props.product?.is_new_to,
     seo_title: props.product?.seo?.seo_title ?? '',
-    seo_description: props.product?.seo?.seo_description ?? ''
+    seo_description: props.product?.seo?.seo_description ?? '',
+    unit: props.product?.unit
 })
 
 const brandsOptions = props.brands.map(brand => {return {id: brand.id, value: brand.name}})

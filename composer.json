@@ -28,7 +28,9 @@
         "fedeisas/laravel-mail-css-inliner": "^5.4",
         "laravel/socialite": "^5.23",
         "ext-libxml": "*",
-        "ryangjchandler/laravel-cloudflare-turnstile": "^3.0"
+        "ryangjchandler/laravel-cloudflare-turnstile": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "vlaim/slownie": "^1.0"
     },
     "require-dev": {
         "orchestra/canvas": "^10.0"

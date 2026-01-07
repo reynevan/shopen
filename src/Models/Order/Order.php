@@ -2,6 +2,7 @@
 
 namespace Shopen\Models\Order;
 
+use Illuminate\Container\Container;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,10 @@ use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Enums\Order\OrderStatus;
 use Shopen\Enums\Payment\PaymentStatus;
+use Shopen\Models\Order\Invoice\Invoice;
 use Shopen\Models\PromoCode\PromoCodeCoupon;
 use Shopen\Models\User;
+use Shopen\Pagination\LengthAwarePaginator;
 
 class Order extends Model
 {
@@ -49,6 +52,13 @@ class Order extends Model
         'status' => OrderStatus::class,
     ];
 
+    protected function paginator($items, $total, $perPage, $currentPage, $options)
+    {
+        return Container::getInstance()->makeWith(LengthAwarePaginator::class, compact(
+            'items', 'total', 'perPage', 'currentPage', 'options'
+        ));
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -79,9 +89,14 @@ class Order extends Model
         return $this->belongsTo(PromoCodeCoupon::class);
     }
 
-    public function statusHistoryItems()
+    public function statusHistoryItems(): HasMany
     {
         return $this->hasMany(OrderStatusHistory::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
     }
 
     public function payments(): HasMany
@@ -106,7 +121,7 @@ class Order extends Model
 
     public function getPlacedDateAttribute()
     {
-        return $this->created_at->toLocalDate();
+        return $this->created_at->format('Y-m-d');
     }
 
     public function isGuestOrder(): bool
@@ -117,6 +132,20 @@ class Order extends Model
     public function isPaid(): bool
     {
         return $this->payments()->where('status', PaymentStatus::COMPLETED->value)->exists();
+    }
+
+    public function getUserFirstName()
+    {
+        if ($this->user && $this->user->first_name) {
+            return $this->user->first_name;
+        }
+        if ($this->billingAddress && $this->billingAddress->first_name) {
+            return $this->billingAddress->first_name;
+        }
+        if ($this->shippingAddress && $this->shippingAddress->first_name) {
+            return $this->shippingAddress->first_name;
+        }
+        return null;
     }
 
     public function getStatusLabelAttribute(): string

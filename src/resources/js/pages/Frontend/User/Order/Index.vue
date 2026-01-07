@@ -3,7 +3,7 @@
 import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
 import OrderThumbnail from "@shopen/pages/Frontend/User/Order/components/OrderThumbnail.vue";
 import Pagination from "@shopen/components/frontend/ui/Pagination.vue";
-import Heading from "../components/Heading.vue";
+import Heading from "@shopen/pages/Frontend/User/components/Heading.vue";
 import IconReceipt from "@shopen/components/icons/IconReceipt.vue";
 import {Head} from "@inertiajs/vue3";
 

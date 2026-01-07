@@ -158,4 +158,10 @@ const types = [
         <Select v-model="form.tax_class_id" id="tax_class_id" :options="taxClasses"/>
     </FormField>
 
+    <FormField
+        label-for="unit"
+        label="Jednostka miary">
+        <Input v-model="form.unit" id="unit"/>
+    </FormField>
+
 </template>

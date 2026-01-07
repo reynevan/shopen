@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('cart_addresses')) {
+            return;
+        }
         Schema::create('cart_addresses', function (Blueprint $table) {
             $table->id();
             $table->foreignId('address_id')->nullable()->constrained()->onDelete('cascade');

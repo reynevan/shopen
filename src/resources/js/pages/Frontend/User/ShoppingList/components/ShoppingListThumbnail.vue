@@ -46,7 +46,7 @@
             </Dropdown>
         </div>
 
-        <Link :href="route('user.shopping-lists.show', list.id)">
+        <Link :href="route('user.shopping-lists.show', list.id)" prefetch>
 
             <!-- Wyświetlanie nazwy listy -->
             <div class="flex items-center justify-between mb-4">

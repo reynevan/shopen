@@ -6,7 +6,7 @@
     @endpush
     @includeFirst(['emails.orders.elements.status', 'shopen::emails.orders.elements.status'], ['order' => $order])
 
-    @includeFirst(['emails.elements.greeting', 'shopen::emails.elements.greeting'], ['order' => $order])
+    @includeFirst(['emails.elements.greeting', 'shopen::emails.elements.greeting'], ['name' => $order->getUserFirstName()])
 
     @includeFirst(['emails.orders.elements.message', 'shopen::emails.orders.elements.message'])
 

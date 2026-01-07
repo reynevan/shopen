@@ -8,11 +8,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Pagination\Paginator;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\Number;
 use Illuminate\Support\ServiceProvider;
@@ -26,17 +24,16 @@ use Shopen\Console\Commands\ShopenInstall;
 use Shopen\Console\Commands\SyncInstagramPosts;
 use Shopen\Console\Commands\Test;
 use Shopen\Core\BlockDirective;
-use Shopen\Core\Context;
 use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
 use Shopen\Events\Product\Price\ProductPriceRuleUpdated;
 use Shopen\Jobs\RecalculateDiscountPrices;
 use Shopen\Listeners\MergeGuestShoppingLists;
-use Shopen\Models\Address;
 use Shopen\Models\Brand\Brand;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Price\ProductPrice;
 use Shopen\Models\Product\Product;
+use Shopen\Pagination\LengthAwarePaginator;
 use Shopen\Repositories\Attribute\AttributeRepository;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
@@ -46,6 +43,7 @@ use Shopen\Observers\ProductPriceObserver;
 use Shopen\Services\FiltersService;
 use Shopen\Services\ShoppingListService;
 use Shopen\Services\UrlService;
+use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 
 class ShopenServiceProvider  extends ServiceProvider
 {
@@ -162,6 +160,8 @@ class ShopenServiceProvider  extends ServiceProvider
         $this->app->singleton(UrlService::class, function ($app) {
             return new UrlService();
         });
+
+        $this->app->bind(BaseLengthAwarePaginator::class, LengthAwarePaginator::class);
 
         Event::listen(ProductPriceRuleUpdated::class, RecalculateDiscountPrices::class);
         Event::listen(Login::class, MergeGuestShoppingLists::class);

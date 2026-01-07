@@ -11,11 +11,11 @@ export const useCartStore = defineStore('cart', () => {
     const isLoaded = ref(false)
 
     const setCart = (cartData) => {
-        if (cartData && cartData.items) {
+        if (cartData && typeof cartData.items !== 'undefined') {
             items.value = cartData.items;
             isLoaded.value = true
         }
-        if (cartData && cartData.subtotal) {
+        if (cartData && typeof cartData.subtotal !== 'undefined') {
             subtotal.value = cartData.subtotal;
         }
     }

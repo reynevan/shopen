@@ -1,6 +1,7 @@
 <?php
 
 
+use Shopen\Http\Controllers\Admin\Api\InvoiceItemsController;
 use Shopen\Http\Controllers\Admin\Attribute\AttributeCreateController;
 use Shopen\Http\Controllers\Admin\Attribute\AttributeEditController;
 use Shopen\Http\Controllers\Admin\Attribute\AttributeIndexController;
@@ -14,6 +15,10 @@ use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageEditController;
 use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageIndexController;
 use Shopen\Http\Controllers\Admin\ContactMessages\ContactMessageShowController;
 use Shopen\Http\Controllers\Admin\Dashboard\DashboardIndexController;
+use Shopen\Http\Controllers\Admin\Order\Invoice\InvoiceCorrectionCreateController;
+use Shopen\Http\Controllers\Admin\Order\Invoice\InvoiceCreateController;
+use Shopen\Http\Controllers\Admin\Order\Invoice\InvoiceShowController;
+use Shopen\Http\Controllers\Admin\Order\Return\ReturnCreateController;
 use Shopen\Http\Controllers\Admin\Product\ProductCreateController;
 use Shopen\Http\Controllers\Admin\Product\ProductsExportController;
 use Shopen\Http\Controllers\Admin\Product\ProductsImportController;
@@ -22,7 +27,6 @@ use Shopen\Http\Controllers\Admin\Product\Review\ProductReviewsEditController;
 use Shopen\Http\Controllers\Admin\Product\Review\ProductReviewsIndexController;
 use Shopen\Http\Controllers\Admin\Category\CategoriesIndexController;
 use Illuminate\Support\Facades\Route;
-use Shopen\Http\Controllers\Admin\Api\OrdersController as ApiOrdersController;
 use Shopen\Http\Controllers\Admin\Api\UploadController;
 use Shopen\Http\Controllers\Admin\Api\ProductsController as ApiProductsController;
 use Shopen\Http\Controllers\Admin\Banner\BannerCreateController;
@@ -97,7 +101,15 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::post('/zamowienia/{order}/wysylka', [OrderShowController::class, 'updateShipping'])->name('orders.shipping');
     Route::post('/zamowienia/{order}/platnosc/{payment}', [OrderShowController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
     Route::post('/zamowienia/{order}/wyslij-bony', [OrderShowController::class, 'sendVouchersEmail'])->name('orders.send-vouchers');
-    Route::get('/api/orders', [ApiOrdersController::class, 'index']);
+    Route::get('/zamowienia/{order}/nowa-faktura', [InvoiceCreateController::class, 'create'])->name('orders.invoices.create');
+    Route::post('/zamowienia/{order}/faktury', [InvoiceCreateController::class, 'store'])->name('orders.invoices.store');
+
+    Route::get('/zamowienia/{order}/zwrot', [ReturnCreateController::class, 'create'])->name('orders.returns.create');
+    Route::post('/zamowienia/{order}/zwrot', [ReturnCreateController::class, 'store'])->name('orders.returns.store');
+
+    Route::get('/faktury/{invoice}', [InvoiceShowController::class, 'show'])->name('orders.invoices.show');
+    Route::get('/faktury/{invoice}/korekta', [InvoiceCorrectionCreateController::class, 'create'])->name('orders.invoices.corrections.create');
+    Route::post('/faktury/{invoice}/korekta', [InvoiceCorrectionCreateController::class, 'store'])->name('orders.invoices.corrections.store');
 
     Route::get('/kody-promocyjne', [PromoCodesIndexController::class, 'index'])->name('promo-codes.index');
     Route::get('/kody-promocyjne/nowy', [PromoCodeCreateController::class, 'create'])->name('promo-codes.create');
@@ -159,6 +171,10 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     });
 
     Route::post('/api/upload-image', [UploadController::class, 'uploadImage']);
+
+    Route::prefix('/api')->name('api.')->group(function () {
+       Route::post('/invoices/items/recalculate', [InvoiceItemsController::class, 'recalculate'])->name('invoices.items.recalculate');
+    });
 
 
 });

@@ -12,11 +12,11 @@ import ProductStructuredData from "@shopen/components/frontend/product/ProductSt
 import AddToShoppingListButton from "@shopen./components/frontend/shoppingList/AddToShoppingListButton.vue";
 import ProductDescription from "@shopen/pages/Frontend/Product/components/ProductDescription.vue";
 import ProductBrand from "@shopen/pages/Frontend/Product/components/ProductBrand.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {trackViewItem} from "@shopen/utils/ga4.js";
 import DetailsSection from "@shopen/pages/Frontend/Product/components/DetailsSection.vue";
 import ProductInfo from "@shopen/pages/Frontend/Product/components/ProductInfo.vue";
-import {Head, Link, usePage} from "@inertiajs/vue3";
+import {Head, Link, router, usePage} from "@inertiajs/vue3";
 
 defineOptions({layout: AppLayout})
 
@@ -43,6 +43,17 @@ const onAddConfigurableToCart = () => {
 }
 
 trackViewItem(props.product, props.variants)
+
+onMounted(() => {
+    fetch(route('products.views.store', props.product.id), {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': page.props.csrf_token,
+        },
+    }).catch(() => {
+    })
+})
 
 </script>
 

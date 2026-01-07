@@ -19,6 +19,13 @@ const props = defineProps(['order']);
             <div>Koszt płatności</div>
             <div>{{ order.payment_amount }}</div>
         </div>
+        <div v-if="order.returned_amount || order.shipping_amount_returned" class="flex items-start justify-between mb-1 py-1 border-b">
+            <div>Zwrot</div>
+            <div class="flex flex-col items-end">
+                <div>Produkty: {{ order.returned_amount }}</div>
+                <div v-if="order.shipping_amount_returned">Wysyłka: {{ order.shipping_amount_returned }}</div>
+            </div>
+        </div>
         <div v-if="order.discount_amount" class="flex items-center justify-between mb-1 py-1 border-b">
             <div>Obniżki</div>
             <div>{{ -1 * order.discount_amount }}</div>

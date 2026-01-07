@@ -18,6 +18,7 @@ const emits = defineEmits(['onClick'])
     <div class="carousel-product-wrapper relative flex justify-center w-full group"
          :class="[product.in_stock ? 'in-stock' : 'out-of-stock']">
         <Link :href="product.url"
+              prefetch
               @click="emits('onClick')"
               class="carousel-product-thumbnail relative flex flex-col justify-between w-full max-w-350 sm:max-w-250">
             <div>

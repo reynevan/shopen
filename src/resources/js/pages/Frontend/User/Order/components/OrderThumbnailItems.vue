@@ -42,7 +42,7 @@ const remainingItemsCount = computed(() => {
             <ProductThumbnailImage :product="item.product" size="sm" class="!w-10 !h-10 flex-shrink-0"/>
             <div class="ml-3 overflow-hidden">
                 <div class="text-sm truncate">
-                    <Link :href="item.product.url" class="hover:underline">{{ item.product.name }}</Link>
+                    <Link :href="item.product.url" class="hover:underline" prefetch>{{ item.product.name }}</Link>
                 </div>
                 <div class="text-xs text-gray-500">
                     {{ item.quantity }} szt. × {{ item.final_price }}

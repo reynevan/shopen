@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Core\Shipping\ShippingMethodManager;
+use Shopen\Http\Resources\Cart\CartResource;
 use Shopen\Http\Resources\User\AddressResource;
 use Shopen\Models\Address;
 use Shopen\Services\CartService;
@@ -33,6 +34,7 @@ readonly class CheckoutIndexController
         }
 
         return Inertia::render('Frontend/Checkout/Index', [
+            'cart' => CartResource::make($this->cartService->getCart()),
             'selectedShippingMethod' => fn () => $cart->shipping_method,
             'selectedPaymentMethod' => fn () => $cart->payment_method,
             'deliveryPoint' => fn () => $cart->delivery_point,

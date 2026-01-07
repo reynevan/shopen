@@ -21,6 +21,8 @@ interface PaymentMethodInterface
 
     public function getName(): string;
 
+    public function getPaymentDueDays(): int;
+
     public function getKey(): string;
 
     public function isAvailable(): bool;

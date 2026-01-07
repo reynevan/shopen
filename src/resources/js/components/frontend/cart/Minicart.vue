@@ -40,6 +40,7 @@ onMounted(() => {
 })
 
 watch(() => page.props.cart, (newVal) => {
+    console.log(newVal)
     if (newVal) {
         cartStore.setCart(page.props.cart)
     }

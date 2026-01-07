@@ -18,6 +18,7 @@ use Shopen\Http\Controllers\Frontend\HomeController;
 use Shopen\Http\Controllers\Frontend\Newsletter\NewsletterController;
 use Shopen\Http\Controllers\Frontend\Payment\PaymentPayController;
 use Shopen\Http\Controllers\Frontend\Payment\Payu\PayuNotifyController;
+use Shopen\Http\Controllers\Frontend\Product\ProductShowController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewUpdateController;
@@ -74,6 +75,8 @@ Route::middleware(['web'])->group(function () {
     Route::get('/potwierdzenie-zamowienia/{order:uuid}', [CheckoutOrderConfirmationController::class, 'index'])->name('checkout.success');
 
     Route::get('/produkt/{product}/opinie', [ProductReviewsController::class, 'index'])->name('api.products.reviews.index');
+
+    Route::post('/produkt/{product}', [ProductShowController::class, 'storeView'])->name('products.views.store');
 
     Route::get('/marka/{brand}', [BrandShowController::class, 'show'])->name('brands.show');
 

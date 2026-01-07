@@ -6,16 +6,14 @@ defineProps(['items']);
 
 <template>
     <table class="w-full">
-        <thead class="sticky top-0 bg-panel py-2">
+        <thead class="bg-panel py-2">
         <tr>
-            <th class="uppercase text-sm font-normal text-left pr-4 py-2 ">Produkt</th>
-            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Cena</th>
-            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Obniżka</th>
-            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Cena po obniżce</th>
-            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Kod rabatowy</th>
+            <th class="uppercase text-sm font-normal text-left pr-4 py-2">Produkt</th>
             <th class="uppercase text-sm font-normal w-[100px] px-4 py-2 text-right">Ilość</th>
+            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Cena katalogowa</th>
+            <th class="uppercase text-sm font-normal w-[200px] px-4 py-2 text-right">Rabat</th>
             <th class="uppercase text-sm font-normal w-[100px] px-4 py-2 text-right">Podatek</th>
-            <th class="uppercase text-sm font-normal w-[150px] px-4 py-2 text-right">Kwota</th>
+            <th class="uppercase text-sm font-normal w-[150px] px-4 py-2 text-right">Wartość</th>
         </tr>
         <tr>
             <th class="h-[1px] bg-border-primary" colspan="8"></th>
@@ -43,13 +41,23 @@ defineProps(['items']);
                     </div>
                 </div>
             </td>
-            <td class="px-4 py-2 text-right">{{ item.price }}</td>
-            <td class="px-4 py-2 text-right">{{ item.discount }}</td>
-            <td class="px-4 py-2 text-right">{{ item.final_price }}</td>
-            <td class="px-4 py-2 text-right">{{ item.promo_code_discount_amount }}</td>
-            <td class="px-4 py-2 text-right">{{ item.quantity }}</td>
-            <td class="px-4 py-2 text-right">{{ item.tax_amount }}</td>
-            <td class="px-4 py-2 text-right">{{ item.total }}</td>
+            <td class="px-4 py-2 text-right">
+                <div v-if="item.returned_quantity > 0">
+                    <div class="whitespace-nowrap">
+                        <span class="text-xs uppercase">Zamówione:</span> {{ item.quantity }}
+                    </div>
+                    <div class="whitespace-nowrap">
+                        <span class="text-xs uppercase">Zwrócone:</span> {{ item.returned_quantity }}
+                    </div>
+                </div>
+                <div v-else>
+                    {{ item.quantity }}
+                </div>
+            </td>
+            <td class="px-4 py-2 text-right">{{ $currency(item.price) }}</td>
+            <td class="px-4 py-2 text-right">{{ $currency(item.discount_amount) }}</td>
+            <td class="px-4 py-2 text-right">{{ $currency(item.tax_amount) }}</td>
+            <td class="px-4 py-2 text-right">{{ $currency(item.total) }}</td>
         </tr>
         </tbody>
     </table>

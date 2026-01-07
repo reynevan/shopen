@@ -35,7 +35,6 @@ readonly class ProductShowController
 
     public function index(Product $product): Response
     {
-        $this->recentlyViewedProductsService->add($product);
         $product->load(['price', 'relatedProducts.price', 'urlRewrite', 'brand']);
         $this->productRepository->loadAttributesUsedOnProductPage($product);
         $product->image = $product->getThumbnailUrl();
@@ -59,6 +58,12 @@ readonly class ProductShowController
                 ->orderBy('name')
                 ->get()
         ]);
+    }
+
+    public function storeView(Product $product): \Illuminate\Http\Response
+    {
+        $this->recentlyViewedProductsService->add($product);
+        return response()->noContent();
     }
 
 

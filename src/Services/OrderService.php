@@ -206,7 +206,7 @@ readonly class OrderService
             'payment_amount' => $paymentAmount,
             'discount_amount' => $discountAmount,
             'promo_code_discount_amount' => $promoCodeDiscountAmount,
-            'total_amount' => $subtotal + $shippingAmount - $promoCodeDiscountAmount,
+            'total_amount' => $subtotal + $shippingAmount + $paymentAmount - $promoCodeDiscountAmount,
             'tax_amount' => $this->calculateTotalTaxes($cart, $shippingAmount, $promoCode),
         ];
     }
@@ -227,7 +227,7 @@ readonly class OrderService
             $tax += $product->taxClass ? $total * $product->taxClass->rate / 100 : 0;
         }
         if ($shippingAmount > 0) {
-            $tax += $shippingAmount * config('shopen.tax.shipping.value', 23) / 100;
+            $tax += $shippingAmount * config('shopen.tax.shipping.rate', 23) / 100;
         }
         return $tax;
     }
@@ -241,14 +241,19 @@ readonly class OrderService
             $finalPrice = $item->final_price;
 
             $promoCodeDiscountAmount = 0;
+            $promoCodeDiscountAmountTotal = 0;
             if ($promoCode && $promoCode->applies_to === ApplyType::PER_ITEM && $promoCode->isAppliedToProduct($product)) {
-                $promoCodeDiscountAmount = $item->quantity * $promoCode->calculateDiscount($finalPrice);
+                $promoCodeDiscountAmount = $promoCode->calculateDiscount($finalPrice);
+                $promoCodeDiscountAmountTotal = round($item->quantity * $promoCodeDiscountAmount, 2);
             } elseif ($promoCode && $promoCode->applies_to === ApplyType::CART) {
-                $promoCodeDiscountAmount = round($promoCode->discount_value * $item->final_price * $item->quantity / $itemsTotalValue, 2);
+                $promoCodeDiscountAmount = round($promoCode->discount_value * $item->final_price / $itemsTotalValue, 2);
+                $promoCodeDiscountAmountTotal = round($promoCodeDiscountAmount * $item->quantity, 2);
             }
-            $total = $item->final_price * $item->quantity - $promoCodeDiscountAmount;
+            $total = $item->final_price * $item->quantity - $promoCodeDiscountAmountTotal;
 
-            $tax = $product->taxClass ? $total * $product->taxClass->rate / 100 : 0;
+            $tax = $product->taxClass
+                ? $total * ($product->taxClass->rate / (100 + $product->taxClass->rate))
+                : 0;
 
             $orderItem = OrderItem::create([
                 'order_id' => $order->id,
@@ -261,6 +266,8 @@ readonly class OrderService
                 'promo_code_discount_amount' => $promoCodeDiscountAmount,
                 'total' => $total,
                 'tax_amount' => $tax,
+                'tax_rate' => $product->taxClass->rate,
+                'unit' => $product->unit ?? config('shopen.product.default_unit')
             ]);
 
             if ($product->is_voucher && $product->promoCode) {

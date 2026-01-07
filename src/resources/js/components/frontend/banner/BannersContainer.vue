@@ -51,6 +51,7 @@ const trackClick = (banner) => {
                 class="w-full">
                 <component
                     :is="banner.link_url ? Link : 'div'"
+                    :prefetch="banner.link_url ? true : null"
                     :href="banner.link_url || undefined"
                     @click="banner.link_url ? trackClick(banner) : undefined"
                     class="block flicking-panel bg-gray-100 w-full flex justify-center items-center">

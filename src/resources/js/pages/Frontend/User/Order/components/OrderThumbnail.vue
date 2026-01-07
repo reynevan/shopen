@@ -1,6 +1,5 @@
 <script setup>
-import OrderStatus from "./OrderStatus.vue";
-import OrderThumbnailItems from "./OrderThumbnailItems.vue";
+import OrderThumbnailItems from "@shopen/pages/Frontend/User/Order/components/OrderThumbnailItems.vue";
 import {Link} from "@inertiajs/vue3";
 
 const props = defineProps(['order']);
@@ -8,7 +7,7 @@ const props = defineProps(['order']);
 </script>
 
 <template>
-    <Link :href="route('user.orders.show', order.uuid)">
+    <Link :href="route('user.orders.show', order.uuid)" prefetch>
         <div class="order-thumbnail cursor-pointer group flex flex-col sm:flex-row sm:items-stretch justify-between">
             <div class="flex-shrink-0 sm:pr-4 mb-4 sm:mb-0">
                 <div class="order-status">{{ order.status_label }}</div>

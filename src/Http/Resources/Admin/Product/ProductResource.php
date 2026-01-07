@@ -39,6 +39,7 @@ class ProductResource extends JsonResource
             'related_products_ids' => $this->whenLoaded('relatedProducts', $this->relatedProducts()->pluck('related_product_id')->toArray()),
             'cross_sell_products' => BaseProductResource::collection($this->whenLoaded('crossSells')),
             'cross_sell_ids' => $this->whenLoaded('crossSells', $this->crossSells()->pluck('cross_sell_product_id')->toArray()),
+            'unit' => $this->unit ?? config('shopen.product.default_unit'),
             'up_sell_products' => BaseProductResource::collection($this->whenLoaded('upSells')),
             'up_sell_ids' => $this->whenLoaded('upSells', $this->upSells()->pluck('up_sell_product_id')->toArray()),
             'promo_code' => PromoCodeResource::make($this->whenLoaded('promoCode')),

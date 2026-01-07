@@ -7,7 +7,7 @@ const props = defineProps({
     type: {
         type: String,
         default: 'view',
-        validator: (value) => ['view', 'edit', 'accept', 'cancel', 'remove', 'next', 'prev', 'up', 'down', 'mail', 'code'].includes(value)
+        validator: (value) => ['view', 'edit', 'accept', 'cancel', 'remove', 'next', 'prev', 'up', 'down', 'mail', 'code', 'download'].includes(value)
     },
     size: {
         type: String,
@@ -24,13 +24,16 @@ const props = defineProps({
     },
     href: {
         type: String
+    },
+    target: {
+        type: String,
     }
 });
 
 const emits = defineEmits(['click']);
 
 // Określ, który tag użyć
-const componentTag = computed(() => props.href ? Link : 'button');
+const componentTag = computed(() => props.href ? (props.type === 'download' ? 'a' : Link) : 'button');
 
 // Atrybuty specyficzne dla tagu
 const tagSpecificAttrs = computed(() => {
@@ -47,7 +50,7 @@ const tagSpecificAttrs = computed(() => {
 });
 
 const classAttr = {
-    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit', 'code'].indexOf(props.type) >= 0,
+    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit', 'code', 'download'].indexOf(props.type) >= 0,
     'bg-transparent text-gray-700 hover:bg-blue-200 hover:text-blue-800': props.type === 'view',
     'bg-transparent text-gray-700 hover:bg-red-200 hover:text-red-800': props.type === 'remove',
     'bg-transparent text-gray-700 hover:bg-green-200 hover:text-green-800': ['accept', 'mail'].indexOf(props.type) >= 0,
@@ -68,6 +71,7 @@ const iClass = {
     'bi bi-plus-lg': props.type === 'add',
     'bi bi-send': props.type === 'mail',
     'bi bi-code': props.type === 'code',
+    'bi bi-download': props.type === 'download',
 }
 
 const sizeClasses = {
@@ -80,6 +84,7 @@ const sizeClasses = {
 <template>
     <component
         :is="componentTag"
+        :target="target"
         @click="emits('click')"
         v-bind="tagSpecificAttrs"
         :class="[

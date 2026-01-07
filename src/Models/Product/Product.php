@@ -61,7 +61,8 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         'is_new',
         'is_new_to',
         'tax_class_id',
-        'ceneo_category_id'
+        'ceneo_category_id',
+        'unit'
     ];
 
     protected $casts = [
@@ -567,6 +568,26 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return $variantAttributes;
     }
 
+    public function getTaxRate()
+    {
+        if ($this->taxClass) {
+            return $this->taxClass->rate;
+        }
+
+
+        return config('shopen.product.default_tax_rate');
+    }
+
+    public function setIsNewToAttribute($value): void
+    {
+        try {
+            if (is_string($value)) {
+                $value = Carbon::parse($value);
+            }
+        } catch (Throwable $e) {}
+        $this->attributes['is_new_to'] = $value;
+    }
+
     public function createUrlRewrite($urlKey = null)
     {
         $urlRewrite = UrlRewrite::query()
@@ -591,26 +612,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         $urlRewrite->entity_id = $this->id;
         $urlRewrite->store_id = 1;
         $urlRewrite->save();
-    }
-
-    public function getTaxRate()
-    {
-        if ($this->taxClass) {
-            return $this->taxClass->rate;
-        }
-
-
-        return config('shopen.product.default_tax_rate');
-    }
-
-    public function setIsNewToAttribute($value): void
-    {
-        try {
-            if (is_string($value)) {
-                $value = Carbon::parse($value);
-            }
-        } catch (Throwable $e) {}
-        $this->attributes['is_new_to'] = $value;
     }
 
     protected function beforeSave(): true

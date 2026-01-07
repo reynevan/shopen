@@ -8,6 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
+        if (Schema::hasTable('order_item_promo_code_coupon')) {
+            return;
+        }
         Schema::create('order_item_promo_code_coupon', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_item_id')->constrained()->onDelete('cascade');

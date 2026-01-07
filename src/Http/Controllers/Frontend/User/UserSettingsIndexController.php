@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Requests\Frontend\User\UpdateSettingsRequest;
+use Shopen\Http\Resources\User\UserResource;
 use Shopen\Services\Newsletter\NewsletterServiceInterface;
 
 class UserSettingsIndexController
@@ -18,6 +19,7 @@ class UserSettingsIndexController
     public function index(): Response
     {
         return Inertia::render('Frontend/User/Settings/Index', [
+            'user' => UserResource::make(Auth::user()),
             'newsletter_active' => $this->newsletterService->isSubscribed(Auth::user()->email),
         ]);
     }
@@ -36,6 +38,6 @@ class UserSettingsIndexController
             $this->newsletterService->unsubscribe($user->email);
         }
 
-        return back()->with('success', 'Twoje dane zostały zmienione!');
+        return back()->with('success', 'Twoje dane zostały zapisane!');
     }
 }

@@ -8,10 +8,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('order_addresses', function (Blueprint $table) {
+        if (Schema::hasTable('invoice_addresses')) {
+            return;
+        }
+        Schema::create('invoice_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->string('type');
+            $table->foreignId('invoice_id')->constrained()->onDelete('cascade');
             $table->string('first_name');
             $table->string('last_name');
             $table->string('company')->nullable();
@@ -24,12 +26,12 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->timestamps();
 
-            $table->index(['order_id', 'type']);
+            $table->index(['invoice_id']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('order_addresses');
+        Schema::dropIfExists('invoice_addresses');
     }
 };

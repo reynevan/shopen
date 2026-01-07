@@ -18,10 +18,10 @@ enum OrderStatus: string
             self::NEW => 'Nowe',
             self::PROCESSING => 'W trakcie realizacji',
             self::SHIPPED => 'Wysłane',
-            self::DELIVERED => 'Dostarczono',
+            self::DELIVERED => 'Dostarczone',
             self::READY_FOR_PICKUP => 'Gotowe do odbioru',
-            self::CANCELLED => 'Anulowano',
-            self::REFUNDED => 'Zwrócono',
+            self::CANCELLED => 'Anulowane',
+            self::REFUNDED => 'Zwrócone',
         };
     }
 

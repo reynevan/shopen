@@ -4,24 +4,22 @@ import UserPanelLayout from "@shopen/layouts/frontend/UserPanelLayout.vue";
 import Heading from "../components/Heading.vue";
 import {Head, useForm} from "@inertiajs/vue3";
 import FormField from "@shopen/components/frontend/form/FormField.vue";
-import {useAuthStore} from "@shopen/stores/auth.js";
 import Button from "@shopen/components/frontend/ui/Button.vue";
 import {useConfirm} from "@shopen/composables/useConfirm.js";
 import Input from "@shopen/components/frontend/input/Input.vue";
-import Checkbox from "../../../../components/frontend/input/Checkbox.vue";
+import Checkbox from "@shopen/components/frontend/input/Checkbox.vue";
 
 defineOptions({layout: UserPanelLayout})
 
 const props = defineProps({
-    newsletter_active: {type: Boolean},
+    user: Object,
+    newsletter_active: Boolean,
 })
 
-const auth = useAuthStore();
-
 const form = useForm({
-    first_name: auth.user.first_name,
-    last_name: auth.user.last_name,
-    email: auth.user.email,
+    first_name: props.user.first_name,
+    last_name: props.user.last_name,
+    email: props.user.email,
     password: '',
     new_password: '',
     newsletter_active: props.newsletter_active,

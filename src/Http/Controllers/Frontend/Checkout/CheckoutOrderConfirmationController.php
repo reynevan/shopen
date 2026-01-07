@@ -18,7 +18,7 @@ readonly class CheckoutOrderConfirmationController
         }
         $order->load('items.product');
         return Inertia::render('Frontend/Checkout/Confirmation', [
-            'order' => OrderResource::make($order),
+            'order' => OrderResource::make($order)
         ]);
     }
 }

@@ -64,7 +64,7 @@ const removeItem = (productId) => {
 
     <div>
         <header class="flex items-center justify-between mb-6">
-            <Link :href="route('user.shopping-lists.index')" rel="prev">
+            <Link :href="route('user.shopping-lists.index')" rel="prev" prefetch>
                 <Button type="ghost" class="pl-2">
                     <IconChevron left size="xl"/>
                     Powrót

@@ -46,6 +46,11 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return config("payment.{$this->getKey()}.name");
     }
 
+    public function getPaymentDueDays(): int
+    {
+        return intval(config("payment.{$this->getKey()}.due_days", 0));
+    }
+
     public function getBlock(): string
     {
         return 'payment.payment-method';
