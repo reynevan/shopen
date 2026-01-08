@@ -6,7 +6,7 @@ const auth = useAuthStore();
 
 const clearCache = () => {
 
-    router.post(route('cache.clear'))
+    router.post(route('admin.cache.clear'))
 }
 </script>
 

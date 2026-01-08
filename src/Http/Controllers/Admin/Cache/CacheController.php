@@ -11,6 +11,6 @@ class CacheController
     {
         Cache::flush();
 
-        return back();
+        return back()->with('success', 'Cache został wyczyszczony');
     }
 }
