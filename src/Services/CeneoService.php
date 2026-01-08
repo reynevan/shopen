@@ -2,38 +2,39 @@
 
 namespace Shopen\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Shopen\Models\Ceneo\CeneoCategory;
 
 class CeneoService
 {
     public function getCategories(): array
     {
-        $categories = CeneoCategory::query()->get();
+        return Cache::rememberForever('ceneo-categories', function () {
+            $categories = CeneoCategory::query()->get();
 
-        $categoriesByParent = [];
-        foreach ($categories as $category) {
-            $parentId = $category->parent_id ?? 0;
-            if (!isset($categoriesByParent[$parentId])) {
-                $categoriesByParent[$parentId] = [];
-            }
-            $categoriesByParent[$parentId][] = $category;
-        }
-
-        $buildTree = function($parentId = null) use (&$buildTree, $categoriesByParent) {
-            $result = [];
-            $children = $categoriesByParent[$parentId] ?? [];
-
-            foreach ($children as $category) {
-                $result[] = [
-                    'id' => $category->id,
-                    'name' => $category->name,
-                    'children' => $buildTree($category->id)
-                ];
+            $categoriesByParent = [];
+            foreach ($categories as $category) {
+                $parentId = $category->parent_id ?? 0;
+                if (!isset($categoriesByParent[$parentId])) {
+                    $categoriesByParent[$parentId] = [];
+                }
+                $categoriesByParent[$parentId][] = $category;
             }
 
-            return $result;
-        };
+            $buildTree = function ($parentId = null) use (&$buildTree, $categoriesByParent) {
+                $result = [];
+                $children = $categoriesByParent[$parentId] ?? [];
 
-        return $buildTree(0);
+                foreach ($children as $category) {
+                    $result[] = [
+                        'id' => $category->id,
+                        'name' => $category->name,
+                        'children' => $buildTree($category->id)
+                    ];
+                }
+                return $result;
+            };
+            return $buildTree(0);
+        });
     }
 }
