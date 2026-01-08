@@ -36,7 +36,7 @@ class SetupAdminUser extends Command
 
         $admin = new User();
         $admin->email = $email;
-        $admin->name = $name;
+        $admin->first_name = $name;
         $admin->password = Hash::make($password);
         $admin->save();
 
