@@ -158,7 +158,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::put('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'update'])->name('tax-classes.update');
     Route::delete('/stawki-podatkowe/{taxClass}', [TaxClassEditController::class, 'destroy'])->name('tax-classes.delete');
 
-    Route::post('/cache/clear', [CacheController::class, 'clear'])->name('cache.clear');
+    Route::post('/cache/clear', [CacheController::class, 'clearCache'])->name('cache.clear');
 
     Route::prefix('/ustawienia')->name('settings.')->group(function () {
         Route::get('/belka', [TopBarSettingsController::class, 'index'])->name('top-bar.index');
