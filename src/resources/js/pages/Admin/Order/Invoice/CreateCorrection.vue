@@ -30,6 +30,12 @@ const form = useForm({
     payment_method: props.invoice.payment_method_label,
 })
 
+const isAnyItemEditing = ref(false)
+
+const onEditingChange = (editing) => {
+    isAnyItemEditing.value = editing;
+}
+
 const onItemsUpdate = (items) => {
     form.items = items;
 }
@@ -57,7 +63,7 @@ const createInvoice = () => {
                 <template #header>
                     Szczegóły
                 </template>
-                
+
                 <div class="sm:max-w-[400px] w-full">
                     <FormField label="Numer faktury" :error="form.errors.number">
                         <Input id="number" v-model="form.number"/>
@@ -88,15 +94,18 @@ const createInvoice = () => {
                         <div v-if="editingAddress">
                             <div class="flex gap-2 items-center mb-2">
                                 <FormField label="Imię" field="first_name">
-                                    <Input id="first_name" v-model="form.billing_address.first_name" placeholder="Imię"/>
+                                    <Input id="first_name" v-model="form.billing_address.first_name"
+                                           placeholder="Imię"/>
                                 </FormField>
                                 <FormField label="Nazwisko" field="last_name">
-                                    <Input id="last_name" v-model="form.billing_address.last_name" placeholder="Nazwisko"/>
+                                    <Input id="last_name" v-model="form.billing_address.last_name"
+                                           placeholder="Nazwisko"/>
                                 </FormField>
                             </div>
                             <div class="flex gap-2 items-center mb-2">
                                 <FormField label="Nazwa firmy" field="company">
-                                    <Input id="company" v-model="form.billing_address.company" placeholder="Nazwa firmy"/>
+                                    <Input id="company" v-model="form.billing_address.company"
+                                           placeholder="Nazwa firmy"/>
                                 </FormField>
                                 <FormField label="NIP" field="nip">
                                     <Input id="nip" v-model="form.billing_address.nip" placeholder="NIP"/>
@@ -104,20 +113,22 @@ const createInvoice = () => {
                             </div>
                             <div class="flex gap-2 items-center mb-2">
                                 <FormField label="NIP" field="nip">
-                                    <Input id="postal_code" v-model="form.billing_address.postal_code" placeholder="Kod pocztowy" />
+                                    <Input id="postal_code" v-model="form.billing_address.postal_code"
+                                           placeholder="Kod pocztowy"/>
                                 </FormField>
                                 <FormField label="NIP" field="nip">
-                                    <Input id="city" v-model="form.billing_address.city" placeholder="Miasto" />
+                                    <Input id="city" v-model="form.billing_address.city" placeholder="Miasto"/>
                                 </FormField>
                             </div>
                             <div class="mb-2">
                                 <FormField label="Adres" field="address_line">
-                                    <Input id="address_line" v-model="form.billing_address.address_line" placeholder="Adres"/>
+                                    <Input id="address_line" v-model="form.billing_address.address_line"
+                                           placeholder="Adres"/>
                                 </FormField>
                             </div>
                             <div>
                                 <FormField label="Nr telefonu" field="phone">
-                                    <Input id="phone" v-model="form.billing_address.phone" placeholder="Nr telefonu" />
+                                    <Input id="phone" v-model="form.billing_address.phone" placeholder="Nr telefonu"/>
                                 </FormField>
                             </div>
                         </div>
@@ -140,7 +151,10 @@ const createInvoice = () => {
             <template #header>
                 Produkty
             </template>
-            <EditInvoiceItems :items="form.items" @onItemsUpdate="onItemsUpdate"/>
+            <EditInvoiceItems
+                :items="form.items"
+                @onEditingChange="onEditingChange"
+                @onItemsUpdate="onItemsUpdate"/>
         </Panel>
 
         <div class="mt-4 flex justify-end">
@@ -148,7 +162,7 @@ const createInvoice = () => {
                 <FormField label="Wyślij e-mail do klienta">
                     <Toggle id="send_email" v-model="form.send_email"/>
                 </FormField>
-                <Button type="primary" @click="createInvoice">Zapisz</Button>
+                <Button type="primary" @click="createInvoice" :disabled="isAnyItemEditing">Zapisz</Button>
             </div>
         </div>
     </div>

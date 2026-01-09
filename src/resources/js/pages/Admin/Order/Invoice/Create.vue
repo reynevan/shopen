@@ -27,8 +27,14 @@ const form = useForm({
     send_email: true
 })
 
+const isAnyItemEditing = ref(false)
+
 const onItemsUpdate = (items) => {
     form.items = items;
+}
+
+const onEditingChange = (editing) => {
+    isAnyItemEditing.value = editing;
 }
 
 const editingAddress = ref(false)
@@ -129,7 +135,10 @@ const createInvoice = () => {
             <template #header>
                 Produkty
             </template>
-            <EditInvoiceItems :items="form.items" @onItemsUpdate="onItemsUpdate"/>
+            <EditInvoiceItems
+                :items="form.items"
+                @onEditingChange="onEditingChange"
+                @onItemsUpdate="onItemsUpdate"/>
         </Panel>
 
         <div class="mt-4 flex justify-end">
@@ -137,7 +146,7 @@ const createInvoice = () => {
                 <FormField label="Wyślij e-mail do klienta">
                     <Toggle id="send_email" v-model="form.send_email"/>
                 </FormField>
-                <Button type="primary" @click="createInvoice">Zapisz</Button>
+                <Button type="primary" @click="createInvoice" :disabled="isAnyItemEditing">Zapisz</Button>
             </div>
         </div>
     </div>

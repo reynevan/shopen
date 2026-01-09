@@ -22,6 +22,7 @@ class Payment extends Model
         'gateway_data',
         'processed_at',
         'notes',
+        'is_return'
     ];
 
     protected $casts = [

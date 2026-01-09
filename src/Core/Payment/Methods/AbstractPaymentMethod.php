@@ -20,14 +20,15 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         $this->config = $this->getDefaultConfig();
     }
 
-    protected function createPayment(Order $order, PaymentStatus $status = PaymentStatus::PENDING, array $additionalData = []): Payment
+    protected function createPayment(Order $order, $amount, bool $isReturn = false, array $additionalData = []): Payment
     {
         return Payment::create([
             'order_id' => $order->id,
             'payment_method' => $this->getKey(),
-            'amount' => $order->total_amount,
-            'status' => $status,
-            'transaction_id' => $this->generateTransactionId()
+            'amount' => $amount,
+            'status' => PaymentStatus::PENDING,
+            'transaction_id' => $this->generateTransactionId(),
+            'is_return' => $isReturn,
         ]);
     }
 

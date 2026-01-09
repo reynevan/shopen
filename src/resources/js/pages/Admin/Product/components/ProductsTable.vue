@@ -81,7 +81,7 @@ const removeProduct = (product) => {
 
         <TableColumn label="Zdjęcie" v-slot="data" width="70px">
             <div class="min-h-[50px]">
-                <Link :href="route('admin.products.edit', data.row.id)">
+                <Link :href="route('admin.products.edit', data.row.id)" prefetch>
                 <img :src="data.row.image"
                      width="50px"
                      class="border"
@@ -91,7 +91,7 @@ const removeProduct = (product) => {
         </TableColumn>
 
         <TableColumn field="name" label="Nazwa" sortable v-slot="data">
-            <Link :href="route('admin.products.edit', data.row.id)" class="hover:text-black cursor-pointer">
+            <Link :href="route('admin.products.edit', data.row.id)" class="hover:text-black cursor-pointer" prefetch>
                 {{ data.row.attributes.name }}
             </Link>
         </TableColumn>
@@ -124,7 +124,7 @@ const removeProduct = (product) => {
 
         <TableColumn label="Akcje" v-slot="data" width="100px">
             <div class="flex divide-x divide-light">
-                <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer">
+                <Link :href="route('admin.products.edit', data.row.id)" class="text-accent cursor-pointer" prefetch>
                     <ActionButton type="edit"/>
                 </Link>
                 <ActionButton @click="removeProduct(data.row)" type="remove"/>

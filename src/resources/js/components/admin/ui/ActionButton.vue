@@ -7,7 +7,21 @@ const props = defineProps({
     type: {
         type: String,
         default: 'view',
-        validator: (value) => ['view', 'edit', 'accept', 'cancel', 'remove', 'next', 'prev', 'up', 'down', 'mail', 'code', 'download'].includes(value)
+        validator: (value) => [
+            'view',
+            'edit',
+            'accept',
+            'cancel',
+            'remove',
+            'next',
+            'prev',
+            'up',
+            'down',
+            'mail',
+            'code',
+            'download',
+            'reload'
+        ].includes(value)
     },
     size: {
         type: String,
@@ -26,6 +40,9 @@ const props = defineProps({
         type: String
     },
     target: {
+        type: String,
+    },
+    title: {
         type: String,
     }
 });
@@ -50,7 +67,7 @@ const tagSpecificAttrs = computed(() => {
 });
 
 const classAttr = {
-    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit', 'code', 'download'].indexOf(props.type) >= 0,
+    'bg-transparent hover:bg-gray-200 text-gray-800': ['search', 'edit', 'code', 'download', 'reload'].indexOf(props.type) >= 0,
     'bg-transparent text-gray-700 hover:bg-blue-200 hover:text-blue-800': props.type === 'view',
     'bg-transparent text-gray-700 hover:bg-red-200 hover:text-red-800': props.type === 'remove',
     'bg-transparent text-gray-700 hover:bg-green-200 hover:text-green-800': ['accept', 'mail'].indexOf(props.type) >= 0,
@@ -72,6 +89,7 @@ const iClass = {
     'bi bi-send': props.type === 'mail',
     'bi bi-code': props.type === 'code',
     'bi bi-download': props.type === 'download',
+    'bi bi-arrow-clockwise': props.type === 'reload',
 }
 
 const sizeClasses = {
@@ -92,6 +110,7 @@ const sizeClasses = {
             disabled ? '' : 'hover:shadow-lg',
             sizeClasses[size]
         ]"
+        :title="title"
         class="flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed">
         <IconLoader
             v-if="loading"

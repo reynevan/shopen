@@ -11,6 +11,8 @@ interface PaymentMethodInterface
 
     public function initializePayment(Order $order, array $data = []): Payment;
 
+    public function initializeReturnPayment(Order $order, ?Payment $payment, $amount, array $data = []): Payment;
+
     public function requiresRedirect(): bool;
 
     public function getPaymentUrl(Payment $payment): ?string;

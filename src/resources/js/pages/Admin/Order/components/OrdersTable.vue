@@ -75,7 +75,7 @@ const filter = () => {
             </TableColumn>
 
             <TableColumn field="-" label="Akcje" v-slot="data" width="50px">
-                <Link :href="route('admin.orders.show', data.row.id)">
+                <Link :href="route('admin.orders.show', data.row.id)" prefetch>
                     <ActionButton type="view"/>
                 </Link>
             </TableColumn>

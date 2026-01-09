@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
+use Shopen\Core\Payment\PaymentMethodManager;
 use Shopen\Enums\Order\OrderStatus;
 use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Http\Requests\Admin\Order\ShipRequest;
@@ -30,6 +31,7 @@ readonly class OrderShowController
 {
     public function __construct(
         protected OrderRepository $orderRepository,
+        protected PaymentMethodManager $paymentMethodManager
     )
     {}
 
@@ -38,7 +40,7 @@ readonly class OrderShowController
         $order->load([
             'shippingAddress',
             'billingAddress',
-            'payments',
+            'payments' => fn ($q) => $q->orderBy('created_at', 'asc'),
             'items.product',
             'items.product.promoCode',
             'items.promoCodeCoupons',
@@ -104,12 +106,26 @@ readonly class OrderShowController
         return back();
     }
 
-    public function updatePaymentStatus(Order $order, Payment $payment)
+    public function updatePaymentStatus(Order $order, Payment $payment): RedirectResponse
     {
         if ($payment->order_id !== $order->id) {
             return back();
         }
         $payment->status = request('status');
+        $payment->save();
+        return back();
+    }
+
+    public function refreshPaymentStatus(Order $order, Payment $payment): RedirectResponse
+    {
+        if ($payment->order_id !== $order->id) {
+            return back();
+        }
+        $method = $this->paymentMethodManager->get($payment->payment_method);
+        if (!$method) {
+            return back();
+        }
+        $payment->status = $method->checkPaymentStatus($payment);
         $payment->save();
         return back();
     }

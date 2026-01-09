@@ -64,6 +64,11 @@ class Invoice extends Model
         return $this->belongsTo(Invoice::class, 'base_invoice_id');
     }
 
+    public function correctionInvoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'base_invoice_id');
+    }
+
     public function getFileNameAttribute()
     {
         $name = preg_replace('/\D+/', '_', $this->invoice_number);

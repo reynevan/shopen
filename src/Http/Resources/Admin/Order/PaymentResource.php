@@ -19,7 +19,8 @@ class PaymentResource extends JsonResource
             'amount' => Number::currency($this->amount),
             'status' => $this->status,
             'status_label' => $this->status_label,
-            'gateway_transaction_id' => $this->gateway_transaction_id
+            'gateway_transaction_id' => $this->gateway_transaction_id,
+            'is_return' => $this->is_return
         ];
     }
 }

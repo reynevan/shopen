@@ -100,6 +100,7 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::post('/zamowienia/{order}/status', [OrderShowController::class, 'updateStatus'])->name('orders.update-status');
     Route::post('/zamowienia/{order}/wysylka', [OrderShowController::class, 'updateShipping'])->name('orders.shipping');
     Route::post('/zamowienia/{order}/platnosc/{payment}', [OrderShowController::class, 'updatePaymentStatus'])->name('orders.update-payment-status');
+    Route::post('/zamowienia/{order}/platnosc/{payment}/odswiez', [OrderShowController::class, 'refreshPaymentStatus'])->name('orders.refresh-payment-status');
     Route::post('/zamowienia/{order}/wyslij-bony', [OrderShowController::class, 'sendVouchersEmail'])->name('orders.send-vouchers');
     Route::get('/zamowienia/{order}/nowa-faktura', [InvoiceCreateController::class, 'create'])->name('orders.invoices.create');
     Route::post('/zamowienia/{order}/faktury', [InvoiceCreateController::class, 'store'])->name('orders.invoices.store');

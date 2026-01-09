@@ -98,7 +98,7 @@ const props = defineProps({
                     <div class="w-1/2">
                         <Panel>
                             <template #header>
-                                Płatność
+                                Płatności
                             </template>
                             <Payment :order="order" :paymentStatuses="paymentStatusOptions"/>
                         </Panel>

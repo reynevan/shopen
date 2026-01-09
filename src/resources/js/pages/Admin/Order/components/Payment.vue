@@ -15,6 +15,14 @@ const submit = (payment) => {
         preserveScroll: true
     })
 }
+
+const refreshStatus = (payment) => {
+    router.post(route('admin.orders.refresh-payment-status', [props.order.id, payment.id]), {},
+        {
+            preserveScroll: true
+        })
+}
+
 const statusOptions = [];
 for (let id in props.paymentStatuses) {
     statusOptions.push({id, value: props.paymentStatuses[id]});
@@ -29,8 +37,14 @@ for (let id in props.paymentStatuses) {
         <div class="divide-y space-y-2">
             <div v-for="payment in order.payments">
                 <div class="flex items-start justify-between py-2">
+
                     <div class="flex flex-col items-start">
-                        <div class="text-xs">kwota</div>
+                        <div v-if="payment.is_return" class="text-xs">
+                            <i class="bi bi-reply"></i> ZWROT
+                        </div>
+                        <div v-else class="text-xs">
+                            <i class="bi bi-credit-card"></i> PŁATNOŚĆ
+                        </div>
                         <div>{{ payment.amount }}</div>
                     </div>
                     <div class="flex flex-col items-end">
@@ -38,6 +52,7 @@ for (let id in props.paymentStatuses) {
                         <div v-show="!payment.editing" class="flex items-center">
                             {{ payment.status_label }}
                             <ActionButton type="edit" @click="payment.editing = true"/>
+                            <ActionButton type="reload" @click="refreshStatus(payment)" title="Odśwież status"/>
                         </div>
                         <div v-show="payment.editing">
                             <form method="POST">
@@ -57,7 +72,7 @@ for (let id in props.paymentStatuses) {
                 <div v-if="payment.gateway_transaction_id" class="flex items-start justify-between pb-2">
                     <div>
                         <div class="text-xs">ID transakcji</div>
-                        <div>{{ payment.gateway_transaction_id}}</div>
+                        <div>{{ payment.gateway_transaction_id }}</div>
                     </div>
                 </div>
             </div>

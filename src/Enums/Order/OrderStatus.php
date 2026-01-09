@@ -7,8 +7,8 @@ enum OrderStatus: string
     case NEW = 'new';
     case PROCESSING = 'processing';
     case SHIPPED = 'shipped';
-    case DELIVERED = 'delivered';
     case READY_FOR_PICKUP = 'ready_for_pickup';
+    case DELIVERED = 'delivered';
     case CANCELLED = 'cancelled';
     case REFUNDED = 'refunded';
 
@@ -18,8 +18,8 @@ enum OrderStatus: string
             self::NEW => 'Nowe',
             self::PROCESSING => 'W trakcie realizacji',
             self::SHIPPED => 'Wysłane',
-            self::DELIVERED => 'Dostarczone',
             self::READY_FOR_PICKUP => 'Gotowe do odbioru',
+            self::DELIVERED => 'Dostarczone',
             self::CANCELLED => 'Anulowane',
             self::REFUNDED => 'Zwrócone',
         };

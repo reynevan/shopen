@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use OpenPayU_Configuration;
 use OpenPayU_Order;
+use OpenPayU_Refund;
 use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
@@ -15,7 +16,7 @@ class PayUPaymentMethod extends AbstractPaymentMethod
 
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        $payment = $this->createPayment($order);
+        $payment = $this->createPayment($order, $order->total_amount);
 
         try {
             $response = $this->createPayUOrder($order, $payment, $data);
@@ -28,6 +29,26 @@ class PayUPaymentMethod extends AbstractPaymentMethod
             return $payment;
         } catch (\Exception $e) {
             $payment->update([
+                'status' => PaymentStatus::FAILED,
+                'notes' => 'Failed to initialize PayU payment: ' . $e->getMessage(),
+            ]);
+            throw $e;
+        }
+    }
+
+    public function initializeReturnPayment(Order $order, ?Payment $payment, $amount, array $data = []): Payment
+    {
+        $returnPayment = $this->createPayment($order, $amount, true);
+
+        try {
+            $response = $this->createPayURefund($order, $payment, $amount);
+            $returnPayment->update([
+                'gateway_transaction_id' => $response->getResponse()->orderId ?? null,
+                'gateway_data' => $response->getResponse(),
+            ]);
+            return $returnPayment;
+        } catch (\Exception $e) {
+            $returnPayment->update([
                 'status' => PaymentStatus::FAILED,
                 'notes' => 'Failed to initialize PayU payment: ' . $e->getMessage(),
             ]);
@@ -48,20 +69,20 @@ class PayUPaymentMethod extends AbstractPaymentMethod
 
     public function checkPaymentStatus(Payment $payment): PaymentStatus
     {
-        try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . $this->getAccessToken(),
-                'Content-Type' => 'application/json',
-            ])->get($this->config['api_url'] . '/orders/' . $payment->gateway_transaction_id);
-
-            if ($response->successful()) {
-                $orderData = $response->json();
-                return $this->mapPayUStatusToPaymentStatus($orderData['orders'][0]['status']);
-            }
-        } catch (\Exception $e) {
-            Log::error('PayU status check failed', ['payment_id' => $payment->id, 'error' => $e->getMessage()]);
+        $this->initializePayu();
+        $payUOrderId = $payment->gateway_data['orderId'] ?? null;
+        if (!$payUOrderId) {
+            return $payment->status;
         }
+        $response = OpenPayU_Order::retrieve($payUOrderId);
 
+        if ($response->getStatus() !== OpenPayU_Order::SUCCESS) {
+            throw new \Exception('PayU API error: ' . $response->body());
+        }
+        if ($response->getStatus() === 'SUCCESS') {
+            $orderData = $response->getResponse();
+            return $this->mapPayUStatusToPaymentStatus($orderData->orders[0]->status ?? null);
+        }
         return $payment->status;
     }
 
@@ -95,13 +116,28 @@ class PayUPaymentMethod extends AbstractPaymentMethod
         ];
     }
 
-    private function createPayUOrder(Order $order, Payment $payment, $data): object
+    private function createPayURefund(Order $order, ?Payment $payment, $amount): ?\OpenPayU_Result
+    {
+        $this->initializePayu();
+        return OpenPayU_Refund::create(
+            $payment->gateway_transaction_id,
+            "Zamówienie #{$order->order_number} - zwrot",
+            intval($amount * 100)
+        );
+    }
+
+    private function initializePayu(): void
     {
         OpenPayU_Configuration::setEnvironment($this->config['env']);
         OpenPayU_Configuration::setMerchantPosId($this->config['pos_id']);
         OpenPayU_Configuration::setSignatureKey($this->config['signature_key']);
         OpenPayU_Configuration::setOauthClientId($this->config['oauth_client_id']);
         OpenPayU_Configuration::setOauthClientSecret($this->config['oauth_client_secret']);
+    }
+
+    private function createPayUOrder(Order $order, Payment $payment, $data): object
+    {
+        $this->initializePayu();
 
         $orderData = [
             'notifyUrl' => $this->config['notify_url'],

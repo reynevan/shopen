@@ -10,7 +10,15 @@ class BankTransferPaymentMethod extends AbstractPaymentMethod
 {
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        return $this->createPayment($order, PaymentStatus::PENDING, [
+        return $this->createPayment($order, PaymentStatus::PENDING, false, [
+            'bank_account' => $this->config['bank_account'],
+            'bank_name' => $this->config['bank_name'],
+            'transfer_title' => 'Order ' . $order->order_number,
+        ]);
+    }
+    public function initializeReturnPayment(Order $order, ?Payment $payment, $amount, array $data = []): Payment
+    {
+        return $this->createPayment($order, $order->total_amount, true, [
             'bank_account' => $this->config['bank_account'],
             'bank_name' => $this->config['bank_name'],
             'transfer_title' => 'Order ' . $order->order_number,

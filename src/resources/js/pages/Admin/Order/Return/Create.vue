@@ -20,8 +20,6 @@ const props = defineProps({
 
 const form = useForm({
     items: props.order.items,
-    send_email: true,
-    create_invoice: true,
     shipping_amount: 0
 })
 
@@ -85,13 +83,7 @@ const createReturn = () => {
 
         <div class="mt-4 flex justify-end">
             <div>
-                <FormField label="Wyślij e-mail do klienta">
-                    <Toggle id="send_email" v-model="form.send_email"/>
-                </FormField>
-                <FormField label="Utwórz korektę faktury" v-if="order.invoices?.length">
-                    <Toggle id="create_invoice" v-model="form.create_invoice"/>
-                </FormField>
-                <FormField label="Zwrot kosztu wysyłki" v-if="order.invoices?.length">
+                <FormField label="Zwrot kosztu wysyłki">
                     <Input id="shipping_amount" v-model="form.shipping_amount"/>
                 </FormField>
                 <Button type="primary" @click="createReturn">Zapisz</Button>

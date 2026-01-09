@@ -23,8 +23,10 @@ const allSent = computed(() => !props.order.items.some(item => !item.promo_code_
         <template v-for="item in order.items" :key="item.id">
             <div v-if="item.promo_code_coupons?.length" class="flex items-center gap-2 py-2">
                 <div>{{ item.product.promo_code.name }}</div>
-                <div v-for="coupon in item.promo_code_coupons" class="border text-sm px-2 bg-white">
-                    {{ coupon.code }}
+                <div class="flex flex-wrap gap-1">
+                    <div v-for="coupon in item.promo_code_coupons" class="border text-sm px-2 bg-white">
+                        {{ coupon.code }}
+                    </div>
                 </div>
                 <div v-if="item.promo_code_coupon_email_sent" class="text-gray-500 text-lg">
                     <i class="bi bi-send-check" title="Kod wysłany do klienta"></i>

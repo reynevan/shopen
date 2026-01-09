@@ -266,7 +266,7 @@ readonly class OrderService
                 'promo_code_discount_amount' => $promoCodeDiscountAmount,
                 'total' => $total,
                 'tax_amount' => $tax,
-                'tax_rate' => $product->taxClass->rate,
+                'tax_rate' => $product->taxClass->rate ?? config('shopen.product.default_tax_rate'),
                 'unit' => $product->unit ?? config('shopen.product.default_unit')
             ]);
 
