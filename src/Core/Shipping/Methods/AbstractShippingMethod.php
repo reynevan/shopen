@@ -30,7 +30,7 @@ abstract class AbstractShippingMethod implements JsonSerializable, ShippingMetho
         if (!is_null($isActive)) {
             return $isActive;
         }
-        return config("shipping.{$this->getKey()}.$field");
+        return config("shipping.{$this->getKey()}.$field", false);
     }
 
     public function getName(): string
