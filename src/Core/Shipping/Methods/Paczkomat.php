@@ -4,8 +4,6 @@ namespace Shopen\Core\Shipping\Methods;
 
 class Paczkomat extends AbstractShippingMethod implements ShippingMethodInterface
 {
-    protected float $price = 12;
-
     public function getKey(): string
     {
         return 'paczkomaty';

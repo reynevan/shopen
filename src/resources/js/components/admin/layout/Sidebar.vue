@@ -11,13 +11,21 @@ const clearCache = () => {
 </script>
 
 <template>
-    <aside class="sidebar fixed left-0 top-0 bottom-0 w-[100px] bg-secondary py-6 z-50">
+    <aside class="sidebar fixed left-0 top-0 bottom-0 w-[100px] bg-secondary py-6 px-2 z-50">
         <ul class="">
             <li class="mb-4 py-2 text-accent">
                 <Link :href="route('admin.dashboard')"
                       class="text-xs flex flex-col items-center"
                 >
-                    <div class="uppercase">Daszbord</div>
+                    <div class="uppercase">Dashboard</div>
+                </Link>
+            </li>
+
+            <li class="mb-4 py-2 text-accent ">
+                <Link :href="route('admin.orders.index')"
+                      class="text-xs flex flex-col items-center"
+                >
+                    <div class="uppercase">Zamówienia</div>
                 </Link>
             </li>
 
@@ -29,27 +37,19 @@ const clearCache = () => {
                 </Link>
             </li>
 
-            <li class="mb-4 py-2 text-accent">
-                <Link :href="route('admin.products.reviews.index')"
-                   class="text-xs flex flex-col items-center"
-                >
-                    <div class="uppercase">Opinie</div>
-                </Link>
-            </li>
-
             <li class="mb-4 py-2  text-accent">
                 <Link :href="route('admin.categories.index')"
-                   class="text-xs flex flex-col items-center"
+                      class="text-xs flex flex-col items-center"
                 >
                     <div class="uppercase">Kategorie</div>
                 </Link>
             </li>
 
-            <li class="mb-4 py-2 text-accent ">
-                <Link :href="route('admin.orders.index')"
+            <li class="mb-4 py-2 text-accent">
+                <Link :href="route('admin.products.reviews.index')"
                    class="text-xs flex flex-col items-center"
                 >
-                    <div class="uppercase">Zamówienia</div>
+                    <div class="uppercase">Opinie</div>
                 </Link>
             </li>
 

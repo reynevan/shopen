@@ -12,7 +12,7 @@ const isActive = computed(() => page.props.route === props.routeName)
 
 <template>
     <li class="px-4 py-2" :class="[isActive ? 'bg-accent' : 'hover:bg-accent/20']">
-        <Link :href="route(props.routeName)">
+        <Link :href="route(props.routeName)" class="block" prefetch>
             {{ title }}
         </Link>
     </li>

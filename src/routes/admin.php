@@ -41,6 +41,8 @@ use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeCreateController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodeEditController;
 use Shopen\Http\Controllers\Admin\PromoCode\PromoCodesIndexController;
 use Shopen\Http\Controllers\Admin\Settings\InstagramSettingsController;
+use Shopen\Http\Controllers\Admin\Settings\PaymentMethodsController;
+use Shopen\Http\Controllers\Admin\Settings\ShippingMethodsController;
 use Shopen\Http\Controllers\Admin\Settings\TopBarSettingsController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassCreateController;
 use Shopen\Http\Controllers\Admin\TaxClass\TaxClassEditController;
@@ -162,12 +164,19 @@ Route::middleware(['web', 'admin.guard'])->prefix('/admin')->name('admin.')->gro
     Route::post('/cache/clear', [CacheController::class, 'clearCache'])->name('cache.clear');
 
     Route::prefix('/ustawienia')->name('settings.')->group(function () {
-        Route::get('/belka', [TopBarSettingsController::class, 'index'])->name('top-bar.index');
-        Route::put('/belka', [TopBarSettingsController::class, 'update'])->name('top-bar.update');
+        Route::get('/banner', [TopBarSettingsController::class, 'index'])->name('top-bar.index');
+        Route::put('/banner', [TopBarSettingsController::class, 'update'])->name('top-bar.update');
+
+        Route::get('/metody-platnosci', [PaymentMethodsController::class, 'index'])->name('payment-methods.index');
+        Route::put('/metody-platnosci', [PaymentMethodsController::class, 'update'])->name('payment-methods.update');
+
+        Route::get('/metody-wysylki', [ShippingMethodsController::class, 'index'])->name('shipping-methods.index');
+        Route::put('/metody-wysylki', [ShippingMethodsController::class, 'update'])->name('shipping-methods.update');
 
 
         Route::get('/instagram', [InstagramSettingsController::class, 'index'])->name('instagram.index');
         Route::put('/instagram', [InstagramSettingsController::class, 'update'])->name('instagram.update');
+        Route::post('/instagram', [InstagramSettingsController::class, 'disconnect'])->name('instagram.disconnect');
         Route::get('/instagram/callback', [InstagramSettingsController::class, 'callback'])->name('instagram.callback');
     });
 

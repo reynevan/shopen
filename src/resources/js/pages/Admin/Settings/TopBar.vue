@@ -7,7 +7,7 @@ import {useForm} from "@inertiajs/vue3";
 import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
 import TextEditor from "@shopen/components/admin/form/input/TextEditor.vue";
 import ColorPicker from "@shopen/components/admin/form/input/ColorPicker.vue";
-import Button from "../../../components/frontend/ui/Button.vue";
+import Button from "../../../components/admin/ui/Button.vue";
 
 defineOptions({layout: SettingsLayout})
 
@@ -44,7 +44,7 @@ const save = () => {
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>
     <section>
-        <div class="space-y-8">
+        <div class="space-y-8 mb-4">
             <div v-for="(slide, index) in form.slides" :key="index" class="flex items-start border-b border-dark">
                 <div class="w-full">
                     <FormField label="Treść">
@@ -61,7 +61,7 @@ const save = () => {
                     </FormField>
                 </div>
                 <div class="pl-4">
-                    <ActionButton type="remove" size="lg" @click="removeSlide(index)"/>
+                    <ActionButton type="remove" @click="removeSlide(index)"/>
                 </div>
             </div>
         </div>

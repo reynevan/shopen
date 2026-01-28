@@ -49,10 +49,16 @@ class ShippingMethodManager
         $this->methods[$method->getKey()] = $method;
     }
 
-    public function getShippingMethods(): array
+    public function getAllShippingMethods(): array
     {
         $this->registerMethods();
         return $this->methods;
+    }
+
+    public function getShippingMethods(): array
+    {
+        $this->registerMethods();
+        return array_filter(array_values($this->methods), fn ($method) => $method->isActive());
     }
 
     public function get(string $key): ?ShippingMethodInterface

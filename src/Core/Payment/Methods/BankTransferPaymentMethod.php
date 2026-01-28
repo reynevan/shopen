@@ -10,19 +10,32 @@ class BankTransferPaymentMethod extends AbstractPaymentMethod
 {
     public function initializePayment(Order $order, array $data = []): Payment
     {
-        return $this->createPayment($order, PaymentStatus::PENDING, false, [
-            'bank_account' => $this->config['bank_account'],
-            'bank_name' => $this->config['bank_name'],
-            'transfer_title' => 'Order ' . $order->order_number,
+        return $this->createPayment($order, $order->total_amount, false, [
+            'transfer_title' => 'Zamówienie nr ' . $order->order_number,
         ]);
     }
     public function initializeReturnPayment(Order $order, ?Payment $payment, $amount, array $data = []): Payment
     {
-        return $this->createPayment($order, $order->total_amount, true, [
-            'bank_account' => $this->config['bank_account'],
-            'bank_name' => $this->config['bank_name'],
-            'transfer_title' => 'Order ' . $order->order_number,
+        return $this->createPayment($order, $amount, true, [
+            'transfer_title' => 'Zamówienie nr ' . $order->order_number,
         ]);
+    }
+
+    public function getTransferDetails()
+    {
+        return $this->getConfigField('transfer_details');
+    }
+
+    public function getAdditionalFields(): array
+    {
+        return [
+            'transfer_details' => [
+                'key' => 'transfer_details',
+                'label' => 'Dane do przelewu',
+                'value' => $this->getTransferDetails(),
+                'input' => 'textarea'
+            ]
+        ];
     }
 
     public function checkPaymentStatus(Payment $payment): PaymentStatus
@@ -33,13 +46,5 @@ class BankTransferPaymentMethod extends AbstractPaymentMethod
     public function getKey(): string
     {
         return 'bank_transfer';
-    }
-
-    protected function getDefaultConfig(): array
-    {
-        return [
-            'bank_account' => config('payment.bank_transfer.account_number'),
-            'bank_name' => config('payment.bank_transfer.bank_name'),
-        ];
     }
 }

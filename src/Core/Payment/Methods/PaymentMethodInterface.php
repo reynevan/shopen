@@ -23,6 +23,8 @@ interface PaymentMethodInterface
 
     public function getName(): string;
 
+    public function getTitle(): string;
+
     public function getPaymentDueDays(): int;
 
     public function getKey(): string;
@@ -31,5 +33,9 @@ interface PaymentMethodInterface
 
     public function getPrice(): float;
 
+    public function getAdditionalFields(): array;
+
     public function jsonSerialize(): array;
+
+    public function toArray(): array;
 }

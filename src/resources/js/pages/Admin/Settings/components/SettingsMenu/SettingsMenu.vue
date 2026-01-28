@@ -2,7 +2,9 @@
     import SettingsMenuItem from "./SettingsMenuItem.vue";
 
     const elements = [
-        {title: 'Belka', route: 'admin.settings.top-bar.index'},
+        {title: 'Banner informacyjny', route: 'admin.settings.top-bar.index'},
+        {title: 'Metody płatności', route: 'admin.settings.payment-methods.index'},
+        {title: 'Metody wysyłki', route: 'admin.settings.shipping-methods.index'},
         {title: 'Instagram', route: 'admin.settings.instagram.index'},
     ]
 </script>

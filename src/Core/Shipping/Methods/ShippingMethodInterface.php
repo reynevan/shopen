@@ -8,7 +8,13 @@ interface ShippingMethodInterface
 
     public function getName(): string;
 
+    public function getTitle(): string;
+
     public function getPrice(): float;
+
+    public function calculatePrice(): float;
+
+    public function toArray(): array;
 
     public function jsonSerialize(): array;
 

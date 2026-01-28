@@ -23,7 +23,6 @@ class InstagramApiService
         return json_decode($response->getBody()->getContents(), true) ?: [];
     }
 
-    // 3) Short-lived user token -> Long-lived user token
     public function exchangeForLongLivedUserToken(string $userToken): array
     {
 
@@ -37,7 +36,6 @@ class InstagramApiService
         return json_decode($response->getBody()->getContents(), true) ?: [];
     }
 
-    // 4) Listuj strony FB użytkownika (do pozyskania Page Access Token)
     public function getUserPages(string $userAccessToken): array
     {
         $url = 'https://graph.facebook.com/v20.0/me/accounts'
@@ -49,7 +47,6 @@ class InstagramApiService
         return $resp['data'] ?? [];
     }
 
-    // 5) Z Page ID pobierz powiązany IG Business User ID
     public function getIgUserIdByPage(string $pageId, string $pageAccessToken): ?string
     {
         $url = 'https://graph.facebook.com/v20.0/' . urlencode($pageId)
@@ -61,10 +58,8 @@ class InstagramApiService
         return $data['instagram_business_account']['id'] ?? null;
     }
 
-    // 6) Page Access Token -> Long-lived Page Token (opcjonalne: uzyskaj long-lived user token i z niego page token)
     public function getLongLivedPageToken(string $pageId, string $longLivedUserToken): ?string
     {
-        // Odśwież listę kont/stron, teraz z long-lived user tokenem: pobierz page access_token, który zwykle sam jest long-lived.
         $url = 'https://graph.facebook.com/v20.0/me/accounts'
             . '?fields=id,name,access_token'
             . '&access_token=' . urlencode($longLivedUserToken);
@@ -80,7 +75,6 @@ class InstagramApiService
         return null;
     }
 
-    // 7) Odświeżenie long-lived user tokena
     public function refreshLongLivedUserToken(string $longLivedUserToken): array
     {
         $url = 'https://graph.facebook.com/v20.0/oauth/access_token'
@@ -93,7 +87,6 @@ class InstagramApiService
         return json_decode($response->getBody()->getContents(), true) ?: [];
     }
 
-    // 8) Pobierz media IG dla IG User
     public function fetchRecentMedia(string $igUserId, string $pageAccessToken, int $limit = 10): array
     {
         $fields = 'id,caption,media_type,media_url,permalink,timestamp,thumbnail_url';

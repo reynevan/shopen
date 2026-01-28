@@ -87,6 +87,21 @@ class BannerService
         return $banners;
     }
 
+    public function getCustom($placements): array
+    {
+        $banners = [];
+        foreach ($placements as $placement) {
+            $placementBanner = $this->buildBaseQuery()
+                ->where('placement_type', PlacementType::DYNAMIC)
+                ->where('placement_key', $placement)
+                ->first();
+            if ($placementBanner) {
+                $banners[] = BannerResource::make($placementBanner)->resolve();
+            }
+        }
+        return $banners;
+    }
+
     private function buildBaseQuery()
     {
         $now = Carbon::now();

@@ -19,8 +19,18 @@ class InstagramSettingsController
     public function index(): Response
     {
         return Inertia::render('Admin/Settings/Instagram', [
-            'connectUrl' => $this->getAuthUrl()
+            'connectUrl' => $this->getAuthUrl(),
+            'isConnected' => $this->getIsConnected()
         ]);
+    }
+
+    public function disconnect(): RedirectResponse
+    {
+        foreach ($this->getConfigPaths() as $path) {
+            $this->config->remove($path);
+        }
+
+        return back();
     }
 
     public function callback(): RedirectResponse
@@ -95,5 +105,26 @@ class InstagramSettingsController
             urlencode($state),
             urlencode(implode(',', $scope))
         );
+    }
+
+    protected function getIsConnected(): bool
+    {
+        foreach ($this->getConfigPaths() as $path) {
+            if (!$this->config->get($path)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected function getConfigPaths(): array
+    {
+        return [
+            'instagram/access_token',
+            'instagram/page_id',
+            'instagram/ig_user_id',
+            'instagram/long_lived_token',
+            'instagram/long_lived_user_token'
+        ];
     }
 }

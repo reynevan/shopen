@@ -52,6 +52,12 @@ class PaymentMethodManager
         $this->methods[$method->getKey()] = $method;
     }
 
+    public function getAllPaymentMethods(): array
+    {
+        $this->registerMethods();
+        return $this->methods;
+    }
+
     public function getPaymentMethods(): array
     {
         $this->registerMethods();

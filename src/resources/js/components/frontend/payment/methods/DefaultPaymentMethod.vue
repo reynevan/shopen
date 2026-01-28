@@ -30,7 +30,7 @@ const selectMethod = () => {
                 <IconCircle v-else></IconCircle>
             </div>
             <div>
-                <div class="payment-method-name">{{ method.name }}</div>
+                <div class="payment-method-name">{{ method.title }}</div>
                 <div class="payment-method-description" v-if="method.description">{{ method.description }}</div>
             </div>
         </div>

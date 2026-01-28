@@ -152,7 +152,7 @@ const onPaginate = (page) => {
             <div class="flex items-center">
                 <ProductThumbnailImage :product="data.row.product" size="sm"/>
                 <div class="ml-2">
-                    <Link :href="data.row.product.url">{{ data.row.product.name }}</Link>
+                    <a :href="data.row.product.url" target="_blank">{{ data.row.product.name }}</a>
                 </div>
             </div>
         </TableColumn>

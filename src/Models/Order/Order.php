@@ -168,7 +168,7 @@ class Order extends Model
     public function getCustomerEmail(): ?string
     {
         if ($this->isGuestOrder()) {
-            $billingAddress = $this->billingAddress();
+            $billingAddress = $this->billingAddress;
             return $billingAddress ? $billingAddress->email : null;
         }
         

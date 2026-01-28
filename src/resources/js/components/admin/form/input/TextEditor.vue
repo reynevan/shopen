@@ -102,7 +102,7 @@ onMounted(async () => {
 <template>
     <div class="w-full">
         <div v-if="!editing">
-            <textarea :id="id ?? 'uuid'" :rows="rows" class="input" v-model="model"></textarea>
+            <textarea :id="id ?? 'uuid'" :rows="rows" class="input py-2" v-model="model"></textarea>
         </div>
         <div v-if="EditorComponent && editing">
             <component

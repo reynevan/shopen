@@ -20,6 +20,7 @@ class VoucherService
             'is_active' => true,
             'discount_type' => DiscountType::FIXED,
             'discount_value' => $price,
+            'minimum_order_value' => $price,
             'applies_to' => ApplyType::CART,
             'applies_to_discounted' => true,
             'usage_limit' => 1

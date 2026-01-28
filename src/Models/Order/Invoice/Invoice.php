@@ -73,7 +73,8 @@ class Invoice extends Model
     {
         $name = preg_replace('/\D+/', '_', $this->invoice_number);
         $name = trim($name, '_');
-        return 'FV_' . $this->id . '_' . $name . '.pdf';
+        $prefix = $this->is_correction ? config('shopen.invoice.number.correction_prefix') : config('shopen.invoice.number.prefix');
+        return $prefix . '_' . $this->id . '_' . $name . '.pdf';
     }
 
     public function getFilePathAttribute()

@@ -80,10 +80,6 @@ const appliesToOptions = [
             <Input v-model="form.name" required/>
         </FormField>
 
-        <FormField label="Opis">
-            <Input v-model="form.description"/>
-        </FormField>
-
         <FormField label="Typ zniżki" required>
             <Select id="discount_type" v-model="form.discount_type" :options="discountTypeOptions"/>
         </FormField>

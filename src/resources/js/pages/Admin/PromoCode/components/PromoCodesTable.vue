@@ -5,6 +5,7 @@ import TableColumn from "@shopen/components/admin/table/TableColumn.vue";
 import {ref} from "vue";
 import {Link, router, usePage} from "@inertiajs/vue3";
 import ActionButton from "@shopen/components/admin/ui/ActionButton.vue";
+import ActionButtons from "../../../../components/admin/ui/ActionButtons.vue";
 
 const props = defineProps({
     promoCodes: Object
@@ -64,10 +65,9 @@ const removeCode = (code) => {
         </TableColumn>
 
         <TableColumn field="name" label="Nazwa" v-slot="data" sortable>
-            <div>{{ data.row.name }}</div>
-            <div v-if="data.row.description" class="text-neutral-400 text-sm">
-                {{ data.row.description }}
-            </div>
+            <Link :href="route('admin.promo-codes.edit', data.row.id)" class="cursor-pointer">
+                {{ data.row.name }}
+            </Link>
         </TableColumn>
 
         <TableColumn field="valid_from" label="Ważny od" v-slot="data" sortable>
@@ -80,12 +80,10 @@ const removeCode = (code) => {
 
 
         <TableColumn label="Akcje" v-slot="data" width="100px">
-            <div class="flex divide-x divide-x-border-light">
-                <Link :href="route('admin.promo-codes.edit', data.row.id)" class="text-accent cursor-pointer">
-                    <ActionButton type="edit"/>
-                </Link>
+            <ActionButtons>
+                <ActionButton type="edit" :href="route('admin.promo-codes.edit', data.row.id)"/>
                 <ActionButton type="remove" @click="removeCode(data.row)"/>
-            </div>
+            </ActionButtons>
         </TableColumn>
 
     </DataTable>

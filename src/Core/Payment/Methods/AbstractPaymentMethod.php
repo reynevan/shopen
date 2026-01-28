@@ -2,11 +2,13 @@
 
 namespace Shopen\Core\Payment\Methods;
 
+use Illuminate\Support\Number;
 use JsonSerializable;
 use Shopen\Enums\Payment\PaymentStatus;
 use Shopen\Models\Order\Order;
 use Shopen\Models\Order\Payment;
 use Shopen\Services\CartService;
+use Shopen\Services\ConfigService;
 
 
 abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodInterface
@@ -15,9 +17,23 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
 
     public function __construct(
         protected CartService $cartService,
+        protected ConfigService $configService,
     )
     {
         $this->config = $this->getDefaultConfig();
+    }
+    protected function getConfigField($field)
+    {
+        return $this->configService->get("payment/{$this->getKey()}/$field") ?? config("payment.{$this->getKey()}.$field");
+    }
+
+    protected function getConfigBoolField($field)
+    {
+        $isActive = $this->configService->get("payment/{$this->getKey()}/$field");
+        if (!is_null($isActive)) {
+            return $isActive;
+        }
+        return config("payment.{$this->getKey()}.$field");
     }
 
     protected function createPayment(Order $order, $amount, bool $isReturn = false, array $additionalData = []): Payment
@@ -29,6 +45,7 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
             'status' => PaymentStatus::PENDING,
             'transaction_id' => $this->generateTransactionId(),
             'is_return' => $isReturn,
+            'gateway_data' => $additionalData,
         ]);
     }
 
@@ -37,19 +54,19 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return 'TXN_' . uniqid() . '_' . time();
     }
 
-    public function getComponent(): ?string
-    {
-        return null;
-    }
-
     public function getName(): string
     {
-        return config("payment.{$this->getKey()}.name");
+        return $this->getConfigField('name');
+    }
+
+    public function getTitle(): string
+    {
+        return $this->getConfigField('title');
     }
 
     public function getPaymentDueDays(): int
     {
-        return intval(config("payment.{$this->getKey()}.due_days", 0));
+        return $this->getConfigField('due_days');
     }
 
     public function getBlock(): string
@@ -57,9 +74,14 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
         return 'payment.payment-method';
     }
 
+    public function isActive(): bool
+    {
+        return $this->getConfigBoolField('active');
+    }
+
     public function isAvailable(): bool
     {
-        if (!config("payment.{$this->getKey()}.active")) {
+        if (!$this->isActive()) {
             return false;
         }
         $selectedShippingMethod = $this->cartService->getCart()->shipping_method;
@@ -78,17 +100,37 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
 
     public function getDescription(): ?string
     {
-        return null;
+        return $this->configService->get("payment/{$this->getKey()}/description") ?? config("payment.{$this->getKey()}.description");
+    }
+
+    public function getAdditionalFields(): array
+    {
+        return [];
     }
 
     public function jsonSerialize(): array
     {
         return [
             'key' => $this->getKey(),
+            'active' => $this->isActive(),
             'name' => $this->getName(),
+            'title' => $this->getTitle(),
+            'price' => Number::currency($this->getPrice()),
+            'description' => $this->getDescription(),
+            'additional_fields' => $this->getAdditionalFields(),
+        ];
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'key' => $this->getKey(),
+            'active' => $this->isActive(),
+            'name' => $this->getName(),
+            'title' => $this->getTitle(),
             'price' => $this->getPrice(),
             'description' => $this->getDescription(),
-            'component' => $this->getComponent(),
+            'additional_fields' => $this->getAdditionalFields(),
         ];
     }
 
@@ -114,7 +156,7 @@ abstract class AbstractPaymentMethod implements JsonSerializable, PaymentMethodI
 
     public function getPrice(): float
     {
-        return config("payment.{$this->getKey()}.price") ?? 0;
+        return (float)$this->getConfigField('price');
     }
 
     public function handleWebhook(array $webhookData): ?Payment
