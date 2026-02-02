@@ -17,9 +17,6 @@ defineProps({
         <template #title>
             <PageTitle>Klienci</PageTitle>
         </template>
-        <Link :href="route('admin.attributes.create')">
-            <Button>Nowy klient</Button>
-        </Link>
     </ActionsPanel>
     <UsersTable :users="users"/>
 </template>

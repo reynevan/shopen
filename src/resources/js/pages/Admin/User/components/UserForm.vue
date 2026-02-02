@@ -30,7 +30,7 @@ const form = useForm({
 const sections = [
     {
         section: 'general',
-        title: 'Główne'
+        title: 'Dane'
     },
     {
         section: 'addresses',

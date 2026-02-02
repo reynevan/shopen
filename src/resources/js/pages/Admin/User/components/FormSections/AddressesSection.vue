@@ -94,8 +94,14 @@ const closeAddressModal = () => {
             <div v-if="billingAddresses?.length > 0">
                 <p>Dodatkowe adresy rozliczeniowe</p>
                 <div class="mt-2 flex flex-wrap gap-4">
-                    <div class="p-4 border rounded" v-for="address in billingAddresses">
-                        <AddressThumbnail :address="address" />
+                    <div v-for="address in billingAddresses" class="p-4 border rounded flex flex-col justify-between">
+                        <div class="mb-4">
+                            <AddressThumbnail :address="address" />
+                        </div>
+                        <ActionButtons>
+                            <ActionButton type="edit" @click="editAddress(address)">Edytuj</ActionButton>
+                            <ActionButton type="remove" @click="removeAddress(address)">Usuń</ActionButton>
+                        </ActionButtons>
                     </div>
                 </div>
             </div>
