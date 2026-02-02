@@ -25,7 +25,7 @@ class ContactMessageResource extends JsonResource
             'status_label' => $this->status->label(),
             'user' => CustomerResource::make($this->whenLoaded('user')),
             'created_at_diff' => Carbon::make($this->created_at)->diffForHumans(),
-            'created_at' => $this->created_at->format('d-m-Y H:i'),
+            'created_at' => $this->created_at->toLocalDateTime(),
             'responses' => ContactMessageResponseResource::collection($this->whenLoaded('responses')),
         ];
     }

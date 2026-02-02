@@ -19,7 +19,7 @@ class ContactMessageResponseResource extends JsonResource
             'message' => strip_tags($this->message),
             'user' => CustomerResource::make($this->whenLoaded('user')),
             'created_at_diff' => Carbon::make($this->created_at)->diffForHumans(),
-            'created_at' => $this->created_at->format('d-m-Y H:i'),
+            'created_at' => $this->created_at->toLocalDateTime(),
         ];
     }
 }

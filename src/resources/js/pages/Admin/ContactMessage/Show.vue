@@ -63,6 +63,7 @@ const hasResponses = computed(() => (props.message?.responses?.length || 0) > 0)
                     <div class="text-xs uppercase text-neutral-500">Nadawca</div>
                     <div class="text-sm"><i class="bi bi-person"></i> {{ message.name }}</div>
                     <div class="text-sm"><i class="bi bi-envelope-at"></i> {{ message.email }}</div>
+                    <div class="text-sm" v-if="message.phone"><i class="bi bi-phone"></i> {{ message.phone }}</div>
                 </div>
                 <div class="pl-2">
                     <div class="text-xs uppercase text-neutral-500">Data wysłania</div>
@@ -96,10 +97,8 @@ const hasResponses = computed(() => (props.message?.responses?.length || 0) > 0)
             <template #header>
                 Odpowiedzi
             </template>
-            <div class="divide-y divide-neutral-200">
-                <div
-                    v-for="response in message.responses"
-                    :key="response.id">
+            <div class="divide-y divide-neutral-200 space-y-4">
+                <div v-for="response in message.responses" :key="response.id">
                     <div class="flex flex-wrap items-center justify-between gap-3 mb-2">
                         <div class="flex items-center gap-2">
                             <div>
@@ -116,8 +115,7 @@ const hasResponses = computed(() => (props.message?.responses?.length || 0) > 0)
                             {{ response.created_at }}
                         </div>
                     </div>
-                    <div
-                        class="border border-neutral-200 bg-neutral-50/50 px-3 py-3 text-neutral-800 whitespace-pre-wrap"
+                    <div class="border border-neutral-200 bg-neutral-50/50 px-3 py-3 text-neutral-800 whitespace-pre-wrap"
                         v-html="response.message"
                     />
                 </div>
