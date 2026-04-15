@@ -84,7 +84,7 @@ class ShopenInstall extends Command
 
     protected function createStore(): void
     {
-        Store::forceCreate(['url' => config('app.url')]);
+        Store::forceCreate(['code' => 'default', 'url' => config('app.url')]);
     }
 
     protected function createTaxClass()
