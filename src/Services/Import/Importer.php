@@ -38,6 +38,7 @@ class Importer
                     'attribute_id' => $attribute->id,
                     'value' => is_array($option) ? $option['value'] : $option,
                     'color' => is_array($option) ? ($option['color'] ?? null) : null,
+                    'store_id' => 1
                 ]);
             }
         }
