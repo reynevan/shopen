@@ -9,7 +9,6 @@ use Shopen\Models\Ceneo\CeneoCategory;
 use Shopen\Models\Product\TaxClass;
 use Shopen\Models\Store;
 use Shopen\Models\User;
-use Shopen\Models\Website;
 
 class ShopenInstall extends Command
 {
@@ -20,7 +19,7 @@ class ShopenInstall extends Command
     {
         $this->installFrontendDependencies();
         $this->runCommand('migrate' . ($this->option('fresh') ? ':fresh' : ''), [], $this->output);
-        $this->createWebsite();
+        $this->createStore();
         $this->importCeneoCategories();
         $this->createAttributes();
         $this->createTaxClass();
@@ -83,10 +82,9 @@ class ShopenInstall extends Command
         return 0;
     }
 
-    protected function createWebsite(): void
+    protected function createStore(): void
     {
-        $website = Website::forceCreate(['url' => config('app.url')]);
-        Store::forceCreate(['website_id' => $website->id]);
+        Store::forceCreate(['url' => config('app.url')]);
     }
 
     protected function createTaxClass()

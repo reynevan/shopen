@@ -1,9 +1,11 @@
 <script setup>
 import {Link, router, usePage} from "@inertiajs/vue3";
+import StoreSelector from "./StoreSelector.vue";
 
 const props = defineProps({
     backRoute: {type: String},
-    backRouteParams: {type: Array, default: []}
+    backRouteParams: {type: Array, default: []},
+    storeSelector: {type: Boolean, default: false},
 })
 
 const page = usePage()
@@ -22,6 +24,9 @@ const backLinkClass = 'text-2xl text-gray-600 hover:text-black transition-colors
                     </Link>
                 </div>
                 <div class="flex items-center">
+                    <div v-if="storeSelector" class="mr-8">
+                        <StoreSelector/>
+                    </div>
                     <slot name="title"/>
                 </div>
             </div>

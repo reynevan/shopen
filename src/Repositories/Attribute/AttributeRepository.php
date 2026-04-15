@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Cache;
 use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Category\Attribute\CategoryAttribute;
 use Shopen\Models\Product\Attribute\ProductAttribute;
+use Shopen\Services\StoreManager;
 
 class AttributeRepository
 {
@@ -139,6 +140,7 @@ class AttributeRepository
             ->when($ids, function ($query) use ($ids) {
                 $query->whereIn('entity_id', $ids);
             })
+            ->where('store_id', app(StoreManager::class)->getCurrentStore()->id)
             ->select(['entity_id', 'value'])
             ->pluck('value', 'entity_id');
     }

@@ -41,6 +41,7 @@ use Shopen\Services\CustomAttributesService;
 use Shopen\Observers\ProductPriceObserver;
 use Shopen\Services\FiltersService;
 use Shopen\Services\ShoppingListService;
+use Shopen\Services\StoreManager;
 use Shopen\Services\UrlService;
 use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 
@@ -71,9 +72,9 @@ class ShopenServiceProvider  extends ServiceProvider
                 ]);
             });
         }
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        //$this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
-        $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        //$this->loadRoutesFrom(__DIR__.'/../routes/api.php');
 
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'shopen');
 
@@ -113,9 +114,6 @@ class ShopenServiceProvider  extends ServiceProvider
             $date = self::this()->translatedFormat('j F Y');
             return str_replace(array_keys($months), array_values($months), $date);
         });
-
-        Number::useCurrency(config('app.currency'));
-        Number::useLocale(config('app.locale'));
 
         $this->app->singleton(FiltersService::class, function ($app) {
             return new FiltersService();
@@ -158,6 +156,10 @@ class ShopenServiceProvider  extends ServiceProvider
 
         $this->app->singleton(UrlService::class, function ($app) {
             return new UrlService();
+        });
+
+        $this->app->singleton(StoreManager::class, function () {
+            return new StoreManager();
         });
 
         $this->app->bind(BaseLengthAwarePaginator::class, LengthAwarePaginator::class);

@@ -18,7 +18,6 @@ return new class extends Migration
             $table->foreignId('attribute_id');
             $table->foreign('attribute_id')->references('id')->on('attributes')->onDelete('cascade');
             $table->foreignId('store_id');
-            $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
             $table->decimal('value')->nullable();
             $table->timestamps();
         });

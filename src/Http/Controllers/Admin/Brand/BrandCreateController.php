@@ -27,7 +27,7 @@ class BrandCreateController
     {
         $data = $request->validated();
         $brand = Brand::create($data);
-        $brand->createOrUpdateSeoForWebsite(1, $data);
+        $brand->createOrUpdateSeoForStore(1, $data);
 
         if ($request->hasFile('logo')) {
             $brand->addMedia($request->file('logo'))->toMediaCollection();

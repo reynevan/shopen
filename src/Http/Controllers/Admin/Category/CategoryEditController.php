@@ -34,7 +34,7 @@ readonly class CategoryEditController
             return redirect(route('admin.categories.index'));
         }
         $this->customAttributesService->preloadCategoryAttributes();
-        $category->seo = $category->getSeoForWebsite(1);
+        $category->seo = $category->getSeoForStore(1);
 
         return Inertia::render('Admin/Category/Index', [
             'categories' => fn() => $this->categoryRepository->getArray($category->id),

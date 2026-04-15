@@ -23,9 +23,9 @@ trait HasSeoDetails
         return $this->morphMany(SeoDetail::class, 'seoable');
     }
 
-    public function getSeoForWebsite(int $websiteId, bool $generateDefault = false): ?SeoDetail
+    public function getSeoForStore(int $storeId, bool $generateDefault = false): ?SeoDetail
     {
-        $seoDetails = $this->seoDetails()->where('website_id', $websiteId)->first();
+        $seoDetails = $this->seoDetails()->where('store_id', $storeId)->first();
         if ($seoDetails || !$generateDefault) {
             return $seoDetails;
         }
@@ -35,11 +35,11 @@ trait HasSeoDetails
         ]);
     }
 
-    public function createOrUpdateSeoForWebsite(int $websiteId, array $data): SeoDetail
+    public function createOrUpdateSeoForStore(int $storeId, array $data): SeoDetail
     {
         return $this->seoDetails()->updateOrCreate(
             [
-                'website_id' => $websiteId,
+                'store_id' => $storeId,
             ],
             [
                 'seo_title' => $data['seo_title'] ?? null,

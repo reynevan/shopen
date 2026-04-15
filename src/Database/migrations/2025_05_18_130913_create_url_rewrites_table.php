@@ -18,7 +18,6 @@ return new class extends Migration
             $table->string('entity_type');
             $table->foreignId('entity_id')->nullable();
             $table->foreignId('store_id');
-            $table->foreign('store_id')->references('id')->on('stores')->onDelete('cascade');
             $table->timestamps();
 
             $table->index('request_path');

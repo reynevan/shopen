@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('seo_details', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('website_id')->constrained()->onDelete('cascade');
+            $table->foreignId('store_id');
 
             $table->unsignedBigInteger('seoable_id');
             $table->string('seoable_type');
@@ -24,7 +24,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['website_id', 'seoable_id', 'seoable_type']);
+            $table->unique(['store_id', 'seoable_id', 'seoable_type']);
         });
     }
 

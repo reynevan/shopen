@@ -31,7 +31,7 @@ class BrandEditController
         $data = $request->validated();
         $brand->update($data);
 
-        $brand->createOrUpdateSeoForWebsite(1, $data);
+        $brand->createOrUpdateSeoForStore(1, $data);
 
         if ($request->hasFile('logo')) {
             $brand->media()->delete();

@@ -15,6 +15,7 @@ use Shopen\Models\Product\Product;
 use Shopen\Repositories\Attribute\AttributeRepository;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Services\StoreManager;
 
 trait HasCustomAttributes
 {
@@ -75,6 +76,11 @@ trait HasCustomAttributes
             return null;
         }
         return $this->loadAttribute($key);
+    }
+
+    public function clearCustomAttributes(): void
+    {
+        $this->customAttributes = [];
     }
 
     public function getCustomAttributes(): array
@@ -249,24 +255,29 @@ trait HasCustomAttributes
     {
         $attribute = $this->fetchAttribute($attribute);
         $valueModel = $attribute->getValueModel();
+        $storeId = app(StoreManager::class)->getCurrentStore()->id;
         if ($attribute->frontend_type === 'multiselect') {
             $attributeValue = $valueModel::query()
                 ->where('entity_id', $this->id)
                 ->where('attribute_id', $attribute->id)
+                ->where('store_id', $storeId)
                 ->pluck('value');
             if ($textValue) {
                 $attributeValue = AttributeOption::query()
                     ->whereIn('id', $attributeValue)
+                    ->where('store_id', $storeId)
                     ->pluck('value');
             }
         } else {
             $attributeValue = $valueModel::query()
                 ->where('entity_id', $this->id)
                 ->where('attribute_id', $attribute->id)
+                ->where('store_id', $storeId)
                 ->first();
             if ($textValue && $attributeValue && $attribute->isSelectable()) {
                 $attributeValue = AttributeOption::query()
                     ->where('id', $attributeValue->value)
+                    ->where('store_id', $storeId)
                     ->first();
             }
             $attributeValue = $attributeValue->value ?? null;

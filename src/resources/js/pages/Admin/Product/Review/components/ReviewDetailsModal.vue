@@ -45,14 +45,13 @@ const remove = () => {
         </template>
         <template #default>
             <!-- Sekcja produktu -->
-            <div class="bg-neutral-50 rounded-lg px-4 pb-4 mb-6">
+            <div class="bg-neutral-100 rounded-lg px-4 py-4 mb-6">
                 <div class="flex items-center gap-4">
                     <a :href="review.product.url" target="_blank" class="flex-shrink-0">
                         <ProductThumbnailImage :product="review.product" size="sm"/>
                     </a>
                     <div>
-                        <a :href="review.product.url" target="_blank"
-                           class="text-neutral-800 font-medium hover:text-blue-600 transition-colors">
+                        <a :href="review.product.url" target="_blank" class="text-neutral-800">
                             {{ review.product.name }}
                         </a>
                     </div>
@@ -64,11 +63,11 @@ const remove = () => {
                 <div class="flex justify-between gap-4 divide-x divide-x-border-light">
                     <div class="w-1/2 px-2">
                         <span class="text-sm text-neutral-500">Autor</span>
-                        <p class="font-medium">{{ review.user.first_name }} {{ review.user.last_name }}</p>
+                        <p>{{ review.user.first_name }} {{ review.user.last_name }}</p>
                     </div>
                     <div class="w-1/2 px-2">
                         <span class="text-sm text-neutral-500">Data dodania</span>
-                        <p class="font-medium">{{ review.created_at }}</p>
+                        <p>{{ review.created_at }}</p>
                     </div>
                 </div>
             </div>

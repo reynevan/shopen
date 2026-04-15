@@ -5,12 +5,11 @@ namespace Shopen\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Shopen\Models\Website;
 
 class SeoDetail extends Model
 {
     protected $fillable = [
-        'website_id',
+        'store_id',
         'seo_title',
         'seo_description',
         'seoable_id',
@@ -22,9 +21,9 @@ class SeoDetail extends Model
         return $this->morphTo();
     }
 
-    public function website(): BelongsTo
+    public function store(): BelongsTo
     {
-        return $this->belongsTo(Website::class);
+        return $this->belongsTo(Store::class);
     }
 
     public function getSeoTitleAttribute()

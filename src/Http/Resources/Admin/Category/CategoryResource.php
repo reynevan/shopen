@@ -30,7 +30,7 @@ class CategoryResource extends JsonResource
             'sort_index' => $this->sort_index,
             'attributes' => $this->resource->getCustomAttributes(),
             'menu_image_url' => $this->resource->getMenuImageUrl(),
-            'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
+            'seo' => SeoDetailResource::make($this->resource->getSeoForStore(1))
         ];
     }
 

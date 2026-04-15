@@ -151,9 +151,10 @@ const duplicate = () => {
 
 </script>
 <template>
-    <ActionsPanel back-route="admin.products.index">
+    <ActionsPanel back-route="admin.products.index" store-selector>
         <template #title>
-            <PageTitle>{{ product.id ? product.attributes.name : 'Nowy produkt' }}</PageTitle></template>
+            <PageTitle>{{ product.id ? product.attributes.name : 'Nowy produkt' }}</PageTitle>
+        </template>
         <Button v-if="product.id" @click="duplicate">Skopiuj</Button>
         <Button @click="save">Zapisz</Button>
     </ActionsPanel>

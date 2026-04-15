@@ -24,14 +24,14 @@ const auth = useAuthStore();
             <div class="my-6 flex items-center gap-4 text-neutral-500 text-sm">
                 <div class="w-[60px] h-[1px] border-b border-light"></div>
                 <div class="whitespace-nowrap">
-                    Nie masz konta?
+                    {{ $t('Nie masz konta?') }}
                 </div>
                 <div class="w-[60px] h-[1px] border-b border-light"></div>
             </div>
 
             <Link prefetch :href="route('sign-up')" title="Zarejestruj się">
                 <Button type="primary" class="whitespace-nowrap" full-width :shadow="false">
-                    Załóż konto
+                    {{ $t('Załóż konto') }}
                 </Button>
             </Link>
         </div>

@@ -14,6 +14,7 @@ use Shopen\Models\Traits\HasUrl;
 use Shopen\Models\UrlRewrite;
 use Shopen\Models\Traits\HasSeoDetails;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
+use Shopen\Services\StoreManager;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -130,13 +131,17 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
         $rewrite->save();
     }
 
-    public function getUrl($absolute = true)
+    public function getUrl($absolute = true): ?string
     {
-        $urlRewrite = $this->urlRewrites()->first();
+        $store = app(StoreManager::class)->getCurrentStore();
+        $urlRewrite = $this
+            ->urlRewrites()
+            ->where('store_id', $store->id)
+            ->first();
         if (!$urlRewrite) {
             return null;
         }
-        $appUrl = $absolute ? (config('app.url') . '/') : '';
+        $appUrl = $absolute ? ($store->full_url . '/') : '';
         return $appUrl . $urlRewrite->request_path;
     }
 
@@ -184,7 +189,7 @@ class Category extends Model implements HasMedia, HasCustomAttributesInterface
 
     public function getSeoData(int $websiteId, bool $generateDefault = false){
         return Cache::rememberForever('category.seo.' . $websiteId . ($generateDefault ? '.default' : ''), function () use ($websiteId, $generateDefault) {
-            return SeoDetailResource::make($this->getSeoForWebsite($websiteId, $generateDefault))->resolve();
+            return SeoDetailResource::make($this->getSeoForStore($websiteId, $generateDefault))->resolve();
         });
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Console\Command;
 use Shopen\Models\Attribute\Attribute;
 use Shopen\Models\Category\Category;
 use Shopen\Models\Product\Product;
+use Shopen\Models\Store;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 
 class Reindex extends Command
@@ -82,6 +83,7 @@ class Reindex extends Command
         }
         $mapping = new Mapping();
         $mapping->keyword('id');
+        $mapping->keyword('store_id');
         $mapping->text('name', [
             'analyzer' => 'polish',
             'fields' => [
@@ -140,24 +142,30 @@ class Reindex extends Command
         if ($this->indexManager->exists($indexName)) {
             $this->indexManager->drop($indexName);
         }
+        $stores = Store::query()->get();
         $mapping = new Mapping();
         $mapping->integer('id');
         $mapping->integer('parent_id');
         $mapping->integer('products_count');
-        $mapping->keyword('url_key');
-        $mapping->text('name', [
-            'analyzer' => 'polish',
-            'fields' => [
-                'autocomplete' => [
-                    'type' => 'text',
-                    'analyzer' => 'autocomplete_analyzer',
-                    'search_analyzer' => 'standard'
-                ],
-                'keyword' => [
-                    'type' => 'keyword',
+        foreach ($stores as $store) {
+            $mapping->keyword('url_key_' . $store->code);
+            $nameParams = [
+                'fields' => [
+                    'autocomplete' => [
+                        'type' => 'text',
+                        'analyzer' => 'autocomplete_analyzer',
+                        'search_analyzer' => 'standard'
+                    ],
+                    'keyword' => [
+                        'type' => 'keyword',
+                    ]
                 ]
-            ]
-        ]);
+            ];
+            if ($store->language === 'pl_PL') {
+                $nameParams['analyzer'] = 'polish';
+            }
+            $mapping->text('name_' . $store->code, $nameParams);
+        }
 
         $this->indexManager->create(new Index($indexName, $mapping, $settings));
     }

@@ -98,7 +98,7 @@ readonly class ProductEditController
                 $variant->searchable();
             }
 
-            $product->createOrUpdateSeoForWebsite(1, [
+            $product->createOrUpdateSeoForStore(1, [
                 'seo_title' => $data['seo_title'] ?? null,
                 'seo_description' => $data['seo_description'] ?? null,
             ]);

@@ -21,7 +21,8 @@ class MenuService
 
     public function getCategories()
     {
-        return Cache::rememberForever('menu.categories', function () {
+        $storeId = app(StoreManager::class)->getCurrentStore()->id;
+        return Cache::rememberForever($storeId . '.menu.categories', function () {
             $urls = $this->getUrls();
 
             $categories = Category::query()

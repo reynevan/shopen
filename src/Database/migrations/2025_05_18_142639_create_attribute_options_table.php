@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attribute_id');
             $table->foreign('attribute_id')->references('id')->on('attributes')->onDelete('cascade');
+            $table->foreignId('store_id');
             $table->string('value');
             $table->string('color')->nullable();
             $table->integer('sort_order')->default(0);

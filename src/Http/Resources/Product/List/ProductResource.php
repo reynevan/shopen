@@ -31,6 +31,7 @@ class ProductResource extends JsonResource
             'is_on_list' => app(ShoppingListService::class)->isProductOnAnyList($this->id),
             'is_configurable' => $this->isConfigurable(),
             'is_new' => $this->isNew(),
+            'attributes' => []
         ];
         if (config('shopen.product.reviews.enabled')) {
             $data['rating'] = $this->rating;

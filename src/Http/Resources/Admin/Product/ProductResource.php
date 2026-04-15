@@ -45,7 +45,7 @@ class ProductResource extends JsonResource
             'promo_code' => PromoCodeResource::make($this->whenLoaded('promoCode')),
             'tax_class_id' => $this->tax_class_id,
             'ceneo_category_id' => $this->ceneo_category_id,
-            'seo' => SeoDetailResource::make($this->resource->getSeoForWebsite(1))
+            'seo' => SeoDetailResource::make($this->resource->getSeoForStore(1))
         ];
     }
 }

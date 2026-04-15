@@ -6,10 +6,9 @@ use App\Support\ProductSorting\ProductSortRegistry;
 use Elastic\Elasticsearch\Client;
 use Elastic\Elasticsearch\ClientBuilder;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Shopen\Models\Attribute\Attribute;
-use Shopen\Models\Product\Product;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Services\StoreManager;
 use stdClass;
 
 class SearchService
@@ -26,6 +25,7 @@ class SearchService
     protected ?int $perPage = null;
     protected ?int $limit = null;
     protected ?bool $new = null;
+    protected int $storeId;
 
     public function __construct(
         protected ProductSortRegistry        $productSortRegistry,
@@ -35,6 +35,8 @@ class SearchService
         $this->client = ClientBuilder::create()
             ->setHosts(['localhost:9200'])
             ->build();
+        $this->storeId = app(StoreManager::class)->getCurrentStore()->id;
+
     }
 
     public function setCategoryId($categoryId): static
@@ -107,6 +109,10 @@ class SearchService
 
         if ($this->brandId) {
             $filters[] = ['term' => ['brand_id' => $this->brandId]];
+        }
+
+        if ($this->storeId) {
+            $filters[] = ['term' => ['store' => $this->storeId]];
         }
 
         if ($this->ids) {
@@ -254,6 +260,12 @@ class SearchService
         }
         $this->addAttributeFilters($queryFilters, $filters, $exclude);
         $this->addPriceRangeFilter($queryFilters, $filters);
+
+
+
+        if ($this->storeId) {
+            $queryFilters[] = ['term' => ['store' => $this->storeId]];
+        }
 
         return $queryFilters;
     }

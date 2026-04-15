@@ -13,9 +13,12 @@ return new class extends Migration
     {
         Schema::create('stores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('website_id');
-            $table->foreign('website_id')->references('id')->on('websites');
+            $table->string('code');
+            $table->string('url');
             $table->string('url_code')->nullable();
+            $table->boolean('is_default')->default(false);
+            $table->string('language')->default('pl_PL');
+            $table->string('currency')->default('PLN');
             $table->timestamps();
         });
     }

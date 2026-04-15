@@ -13,7 +13,7 @@ class BrandResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'logo' => $this->resource->getLogoUrl(),
-            'seo' => $this->resource->getSeoForWebsite(1, true),
+            'seo' => $this->resource->getSeoForStore(1, true),
             'url' => $this->resource->getUrl(),
         ];
     }

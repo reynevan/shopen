@@ -60,7 +60,7 @@ import Logo from "@shopen/components/frontend/ui/Logo.vue";
                                 <IconPhone size="lg"/>
                             </div>
                             <div>
-                                <a class="text-2xl" href="tel:0 700 880 717">0 700 880 717</a>
+                                <a class="text-2xl" href="tel:0 100 200 300">0 100 200 300</a>
                                 <p class="text-sm flex justify-between">
                                     <span class="text-neutral-400">pon - pt </span>
                                     <span>8:00 - 16:00</span>

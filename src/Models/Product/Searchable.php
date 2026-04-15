@@ -4,8 +4,11 @@ namespace Shopen\Models\Product;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Laravel\Scout\Scout;
+use Shopen\Jobs\MakeSearchable;
 use Shopen\Models\Order\OrderItem;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Services\StoreManager;
 
 trait Searchable
 {
@@ -16,10 +19,37 @@ trait Searchable
         return !!$this->is_active && $this->visible_individually;
     }
 
+    public function getScoutKey()
+    {
+        $store = app(StoreManager::class)->getCurrentStore();
+
+        return $this->id . '_' . $store->id;
+
+    }
+
+    public function queueMakeSearchable($models)
+    {
+        if ($models->isEmpty()) {
+            return;
+        }
+
+        if (! config('scout.queue')) {
+            return $this->syncMakeSearchable($models);
+        }
+
+        dispatch((new MakeSearchable($models))
+            ->onQueue($models->first()->syncWithSearchUsingQueue())
+            ->onConnection($models->first()->syncWithSearchUsing()));
+    }
+
     public function toSearchableArray()
     {
+        $this->clearCustomAttributes();
+        $this->refresh();
+        $store = app(StoreManager::class)->getCurrentStore();
         return [
             'id' => $this->id,
+            'store' => $store->id,
             'name' => $this->getCustomAttribute('name'),
             'description' => $this->getCustomAttribute('description'),
             'visible_individually' => $this->visible_individually,

@@ -58,9 +58,9 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                             <div class="p-2 group-hover:shadow-lg rounded-t border border-transparent group-hover:border-light">
                                 <Link :href="auth.isLoggedIn ? route('user.orders.index') : route('login')"
                                       prefetch
-                                      :title="auth.isLoggedIn ? 'Moje konto' : 'Zaloguj się'"
+                                      :title="auth.isLoggedIn ? $t('Moje konto') : $t('Zaloguj się')"
                                       class="flex items-center gap-2">
-                                    <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">Zaloguj&nbsp;się</span>
+                                    <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">{{ $t('Zaloguj się')}}</span>
                                     <IconProfile size="2xl"/>
                                 </Link>
                             </div>

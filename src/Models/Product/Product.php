@@ -536,11 +536,6 @@ class Product extends Model implements HasMedia, HasCustomAttributesInterface
         return max($qty - $cartQty, 0);
     }
 
-    public function getUrl()
-    {
-        return config('app.url') . '/' . $this->urlRewrite?->request_path;
-    }
-
     public function getCanonicalUrl()
     {
         if (!$this->parent_id) {

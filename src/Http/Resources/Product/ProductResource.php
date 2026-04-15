@@ -9,6 +9,7 @@ use Shopen\Http\Resources\Brand\BaseBrandResource;
 use Shopen\Http\Resources\Seo\SeoDetailResource;
 use Shopen\Services\ShippingService;
 use Shopen\Services\ShoppingListService;
+use Shopen\Services\StoreManager;
 
 class ProductResource extends JsonResource
 {
@@ -19,7 +20,7 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $seo = $this->resource->getSeoForWebsite(1);
+        $seo = $this->resource->getSeoForStore(app(StoreManager::class)->getCurrentStore()->id);
         $data = [
             'id' => $this->id,
             'sku' => $this->sku,

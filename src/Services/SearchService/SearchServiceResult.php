@@ -17,6 +17,7 @@ use Shopen\Repositories\Brand\BrandRepository;
 use Shopen\Repositories\Category\CategoryAttributeRepository;
 use Shopen\Repositories\Category\CategoryRepository;
 use Shopen\Repositories\Product\ProductAttributeRepository;
+use Shopen\Services\StoreManager;
 
 class SearchServiceResult
 {
@@ -75,10 +76,11 @@ class SearchServiceResult
             })
             ->get();
 
+        $store = app(StoreManager::class)->getCurrentStore();
         foreach ($categories as $category) {
             $source = $sources[$category->id] ?? [];
-            $category->url = config('app.url') . '/' .  $source['url_key'];
-            $category->setCustomAttribute('name', $source['name']);
+            $category->url = $store->full_url . '/' .  $source['url_key_' . $store->code];
+            $category->setCustomAttribute('name', $source['name_' . $store->code]);
         }
 
         return $categories;

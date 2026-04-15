@@ -230,7 +230,7 @@ trait ProductsImporter
         $product->save();
         $product->setPrice($data['prices']);
 
-        $product->createOrUpdateSeoForWebsite(1, [
+        $product->createOrUpdateSeoForStore(1, [
             'seo_title' => $data['meta_title'] ?? $data['name'],
             'seo_description' => $data['meta_description'] ?? $data['short_description'] ?? null,
         ]);

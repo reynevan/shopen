@@ -65,7 +65,7 @@ trait CategoriesImporter
             $category->parent_id = $parentId;
             $category->save();
             $category->generateUrlRewrite($data['url_key']);
-            $category->createOrUpdateSeoForWebsite(1, [
+            $category->createOrUpdateSeoForStore(1, [
                 'seo_description' => $data['meta_description'],
             ]);
             $category->updatePath();

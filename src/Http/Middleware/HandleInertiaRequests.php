@@ -10,10 +10,12 @@ use Inertia\Inertia;
 use Inertia\Middleware;
 use Shopen\Core\Context;
 use Shopen\Facades\Breadcrumbs;
+use Shopen\Http\Resources\Admin\StoreResource;
 use Shopen\Http\Resources\Admin\TextSlide\TextSlideResource;
 use Shopen\Http\Resources\Cart\CartItemResource;
 use Shopen\Http\Resources\User\UserResource;
 use Shopen\Models\Cart\Cart;
+use Shopen\Models\Store;
 use Shopen\Services\CartService;
 use Shopen\Services\MenuService;
 use Shopen\Services\ShoppingListService;
@@ -65,6 +67,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => fn() => !!$user,
             'csrf_token' => fn() => csrf_token(),
             'route' => $request->route()->getName(),
+            'lang' => fn() => app()->getLocale(),
             ...$this->getFlashData($request),
         ];
         if (Route::is('admin.*')) {
@@ -74,6 +77,7 @@ class HandleInertiaRequests extends Middleware
             ];
             $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
             $data['referer'] = $request->header('referer');
+            $data['stores'] = fn() => StoreResource::collection(Store::all());
         } else {
             $ziggy = fn() => [
                 ...(new Ziggy)->filter('!admin.*')->toArray(),
