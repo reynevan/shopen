@@ -114,11 +114,12 @@ trait HasCustomAttributes
             return false;
         }
 
+        $customAttributes = $this->customAttributes;
         if (!parent::save($options)) {
             return false;
         }
 
-        foreach ($this->customAttributes as $attrCode => $value) {
+        foreach ($customAttributes as $attrCode => $value) {
             $attribute = $this->getAttributeClass()::query()->where('code', $attrCode)->first();
             if (!$attribute) {
                 continue;
