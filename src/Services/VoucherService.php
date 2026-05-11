@@ -9,14 +9,14 @@ use Shopen\Models\PromoCode\PromoCode;
 
 class VoucherService
 {
-    public function createPromoCodeForProduct(Product $product, $price)
+    public function createPromoCodeForProduct(Product $product, $price, $name = null)
     {
         if (!$product->is_voucher) {
             return null;
         }
         $promoCode = new PromoCode();
         $promoCode->fill([
-            'name' => $product->getCustomAttributeValue('name'),
+            'name' => $name ?? $product->getCustomAttributeValue('name'),
             'is_active' => true,
             'discount_type' => DiscountType::FIXED,
             'discount_value' => $price,
