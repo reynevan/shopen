@@ -9,6 +9,7 @@ use Shopen\Models\Ceneo\CeneoCategory;
 use Shopen\Models\Product\TaxClass;
 use Shopen\Models\Store;
 use Shopen\Models\User;
+use Shopen\Services\StoreManager;
 
 class ShopenInstall extends Command
 {
@@ -84,7 +85,8 @@ class ShopenInstall extends Command
 
     protected function createStore(): void
     {
-        Store::forceCreate(['code' => 'default', 'url' => config('app.url')]);
+        $store = Store::forceCreate(['code' => 'default', 'url' => config('app.url')]);
+        app(StoreManager::class)->setCurrentStore($store);
     }
 
     protected function createTaxClass()

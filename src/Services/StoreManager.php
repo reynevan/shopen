@@ -26,6 +26,19 @@ class StoreManager
 
     public function resolveStore()
     {
+        if (app()->runningInConsole()) {
+            $store = Store::query()->where('is_default', true)->first();
+            if (!$store) {
+                $store = new Store();
+                $store->id = 1;
+                $store->currency = 'PLN';
+                $store->language = 'pl_PL';
+                $store->url = config('app.url');
+            }
+            return ['store' => $store, 'redirect' => false];
+
+        }
+
         $stores = Cache::remember('stores_all', 3600, fn() => Store::all());
         $fullUrl = Request::getSchemeAndHttpHost();
         $segments = Request::segments();
