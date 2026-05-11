@@ -85,7 +85,7 @@ class ShopenInstall extends Command
 
     protected function createStore(): void
     {
-        $store = Store::forceCreate(['code' => 'default', 'url' => config('app.url')]);
+        $store = Store::forceCreate(['code' => 'default', 'url' => config('app.url'), 'currency' => config('app.currency'), 'language' => config('app.locale')]);
         app(StoreManager::class)->setCurrentStore($store);
     }
 
