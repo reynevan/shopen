@@ -51,8 +51,7 @@ const closeMenu = () => {
              @mouseover="openMenu"
              @mouseleave="closeMenu">
             <div
-                class="nav-link border-b-2 group-hover/parent:border-black border-transparent transition-colors duration-500 px-4 py-2"
-                :class="category.subcategories.length > 0 ? 'has-subcategories rounded-t-md' : 'rounded-md'">
+                class="nav-link border-b-2 group-hover/parent:border-black border-transparent transition-colors duration-500 px-4 py-2">
                 <Link prefetch :href="category.url" class="navigation-label">
                     {{ category.name }}
                 </Link>
