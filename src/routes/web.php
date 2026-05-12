@@ -1,10 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Shopen\Http\Controllers\Frontend\Api\AttributesController;
 use Shopen\Http\Controllers\Frontend\Api\CartController as ApiCartController;
-use Shopen\Http\Controllers\Frontend\Api\CategoriesController as ApiCategoriesController;
-use Shopen\Http\Controllers\Frontend\Api\CheckoutController as ApiCheckoutController;
 use Shopen\Http\Controllers\Frontend\Api\ProductReviewsController;
 use Shopen\Http\Controllers\Frontend\Api\UsersController as ApiUsersController;
 use Shopen\Http\Controllers\Frontend\Brand\BrandShowController;
@@ -16,17 +13,16 @@ use Shopen\Http\Controllers\Frontend\Checkout\CheckoutOrderController;
 use Shopen\Http\Controllers\Frontend\Checkout\CheckoutUpdateController;
 use Shopen\Http\Controllers\Frontend\HomeController;
 use Shopen\Http\Controllers\Frontend\Newsletter\NewsletterController;
-use Shopen\Http\Controllers\Frontend\Payment\PaymentPayController;
 use Shopen\Http\Controllers\Frontend\Payment\Payu\PayuNotifyController;
 use Shopen\Http\Controllers\Frontend\Product\ProductShowController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewDeleteController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewStoreController;
 use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewUpdateController;
-use Shopen\Http\Controllers\Frontend\Product\Review\ProductReviewVoteController;
 use Shopen\Http\Controllers\Frontend\SearchController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListIndexController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListItemController;
 use Shopen\Http\Controllers\Frontend\ShoppingList\ShoppingListShowController;
+use Shopen\Http\Controllers\Frontend\Static\AboutController;
 use Shopen\Http\Controllers\Frontend\Static\ContactController;
 use Shopen\Http\Controllers\Frontend\Static\ShippingController;
 use Shopen\Http\Controllers\Frontend\Static\TermsAndConditionsController;
@@ -36,16 +32,9 @@ use Shopen\Http\Controllers\Frontend\User\Order\UserOrderShowController;
 use Shopen\Http\Controllers\Frontend\User\Order\UserOrdersIndexController;
 use Shopen\Http\Controllers\Frontend\User\UserAddressesIndexController;
 use Shopen\Http\Controllers\Frontend\User\UserSettingsIndexController;
-use Shopen\Http\Controllers\Frontend\UserProfileController;
 use Shopen\Http\Dispatcher;
-use \Shopen\Http\Controllers\Frontend\Api\SearchController as ApiSearchController;
 
-if (env('APP_ENV') === 'local') {
-    Route::get('/mail/{id?}', function ($id = 1) {
-       $order = \Shopen\Models\Order\Order::query()->where('id', $id)->first();
-       return new \Shopen\Mail\Order\OrderVouchers($order, [['name' => 'Bon 100 zł', 'codes' => ['ABC100', 'ASD123123']], ['name' => 'Bon 200 zł', 'codes' => ['ADG123', 'SDFAFF234234']]]);
-    });
-}
+
 
 Route::middleware(['web'])->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -97,6 +86,8 @@ Route::middleware(['web'])->group(function () {
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
     Route::get('/newsletter/potwierdzenie-subskrypcji', [NewsletterController::class, 'confirmed'])->name('newsletter.confirmed');
+
+    Route::get('/o-nas', [AboutController::class, 'index'])->name('about');
 
     Route::get('/kontakt', [ContactController::class, 'index'])->name('contact.index');
     Route::post('/kontakt', [ContactController::class, 'submit'])->name('contact.submit');

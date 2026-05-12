@@ -60,7 +60,7 @@ const { isScrollingDown } = props.hideOnScroll ? useScrollDirection() : false;
                                       prefetch
                                       :title="auth.isLoggedIn ? $t('Moje konto') : $t('Zaloguj się')"
                                       class="flex items-center gap-2">
-                                    <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700">{{ $t('Zaloguj się')}}</span>
+                                    <span v-if="!auth.isLoggedIn" class="hidden sm:inline text-neutral-700 whitespace-nowrap">{{ $t('Zaloguj się')}}</span>
                                     <IconProfile size="2xl"/>
                                 </Link>
                             </div>

@@ -50,6 +50,10 @@ Breadcrumbs::register('checkout.success', function (BreadcrumbsService $breadcru
     $breadcrumbs->remove();
 });
 
+Breadcrumbs::register('about', function (BreadcrumbsService $breadcrumbs) {
+    $breadcrumbs->add('O nas', route('about'));
+});
+
 Breadcrumbs::register('contact.index', function (BreadcrumbsService $breadcrumbs) {
     $breadcrumbs->add('Kontakt', route('contact.index'));
 });

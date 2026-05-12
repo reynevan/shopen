@@ -205,7 +205,9 @@ onUnmounted(() => {
         </div>
 
         <!-- Slot na bannery na dole strony -->
-        <slot name="page-bottom-banners"></slot>
+        <div class="mb-8">
+            <slot name="page-bottom-banners"></slot>
+        </div>
     </div>
 
     <!-- Mobile Filters Panel (Teleport) -->
