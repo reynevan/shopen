@@ -25,7 +25,7 @@ const props = defineProps({
     isMobile: {
         type: Boolean,
         default: false
-    }
+    },
 })
 
 const emits = defineEmits(['filterChange', 'onRemoveFilter'])
@@ -150,7 +150,7 @@ onUnmounted(() => {
 <template>
     <div class="filters-panel">
         <form method="get" data-ai="filters">
-            <div class="flex flex-col sm:flex-row sm:items-center flex-wrap gap-4 sm:gap-0 divide-y divide-light sm:divide-y-0 px-4 sm:px-0">
+            <div class="flex flex-col divide-y divide-light">
                 <Filter :attribute="{slug: 'price', name: 'Cena'}"
                         :is-mobile="isMobile"
                         @onClear="clearPriceFilter()"
@@ -184,7 +184,7 @@ onUnmounted(() => {
                         @onClear="clearAttributeFilter(attribute.slug)"
                         :active-filter-count="getActiveFilterCount(attribute.slug)"
                         :key="attribute.slug">
-                    <div :class="attribute.options?.length >= 8 ? 'sm:grid sm:grid-cols-2 sm:grid-gap-4' : ''">
+                    <div>
                         <template v-for="option in attribute.options"
                                   :key="option.slug">
                             <label
@@ -192,7 +192,7 @@ onUnmounted(() => {
                                 :for="`${attribute.slug}_${option.slug}`"
                                 :data-value="option.value"
                                 :data-count="option.count"
-                                class="flex items-center space-x-3 cursor-pointer hover:bg-accent p-2 transition-colors whitespace-nowrap">
+                                class="filter-option-label flex items-center gap-2 cursor-pointer p-2 transition-colors">
                                 <Checkbox
                                     :id="`${attribute.slug}_${option.slug}`"
                                     :checked="isFilterActive(attribute.slug, option.id)"
@@ -201,7 +201,7 @@ onUnmounted(() => {
                                 <span v-if="option.color"
                                       class="w-6 h-6 inline-block rounded border"
                                       :style="{'background-color': option.color}"></span>
-                                <span class="flex-1 text-sm font-light text-gray-700">
+                                <span class="flex-1 min-w-0 text-sm font-light text-gray-700">
                                     {{ option.value }}
                                     <data :value="option.count" class="text-gray-500 ml-1">({{ option.count }})</data>
                                 </span>

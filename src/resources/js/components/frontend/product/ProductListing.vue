@@ -129,15 +129,11 @@ onUnmounted(() => {
             <slot name="header" :resultsCount="resultsCount"></slot>
         </div>
 
-        <div>
-            <!-- Filters  -->
+        <div class="flex gap-6 items-start">
+            <!-- Lewy sidebar z filtrami (tylko desktop) -->
             <div v-if="hasActiveFilters || products?.data?.length"
-                class="hidden sm:block top-0 z-5 mb-4 px-4 sm:px-0"
-                 ref="filtersPanel"
-                 :class="[
-                     isFiltersPanelSticky ? 'shadow-lg' : '',
-                     isScrollingUp ? 'relative' : 'sticky'
-                 ]">
+                 class="hidden sm:block w-64 shrink-0 self-start top-4"
+                 ref="filtersPanel">
                 <FiltersPanel
                     @filterChange="onFilterChange"
                     @onRemoveFilter="removeFilter"
@@ -150,7 +146,7 @@ onUnmounted(() => {
             </div>
 
             <!-- Główna kolumna z produktami -->
-            <div>
+            <div class="flex-1 min-w-0">
                 <div class="sm:hidden mb-4 sticky top-0 z-5"
                      :class="isFiltersButtonSticky ? 'shadow-lg' : ''"
                      ref="filtersButton">
@@ -180,7 +176,7 @@ onUnmounted(() => {
                     <div v-if="products.data.length > 0"
                          :key="products.data.length"
                          ref="targetElement"
-                         class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
+                         class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-1 mb-8">
                         <ProductThumbnail v-for="(product, index) in products.data"
                                           :key="product.id"
                                           :index="index"
