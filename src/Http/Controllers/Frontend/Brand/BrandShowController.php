@@ -6,7 +6,7 @@ use App\Support\ProductSorting\ProductSortRegistry;
 use Inertia\Inertia;
 use Inertia\Response;
 use Shopen\Http\Resources\Brand\BrandResource;
-use Shopen\Http\Resources\Product\ProductResource;
+use Shopen\Http\Resources\Product\List\ProductResource;
 use Shopen\Models\Brand\Brand;
 use Shopen\Repositories\Product\ProductAttributeRepository;
 use Shopen\Repositories\Product\ProductRepository;
