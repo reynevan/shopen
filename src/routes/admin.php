@@ -50,13 +50,15 @@ use Shopen\Http\Controllers\Admin\TaxClass\TaxClassIndexController;
 use Shopen\Http\Controllers\Admin\User\UserEditController;
 use Shopen\Http\Controllers\Admin\User\UserIndexController;
 
-Route::middleware(['web'])->name('admin.')->group(function () {
+$prefix = 'admin';
+
+Route::middleware(['web'])->prefix($prefix)->name('admin.')->group(function () {
     Route::get('logowanie', [LoginController::class, 'create'])->name('login');
     Route::post('logowanie', [LoginController::class, 'store']);
     Route::post('logout', [LoginController::class, 'destroy'])->name('logout');
 });
 
-Route::middleware(['web', 'admin.guard'])->name('admin.')->group(function () {
+Route::middleware(['web', 'admin.guard'])->prefix($prefix)->name('admin.')->group(function () {
     Route::get('', [DashboardIndexController::class, 'index'])->name('dashboard');
     Route::get('/produkty/opinie', [ProductReviewsIndexController::class, 'index'])->name('products.reviews.index');
     Route::put('/produkty/opinie/{review}/accept', [ProductReviewsEditController::class, 'accept'])->name('products.reviews.accept');

@@ -83,6 +83,7 @@ class HandleInertiaRequests extends Middleware
                 ...(new Ziggy)->filter('!admin.*')->toArray(),
                 'location' => $request->url(),
             ];
+
             $data['ziggy'] = $request->inertia() ? Inertia::lazy($ziggy) : $ziggy;
 
 
